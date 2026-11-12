@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>师资结算系统 · 交互原型 V3.0</title>
+<style>
+:root{--blue:#315cec;--ink:#162033;--sub:#69758c;--line:#e4e9f2;--bg:#f3f6fb;--green:#159a70;--orange:#dc861d;--purple:#7b4fd6}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:radial-gradient(900px 460px at -5% -10%,#dce7ff,transparent 60%),radial-gradient(800px 420px at 105% 0,#def5eb,transparent 58%),var(--bg)}
+.wrap{max-width:920px;margin:auto;padding:56px 24px 72px}
+.badge{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid #cfdaff;border-radius:20px;background:#eef2ff;color:var(--blue);font-size:11px;font-weight:700}.badge:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--blue)}
+h1{font-size:38px;letter-spacing:-1px;margin:17px 0 12px}
+.lead{max-width:720px;color:var(--sub);font-size:14px;line-height:1.85;margin:0 0 34px}
+.hint{display:flex;align-items:center;gap:8px;margin:0 0 16px;font-size:13px;font-weight:700;color:var(--ink)}.hint small{font-weight:400;color:var(--sub);font-size:12px}
+.steps{list-style:none;margin:0;padding:0;position:relative}
+.steps:before{content:"";position:absolute;left:35px;top:34px;bottom:34px;width:2px;background:linear-gradient(#bfcdf8,#bfe8d8)}
+.step{position:relative;margin-bottom:14px}
+.step a{position:relative;display:flex;align-items:center;gap:20px;padding:20px 26px 20px 20px;border:1px solid rgba(255,255,255,.8);border-radius:18px;background:rgba(255,255,255,.95);color:inherit;text-decoration:none;box-shadow:0 12px 36px rgba(25,41,78,.07);transition:.2s}
+.step a:hover{transform:translateX(4px);box-shadow:0 18px 46px rgba(25,41,78,.12)}
+.no{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:800;color:#fff;background:var(--c,var(--blue));box-shadow:0 0 0 5px var(--bg)}
+.ico{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--bgc,#eaf0ff);color:var(--c,var(--blue))}.ico svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.body{flex:1;min-width:0}.body h2{font-size:18px;margin:0 0 6px}.body h2 em{font-style:normal;font-size:11px;font-weight:600;color:var(--c,var(--blue));background:var(--bgc,#eaf0ff);padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:2px}
+.body p{margin:0;font-size:13px;line-height:1.7;color:var(--sub)}
+.go{flex:none;font-size:12px;font-weight:700;color:var(--c,var(--blue));white-space:nowrap}
+.s1{--c:#315cec;--bgc:#eaf0ff}.s2{--c:#0f8fb0;--bgc:#e4f6fb}.s3{--c:#7b4fd6;--bgc:#f0eaff}.s4{--c:#dc861d;--bgc:#fff2e0}.s5{--c:#159a70;--bgc:#e8f8f2}
+@media(max-width:760px){h1{font-size:30px}.wrap{padding-top:34px}.step a{flex-wrap:wrap;gap:12px}.ico{display:none}.go{width:100%;padding-left:52px}.steps:before{left:35px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <span class="badge">交互原型 V3.0</span>
+  <h1>讲师 / 助教师资结算系统</h1>
+  <p class="lead">覆盖排期联动、课酬账单、结算申请单、讲师 / 助教 / 机构账户、自助提现、月度与紧急付款及付款确认。页面内置示例数据，可切换角色并完整演示关键流程。</p>
+
+  <div class="hint">推荐查看顺序 <small>按业务流转：流程图 → 项目排期 → 执行单 → 后台 → 小程序</small></div>
+
+  <ol class="steps">
+    <li class="step s1">
+      <a href="./业务流程图_V3.0.html">
+        <span class="no">1</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="6" rx="1"/><rect x="14" y="3" width="7" height="6" rx="1"/><rect x="8.5" y="15" width="7" height="6" rx="1"/><path d="M6.5 9v3h11V9M12 12v3"/></svg></span>
+        <div class="body"><h2>业务流程图<em>业务流程图_V3.0.html</em></h2><p>共 10 张图：三段流程总览、端到端泳道图、账号与首次登录、课酬账单、结算申请与审批、紧急提现、自助提现、月度出款与确认、状态流转、个人 / 机构 / 收款主体。</p></div>
+        <span class="go">查看 →</span>
+      </a>
+    </li>
+    <li class="step s2">
+      <a href="./项目排期.html">
+        <span class="no">2</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M8 14h3M8 17h6"/></svg></span>
+        <div class="body"><h2>项目排期<em>项目排期.html</em></h2><p>预填课酬，在排期中预填讲师 / 助教、授课天数与单价（非强制卡点）；</p></div>
+        <span class="go">查看 →</span>
+      </a>
+    </li>
+    <li class="step s3">
+      <a href="./执行单.html">
+        <span class="no">3</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h7M9 17h5"/></svg></span>
+        <div class="body"><h2>执行单<em>执行单.html</em></h2><p>从项目排期中自动带入预填课酬信息；提交执行单后自动生成课酬账单草稿。</p></div>
+        <span class="go">查看 →</span>
+      </a>
+    </li>
+    <li class="step s4">
+      <a href="./后台.html#/bills">
+        <span class="no">4</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h3M8 17h6"/></svg></span>
+        <div class="body"><h2>师资结算后台<em>后台.html</em></h2><p>课酬账单、待结算清单、结算申请单、讲师 / 助教 / 机构账户、提现单、付款单、付款确认与系统配置。可切换项目经理、月度账单经办人、财务、超级管理员四种角色。</p></div>
+        <span class="go">进入后台 →</span>
+      </a>
+    </li>
+    <li class="step s5">
+      <a href="./小程序.html#/invite">
+        <span class="no">5</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2M9 6h6"/></svg></span>
+        <div class="body"><h2>讲师 / 助教小程序<em>小程序.html</em></h2><p>邀请登录、结算钱包、课酬入账明细、普通与紧急提现、收款账户、提现记录及手机号重新绑定；支持机构账户视角。</p></div>
+        <span class="go">进入小程序 →</span>
+      </a>
+    </li>
+  </ol>
+</main>
+</body>
+</html>

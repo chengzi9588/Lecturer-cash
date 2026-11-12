@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>编辑排期 · 师资课酬预填（方案B）</title>
+<style>
+:root{--blue:#2f6bff;--blue-bg:#eaf1ff;--ink:#1f2937;--sub:#6b7280;--line:#e5e7eb;--bg:#f2f4f7;--orange:#d97706;--orange-bg:#fff4e0;--red:#e5484d;--green:#16a34a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.top{height:44px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 16px;color:var(--sub);font-size:12px;gap:6px}
+.top b{color:var(--ink);font-weight:500}.top .sp{flex:1}.top .user{color:var(--ink)}
+.sub{height:44px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 16px;font-weight:600;gap:10px}
+.sub a{cursor:pointer;color:var(--ink)}
+.page{display:flex;gap:16px;padding:16px;max-width:1400px;margin:0 auto;align-items:flex-start}
+.main{flex:1;min-width:0;background:#fff;border-radius:4px;padding:20px 24px 28px}
+.side{width:300px;flex:none;position:sticky;top:12px;display:flex;flex-direction:column;gap:12px}
+.card{background:#fff;border-radius:4px;padding:14px 16px}
+h3.sec{margin:24px 0 14px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:12px}
+h3.sec:first-child{margin-top:0}h3.sec:after{content:"";flex:1;height:1px;background:var(--line)}
+h3.sec em{font-style:normal;font-size:12px;font-weight:400;color:var(--sub)}
+.f{margin-bottom:16px}.f>label{display:block;margin-bottom:6px;color:#374151}
+.req:before{content:"* ";color:var(--red)}
+.row{display:flex;gap:16px}.row>.f{flex:1}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;height:32px;border:1px solid #d1d5db;border-radius:3px;padding:0 10px;font:inherit;background:#fff;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+textarea{height:90px;padding:8px 10px;resize:vertical}
+input[readonly]{background:#f9fafb;color:var(--sub)}
+.btn{height:32px;padding:0 14px;border:1px solid #d1d5db;background:#fff;border-radius:3px;cursor:pointer;font:inherit}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}.btn.pri:hover{color:#fff;opacity:.9}
+.btn.danger{color:var(--red);border-color:#f3b4b6}.btn.danger:hover{background:#fff5f5;color:var(--red);border-color:var(--red)}
+.btn.sm{height:26px;padding:0 10px;font-size:12px}
+.daterow{display:flex;gap:8px;align-items:center;max-width:420px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border:1px solid #9ec5ff;background:var(--blue-bg);color:#1d4ed8;border-radius:3px;font-size:12px}
+.chip i{font-style:normal;cursor:pointer;color:#6b8fd6}.chip i:hover{color:var(--red)}
+.chip.p{border-color:#cbd5e1;background:#f1f5f9;color:#334155}
+.tag{font-size:11px;padding:0 5px;border-radius:2px;line-height:17px;display:inline-block}
+.tag.o{background:var(--orange-bg);color:var(--orange);border:1px solid #f6d49b}
+.tag.g{background:#e8f7ee;color:var(--green);border:1px solid #b7e4c7}
+.tag.b{background:var(--blue-bg);color:#1d4ed8;border:1px solid #bcd4ff}
+.pbox{display:flex;gap:12px;align-items:flex-start}
+.pbox .in{flex:1;border:1px solid #d1d5db;border-radius:3px;padding:8px 10px;min-height:44px;position:relative}
+.pbox .in.dis{background:#f9fafb;opacity:.6;pointer-events:none}
+.pbox .in .chips{margin:0 0 6px}
+.pbox .in input{border:none;height:26px;padding:0;width:100%}
+.pbox .no{white-space:nowrap;padding-top:6px;color:var(--sub);display:flex;gap:4px;align-items:center}
+.hint{color:#9ca3af;font-size:12px}
+.dd{position:absolute;left:0;right:0;top:100%;margin-top:2px;background:#fff;border:1px solid #d1d5db;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.1);z-index:20;max-height:230px;overflow:auto;display:none}
+.dd.on{display:block}
+.dd .it{padding:6px 10px;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+.dd .it:hover{background:#f3f6ff}.dd .it.off{color:#b4b9c2;cursor:not-allowed;background:#fafafa}
+.dd .it small{color:var(--sub)}
+.dd .add{border-top:1px solid var(--line);color:var(--blue);font-weight:500;position:sticky;bottom:0;background:#fff}
+.dd .empty{padding:10px;color:#9ca3af}
+.opt{margin:8px 0 0;display:flex;gap:6px;align-items:center;color:#374151}
+/* 课酬预填 */
+.pay{border:1px solid var(--line);border-radius:4px;overflow:visible}
+.pay .hd{background:#f9fafb;padding:10px 14px;border-bottom:1px solid var(--line);color:var(--sub);font-size:12px;border-radius:4px 4px 0 0}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);font-size:12.5px;vertical-align:middle}
+th{background:#fafafa;font-weight:500;color:#4b5563;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td input[type=number]{width:84px;height:28px}td select{height:28px;width:84px;padding:0 4px}
+.dbtn{width:260px;height:28px;border:1px solid #d1d5db;border-radius:3px;background:#fff;text-align:left;padding:0 8px;cursor:pointer;font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+.dpop{position:absolute;z-index:30;background:#fff;border:1px solid #d1d5db;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:10px;width:300px}
+.dpop .dr{display:flex;align-items:center;gap:10px;padding:4px 0}.dpop .dr .dn{flex:1}.dpop .dr label{padding:0}.dpop .dh{display:flex;gap:10px;color:var(--sub);font-size:12px;padding-bottom:4px;border-bottom:1px solid var(--line)}.dpop .dh span:first-child{flex:1}.dpop .dh span{width:44px}.dpop .dh span:first-child{width:auto}
+.dpop label{display:flex;gap:6px;align-items:center;padding:3px 0;cursor:pointer}
+.dpop .ft{display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
+.warns{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.warn{background:var(--orange-bg);border:1px solid #f6d49b;color:#92560a;border-radius:3px;padding:6px 10px;font-size:12px}
+.payEmpty{padding:22px;text-align:center;color:#9ca3af}
+.tot{display:flex;justify-content:space-between;padding:10px 14px;background:#fafafa;border-top:1px solid var(--line);font-size:12.5px;border-radius:0 0 4px 4px}
+.tot b{color:var(--blue)}
+/* side */
+.side .badge{display:inline-block;padding:0 8px;border:1px solid #9ec5ff;color:#1d4ed8;background:var(--blue-bg);border-radius:3px;font-size:12px}
+.kv{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #f1f5f9}.kv:last-child{border:none}
+.kv span:first-child{width:62px;color:#9ca3af;flex:none}.kv span:last-child{flex:1;word-break:break-all}
+.side h4{margin:0 0 8px;font-size:13px}
+.side ul{margin:0;padding-left:16px;color:#4b5563;font-size:12px}.side li{margin-bottom:6px}
+.foot{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 24px;display:flex;align-items:center;justify-content:center;gap:12px;margin-top:0}
+.foot .l{position:absolute;left:24px;color:var(--sub);font-size:12px}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:50}.mask.on{display:flex}
+.modal{background:#fff;border-radius:6px;width:420px;padding:20px 22px}
+.modal h4{margin:0 0 14px;font-size:15px}
+.modal .err{color:var(--red);font-size:12px;margin-top:4px;min-height:16px}
+.modal .ops{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+.toast{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);background:rgba(31,41,55,.9);color:#fff;padding:6px 14px;border-radius:4px;font-size:12px;opacity:0;transition:.25s;pointer-events:none;z-index:60}
+.toast.on{opacity:1}
+.note3{margin-top:10px;background:#f5f8ff;border:1px solid #d7e3ff;border-radius:4px;padding:8px 12px;color:#44558a;font-size:12px}
+.daterow{max-width:none;flex-wrap:wrap}.daterow input[type=date]{width:150px}.daterow label{white-space:nowrap;display:flex;gap:4px;align-items:center}
+.dsum2{margin-top:8px;color:#4b5563}.dsum2 a,.warns a{color:var(--blue);cursor:pointer;margin-left:6px}
+.chip.seg b{cursor:pointer;font-weight:400}.chip.mini{background:#fff;border-color:#d1d5db;color:#4b5563}
+.exc{font-size:11.5px;color:var(--sub);max-width:260px;line-height:1.5;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dpop{width:380px}
+.dpop .tip{font-size:12px;color:var(--sub);margin-bottom:8px}
+.dpop .dsum{font-weight:600;margin-bottom:8px}.dpop .dsum span{font-weight:400;color:var(--orange)}
+.dpop .dq{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.dpop .rg{display:flex;gap:6px;align-items:center;margin-bottom:8px;font-size:12px}.dpop .rg select{width:auto;flex:1;height:26px;padding:0 4px;min-width:0}.dpop .rg select.act{flex:none;width:70px}
+.dpop .dlist{max-height:270px;overflow:auto;border:1px solid var(--line);border-radius:4px}
+.dpop .wh{display:flex;align-items:center;gap:8px;background:#f9fafb;padding:5px 10px;cursor:pointer;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1}
+.dpop .wh .car{color:var(--sub);width:12px}.dpop .wh b{flex:1;font-weight:500;font-size:12px}
+.dpop .wh label,.dpop .dr label{display:flex;gap:4px;align-items:center;padding:0;font-size:12px}
+.dpop .dlist .dr{padding:4px 10px 4px 30px;border-bottom:1px dashed #f1f5f9}
+.dpop .dr .we{color:var(--orange);font-size:11px;margin-left:4px}
+.dpop .ft{align-items:center}
+</style>
+</head>
+<body>
+<div class="top">☰ <span>企培项目管理 ▾</span> / <span>企培项目排期</span> / <b>编辑排期</b><span class="sp"></span><span class="user">承艳军 (chengyj)</span></div>
+<div class="sub"><a onclick="toast('返回上一页')">←</a>编辑排期</div>
+
+<div class="page">
+<div class="main">
+
+<h3 class="sec">基本信息</h3>
+<div class="f"><label class="req">合同编号（项目名称）</label>
+<select><option>A-BC-QP1026-1268（【一体化咨询】平安科技AI领航计划B类管理者盘点2）</option></select></div>
+<div class="f"><label>负责人</label><select><option>张雅淇</option></select></div>
+<div class="row">
+<div class="f"><label class="req">客户简称</label><input type="text" value="平安科技"></div>
+<div class="f"><label class="req">客户归属</label><select><option>金融制造组</option></select></div>
+</div>
+<div class="f"><label class="req">培训班</label><input type="text" value="线下面试"></div>
+
+<h3 class="sec">培训日期与方式</h3>
+<div class="f"><label class="req">实际培训日期</label>
+<div class="daterow"><input type="date" id="dateFrom"><span>→</span><input type="date" id="dateTo" placeholder="结束日期"><label><input type="checkbox" id="exWk" checked> 排除周末</label><button class="btn" onclick="addDate()">添加日期</button></div>
+<div class="hint" style="margin-top:4px">只选开始日期=添加单日；同时选结束日期=批量添加整段</div>
+<div class="dsum2" id="dateSum"></div>
+<div class="chips" id="dateChips"></div></div>
+<div class="row">
+<div class="f"><label class="req">培训方式</label>
+<select id="mode" onchange="onMode()"><option value="线下">线下</option><option value="线上">线上</option></select></div>
+<div class="f"><label class="req">培训城市</label><select><option>广东 · 深圳</option><option>北京</option><option>上海</option></select></div>
+</div>
+
+<h3 class="sec">人员安排</h3>
+
+<div class="f"><label>现场安排人员</label>
+<div class="pbox"><div class="in" id="onsiteBox">
+<div class="chips" id="onsiteChips"></div>
+<input type="text" id="onsiteIn" placeholder="其他人，回车添加；注：若项目经理和其他人均未填写，则显示缺失">
+</div><label class="no"><input type="checkbox" id="onsiteNo" onchange="renderAll()">不需要</label></div>
+<label class="opt"><input type="checkbox">个别培训日使用不同现场安排</label></div>
+
+<div class="f"><label>讲师 <em class="hint">（从讲师运营系统选择，选中即绑定人员ID）</em></label>
+<div class="pbox"><div class="in" id="lecBox">
+<div class="chips" id="lecChips"></div>
+<input type="text" id="lecIn" placeholder="搜索讲师姓名后选择；不填写则显示缺讲师" autocomplete="off">
+<div class="dd" id="lecDd"></div>
+</div><label class="no"><input type="checkbox" id="lecNo" onchange="renderAll()">不需要</label></div></div>
+
+<div class="f"><label>助教/班主任 <em class="hint">（选择已有助教账户；没有可直接新增）</em></label>
+<div class="pbox"><div class="in" id="astBox">
+<div class="chips" id="astChips"></div>
+<input type="text" id="astIn" placeholder="搜索助教姓名后选择，可添加多人；不填写则显示缺助教" autocomplete="off">
+<div class="dd" id="astDd"></div>
+</div><label class="no"><input type="checkbox" id="astNo" onchange="renderAll()">不需要</label></div></div>
+
+<h3 class="sec">师资课酬预填</h3>
+<div class="pay">
+<div id="payBody"></div>
+<div class="tot" id="payTot"></div>
+</div>
+<div class="warns" id="warns"></div>
+
+<h3 class="sec">备注</h3>
+<div class="f"><label>补充说明</label><textarea placeholder="填写现场要求等补充信息；旧表无法拆分的内容也可迁入这里"></textarea></div>
+
+</div>
+
+<div class="side">
+<div class="card" id="sumCard"></div>
+<div class="card" id="paySumCard"></div>
+<div class="card">
+<h4>录入与权限规则</h4>
+<ul>
+<li>编辑时修改自动保存；讲师、助教、现场均非必填，留空只标记为「缺」，不阻断保存。</li>
+<li>讲师只能从讲师运营系统选择；助教选已有账户，或在弹窗中直接新增（姓名必填，手机号可后补）。</li>
+<li>助教/班主任统一按助教账户处理，参与课酬预填。</li>
+<li>同一师资同一时段重复占用仅提醒，不拦截；账单阶段才强校验。</li>
+<li>选择线上时，现场安排自动按「不需要」处理。</li>
+<li>培训日期支持按区间批量添加，并合并显示；超过 14 天自动折叠。</li>
+<li>授课/服务日期默认「全部培训日·全天」，只需调整例外；之后新增的培训日期默认也算授课日。</li>
+<li>缺少手机号不影响排期；加入待结算清单前需补充。</li>
+</ul></div>
+</div>
+</div>
+
+<div class="foot"><span class="l">修改后自动保存</span>
+<button class="btn" onclick="toast('返回上一页')">返 回</button>
+<button class="btn danger" onclick="toast('演示：删除排期')">删除排期</button></div>
+
+<div class="mask" id="mask"><div class="modal">
+<h4>新增助教</h4>
+<div class="f"><label class="req">助教姓名</label><input type="text" id="nName" maxlength="20" placeholder="请输入姓名"></div>
+<div class="f"><label>手机号 <em class="hint">（可后补；缺失不影响排期，加入待结算清单前需补充）</em></label><input type="text" id="nPhone" maxlength="11" placeholder="请输入11位手机号"></div>
+<div class="err" id="nErr"></div>
+<div class="ops"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" onclick="saveAssistant()">确定并选择</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 模拟数据 ===== */
+const LECTURERS=[{id:'L001',name:'肖婷',phone:'13611110001'},{id:'L002',name:'马宇峰',phone:'13611110002'},{id:'L003',name:'王磊',phone:'13611110003'},{id:'L004',name:'李娜',phone:''},{id:'L005',name:'周明',phone:'13611110005'}];
+let ASSISTANTS=[{id:'A001',name:'刘洋',phone:'13800001111'},{id:'A002',name:'陈静',phone:'13900002222'},{id:'A003',name:'赵敏',phone:''}];
+/* 其他项目已有排期：人员ID -> [{date,slot,project}] */
+const OCCUPY={L001:[{date:'2026-11-10',slot:'上午',project:'华为云训练营'}],L002:[{date:'2026-11-24',slot:'全天',project:'中国银行数字化培训'}],A001:[{date:'2026-11-11',slot:'下午',project:'腾讯管理班'}]};
+
+/* ===== 状态 ===== */
+const S={dates:['2026-11-09','2026-11-10','2026-11-11','2026-11-12','2026-11-23','2026-11-24','2026-11-25'],
+ onsite:['张雅淇'],lec:[LECTURERS[0],LECTURERS[1]],ast:[],pay:{}};
+const $=id=>document.getElementById(id);
+const wd=['日','一','二','三','四','五','六'];
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1400)}
+function saved(){toast('已自动保存')}
+
+function persons(){return [...S.lec.map(p=>({...p,role:'讲师'})),...S.ast.map(p=>({...p,role:'助教'}))]}
+function payOf(p){
+  if(!S.pay[p.id])S.pay[p.id]={exc:{},price:'',cat:''};
+  const c=S.pay[p.id];
+  Object.keys(c.exc).forEach(d=>{if(!S.dates.includes(d))delete c.exc[d]});
+  return c;
+}
+/* 默认：每个培训日上午+下午都授课；exc 只记录例外（[]=不授课，['上午']=仅上午，['下午']=仅下午） */
+function selMap(c){const m={};S.dates.forEach(d=>{m[d]=(d in c.exc)?c.exc[d]:['上午','下午']});return m}
+function daysOf(c){const m=selMap(c);return Object.values(m).reduce((n,a)=>n+a.length*.5,0)}
+function slotsOf(s){return s==='全天'?['上午','下午']:[s]}
+function sumText(c){
+  if(!S.dates.length)return '请先添加培训日期';
+  const k=Object.keys(c.exc).length;
+  return k?`全部培训日，例外 ${k} 天`:`全部培训日·全天（${S.dates.length}天）`;
+}
+/* ===== 日期工具 ===== */
+function pd(x){return new Date(x+'T00:00:00')}
+function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function addDays(x,n){const d=pd(x);d.setDate(d.getDate()+n);return fmt(d)}
+function isWk(x){const g=pd(x).getDay();return g===0||g===6}
+/* 培训日期合并：连续日期（中间只隔周末也算连续）合成一段 */
+function segments(dates){
+  const segs=[];
+  dates.forEach(d=>{
+    const last=segs[segs.length-1];
+    if(last){
+      const prev=last.list[last.list.length-1];
+      let x=addDays(prev,1),ok=true,sk=false;
+      while(x<d){if(isWk(x))sk=true;else{ok=false;break}x=addDays(x,1)}
+      if(ok){last.list.push(d);if(sk)last.skip=true;return}
+    }
+    segs.push({list:[d],skip:false});
+  });
+  return segs;
+}
+function segLabel(g){
+  const f=g.list[0],l=g.list[g.list.length-1];
+  if(g.list.length===1)return f;
+  return `${f} ~ ${f.slice(0,4)===l.slice(0,4)?l.slice(5):l}（${g.list.length}天${g.skip?'·不含周末':''}）`;
+}
+function segText(){
+  const segs=segments(S.dates);if(!segs.length)return '—';
+  if(segs.length<=3)return segs.map(segLabel).join('、');
+  return segs.slice(0,2).map(segLabel).join('、')+`……等 ${segs.length} 段，共 ${S.dates.length} 天`;
+}
+/* 在培训日期序列中相邻的日期合成一组（用于例外、冲突提示） */
+function runsIn(sub){
+  const idx=sub.map(d=>S.dates.indexOf(d)).sort((a,b)=>a-b),runs=[];
+  idx.forEach(i=>{const l=runs[runs.length-1];if(l&&l[l.length-1]===i-1)l.push(i);else runs.push([i])});
+  return runs.map(r=>r.map(i=>S.dates[i]));
+}
+function runLabel(r){return r.length===1?r[0].slice(5):r[0].slice(5)+'~'+r[r.length-1].slice(5)}
+function excText(c){
+  const names={'不授课':[],'仅上午':[],'仅下午':[]};
+  Object.keys(c.exc).forEach(d=>{const a=c.exc[d];names[a.length===0?'不授课':(a[0]==='上午'?'仅上午':'仅下午')].push(d)});
+  return Object.keys(names).filter(k=>names[k].length).map(k=>runsIn(names[k]).map(runLabel).join('、')+' '+k).join('；');
+}
+function activePersons(){return (($('lecNo').checked)?[]:S.lec.map(p=>({...p,role:'讲师'}))).concat($('astNo').checked?[]:S.ast.map(p=>({...p,role:'助教'})))}
+function conflicts(){
+  const out=[];
+  activePersons().forEach(p=>{
+    const c=payOf(p),occ=OCCUPY[p.id]||[],m=selMap(c),g={};
+    S.dates.forEach(d=>occ.filter(o=>o.date===d).forEach(o=>{
+      if(m[d].some(s=>slotsOf(o.slot).includes(s))){const k=o.project+'|'+o.slot;(g[k]=g[k]||{o,ds:[]}).ds.push(d)}
+    }));
+    Object.values(g).forEach(x=>out.push(`${p.name}（${p.role}）${runsIn(x.ds).map(runLabel).join('、')} ${x.o.slot}已在「${x.o.project}」有排期，仅提醒，不拦截`));
+  });
+  return out;
+}
+let warnsOpen=false,datesOpen=false;const segOpen=new Set();
+function renderWarns(){
+  const w=conflicts();
+  const show=warnsOpen?w:w.slice(0,3);
+  $('warns').innerHTML=show.map(x=>`<div class="warn">⚠ ${x}</div>`).join('')+(w.length>3?`<div><a onclick="warnsOpen=!warnsOpen;renderWarns()">${warnsOpen?'收起':'展开更多（+'+(w.length-3)+'）'}</a></div>`:'');
+}
+
+/* ===== 培训日期 ===== */
+function addDate(){
+  const f=$('dateFrom').value,t=$('dateTo').value;
+  if(!f){toast('请先选择开始日期');return}
+  let list=[];
+  if(!t){list=[f]}
+  else{
+    if(t<f){toast('结束日期不能早于开始日期');return}
+    let x=f,n=0;
+    while(x<=t&&n<400){if(!($('exWk').checked&&isWk(x)))list.push(x);x=addDays(x,1);n++}
+    if(x<=t){toast('单次最多添加 400 天');return}
+  }
+  const add=list.filter(d=>!S.dates.includes(d));
+  if(!add.length){toast(list.length?'所选日期均已添加':'所选区间内没有可添加的日期');return}
+  S.dates=[...S.dates,...add].sort();
+  $('dateFrom').value='';$('dateTo').value='';renderAll();toast(`已添加 ${add.length} 天`);
+}
+function delSeg(start){
+  const g=segments(S.dates).find(x=>x.list[0]===start);if(!g)return;
+  if(g.list.length>1&&!confirm(`确认删除「${segLabel(g)}」共 ${g.list.length} 天？`))return;
+  S.dates=S.dates.filter(d=>!g.list.includes(d));segOpen.delete(start);renderAll();saved();
+}
+function delDate(d){S.dates=S.dates.filter(x=>x!==d);renderAll();saved()}
+function toggleSeg(start){segOpen.has(start)?segOpen.delete(start):segOpen.add(start);renderDates()}
+function toggleDates(){datesOpen=!datesOpen;renderDates()}
+function renderDates(){
+  const segs=segments(S.dates),many=S.dates.length>14;
+  $('dateSum').innerHTML=S.dates.length?`共 <b>${S.dates.length}</b> 天 · ${segs.length} 段`+(many?`<a onclick="toggleDates()">${datesOpen?'收起':'展开'}</a>`:''):'';
+  if(many&&!datesOpen){$('dateChips').innerHTML='';return}
+  $('dateChips').innerHTML=segs.map(g=>{
+    const st=g.list[0];
+    if(g.list.length===1)return chip(st,`delSeg('${st}')`);
+    const open=segOpen.has(st);
+    return chip(`<b onclick="toggleSeg('${st}')" title="点击${open?'收起':'展开'}每一天">${segLabel(g)} ${open?'▴':'▾'}</b>`,`delSeg('${st}')`,'seg')
+      +(open?g.list.map(d=>chip(d.slice(5),`delDate('${d}')`,'mini')).join(''):'');
+  }).join('');
+}
+function onMode(){renderAll();saved()}
+
+/* ===== 渲染 ===== */
+function phoneTag(p){return p.phone?`<small style="opacity:.7">${p.phone}</small>`:'<span class="tag o">手机号待补充</span>'}
+function chip(label,onx,cls=''){return `<span class="chip ${cls}">${label}<i onclick="${onx}">✕</i></span>`}
+function renderAll(){
+  const online=$('mode').value==='线上';
+  renderDates();
+  const oNo=$('onsiteNo');oNo.checked=oNo.checked||online;oNo.disabled=online;
+  $('onsiteBox').classList.toggle('dis',oNo.checked);
+  $('onsiteChips').innerHTML=S.onsite.map((n,i)=>chip(n,`delOnsite(${i})`,'p')).join('');
+  $('lecBox').classList.toggle('dis',$('lecNo').checked);
+  $('astBox').classList.toggle('dis',$('astNo').checked);
+  $('lecChips').innerHTML=S.lec.map(p=>chip(p.name+' '+phoneTag(p),`delLec('${p.id}')`)).join('');
+  $('astChips').innerHTML=S.ast.map(p=>chip(p.name+' '+phoneTag(p)+(p.isNew?' <span class="tag g">新增</span>':''),`delAst('${p.id}')`)).join('');
+  renderPay();renderSide();
+}
+function renderPay(){
+  const ps=(($('lecNo').checked)?[]:S.lec.map(p=>({...p,role:'讲师'}))).concat($('astNo').checked?[]:S.ast.map(p=>({...p,role:'助教'})));
+  if(!ps.length){$('payBody').innerHTML='<div class="payEmpty">请先在上方选择讲师或助教，将自动生成课酬预填行</div>';$('payTot').innerHTML='<span>预估合计</span><b>—</b>';$('warns').innerHTML='';return}
+  let rows='',total=0,hasPrice=false;
+  ps.forEach(p=>{
+    const c=payOf(p),d=daysOf(c),pr=parseFloat(c.price);
+    const amt=(!isNaN(pr)&&c.price!=='')?d*pr:null;if(amt!==null){total+=amt;hasPrice=true}
+    const txt=sumText(c);
+    rows+=`<tr>
+      <td><b>${p.name}</b><div class="hint">${p.phone||'<span class="tag o">手机号待补充</span>'}</div></td>
+      <td><span class="tag ${p.role==='讲师'?'b':'g'}">${p.role}</span></td>
+      <td style="position:relative"><button class="dbtn" onclick="openDates(event,'${p.id}')" title="${txt}">${txt}</button>${excText(c)?`<div class="exc" title="${excText(c)}">例外：${excText(c)}</div>`:''}</td>
+      <td><select onchange="setCat('${p.id}',this.value)"><option value="">请选择</option>${CATS.map(x=>`<option ${c.cat===x?'selected':''}>${x}</option>`).join('')}</select></td>
+      <td>${d}</td>
+      <td><input type="number" min="0" step="0.01" placeholder="选填" value="${c.price}" oninput="setPrice('${p.id}',this.value)"></td>
+      <td id="amt_${p.id}">${amt===null?'—':'¥'+amt.toLocaleString()}</td></tr>`;
+  });
+  $('payBody').innerHTML=`<table><thead><tr><th>人员</th><th>角色</th><th>授课/服务日期</th><th>费用类别</th><th>天数</th><th>单价(元/天)</th><th>预估金额</th></tr></thead><tbody>${rows}</tbody></table>`;
+  $('payTot').innerHTML=`<span>共 ${ps.length} 人</span><span>预估合计：<b id="totV">${hasPrice?'¥'+total.toLocaleString():'—'}</b></span>`;
+  renderWarns();
+}
+function renderSide(){
+  const online=$('mode').value==='线上';
+  const lec=$('lecNo').checked?'不需要':(S.lec.length?S.lec.map(p=>p.name).join('、'):'缺');
+  const ast=$('astNo').checked?'不需要':(S.ast.length?S.ast.map(p=>p.name).join('、'):'缺');
+  const on=$('onsiteNo').checked?'不需要':(S.onsite.length?S.onsite.join('、'):'缺');
+  const miss=[];if(lec==='缺')miss.push('缺讲师');if(ast==='缺')miss.push('缺助教');if(on==='缺')miss.push('缺现场');
+  const dt=S.dates.map(d=>d.slice(5)).join('、')||'—';
+  $('sumCard').innerHTML=`<span class="badge">金融制造组</span>
+  <div style="margin:8px 0 6px"><b>线下面试</b><div class="hint">平安科技</div></div>
+  <div class="kv"><span>合同编号</span><span>A-BC-QP1026-1268（【一体化咨询】平安科技AI领航计划B类管理者盘点2）</span></div>
+  <div class="kv"><span>负责人</span><span>张雅淇</span></div>
+  <div class="kv"><span>培训日期</span><span>${segText()}</span></div>
+  <div class="kv"><span>方式地点</span><span>${$('mode').value} · 深圳</span></div>
+  <div class="kv"><span>讲师</span><span>${lec}</span></div>
+  <div class="kv"><span>助教/班主任</span><span>${ast}</span></div>
+  <div class="kv"><span>现场安排</span><span>${on}</span></div>
+  <div style="margin-top:8px">${miss.map(m=>`<span class="tag o" style="margin-right:6px">${m}</span>`).join('')}</div>`;
+  const ps=(($('lecNo').checked)?[]:S.lec).concat($('astNo').checked?[]:S.ast);
+  let total=0,filled=0,days=0;
+  ps.forEach(p=>{const c=payOf(p);days+=daysOf(c);const pr=parseFloat(c.price);if(!isNaN(pr)&&c.price!==''){filled++;total+=daysOf(c)*pr}});
+  const pend=ps.length;const w=conflicts().length;
+  $('paySumCard').innerHTML=`<h4>课酬预填摘要</h4>
+  <div class="kv"><span>预填人数</span><span>${ps.length} 人（单价已填 ${filled}）</span></div>
+  <div class="kv"><span>总天数</span><span>${days} 天</span></div>
+  <div class="kv"><span>预估合计</span><span><b style="color:var(--blue)">${filled?'¥'+total.toLocaleString():'—'}</b></span></div>
+  <div class="kv"><span>待确认</span><span>${pend?`${pend} 人（生成课酬草稿后需项目经理确认）`:'—'}</span></div>
+  <div class="kv"><span>重复占用</span><span>${w?`<span class="tag o">${w} 处提醒</span>`:'无'}</span></div>`;
+}
+function refreshNumbers(id){ /* 输入单价时只局部刷新，避免输入框失焦 */
+  const p=persons().find(x=>x.id===id);if(!p)return;
+  const c=payOf(p),pr=parseFloat(c.price);
+  const el=$('amt_'+id);if(el)el.textContent=(!isNaN(pr)&&c.price!=='')?'¥'+(daysOf(c)*pr).toLocaleString():'—';
+  let total=0,has=false;
+  persons().forEach(q=>{if(q.role==='讲师'&&$('lecNo').checked)return;if(q.role==='助教'&&$('astNo').checked)return;const cc=payOf(q),v=parseFloat(cc.price);if(!isNaN(v)&&cc.price!==''){total+=daysOf(cc)*v;has=true}});
+  const t=$('totV');if(t)t.textContent=has?'¥'+total.toLocaleString():'—';
+  renderSide();
+}
+const CATS=['授课','助教','出题 / 题库','源文件','视频','打包价','其他'];
+function setCat(id,v){S.pay[id].cat=v;clearTimeout(setCat._t);setCat._t=setTimeout(saved,600)}
+function setPrice(id,v){S.pay[id].price=v;refreshNumbers(id);clearTimeout(setPrice._t);setPrice._t=setTimeout(saved,600)}
+
+/* 授课/服务日期：默认全选，只调整例外；支持按周、按范围、快捷批量操作 */
+let PP=null;
+function weekGroups(){
+  const g=[],map={};
+  S.dates.forEach(d=>{const k=addDays(d,-((pd(d).getDay()+6)%7));if(!map[k]){map[k]={key:k,dates:[]};g.push(map[k])}map[k].dates.push(d)});
+  return g;
+}
+function openDates(ev,id){
+  ev.stopPropagation();closePop();
+  if(!S.dates.length){toast('请先添加培训日期');return}
+  const p=persons().find(x=>x.id===id),c=payOf(p),m=selMap(c);
+  const draft={};S.dates.forEach(d=>draft[d]=m[d].slice());
+  const open=new Set(),wg=weekGroups();
+  wg.forEach(w=>{if(S.dates.length<=10||w.dates.some(d=>draft[d].length!==2))open.add(w.key)});
+  PP={id,draft,open};
+  const pop=document.createElement('div');pop.className='dpop';pop.id='dpop';
+  pop.onclick=e=>e.stopPropagation();
+  ev.target.parentNode.appendChild(pop);
+  pop.style.left='0';pop.style.top=(ev.target.offsetTop+30)+'px';
+  renderPop();
+}
+const SL=['上午','下午'];
+function setSlot(d,s,on){const a=new Set(PP.draft[d]);on?a.add(s):a.delete(s);PP.draft[d]=SL.filter(x=>a.has(x))}
+function daySet(d,s,on){setSlot(d,s,on);renderPop()}
+function wkSet(key,s,on){weekGroups().find(w=>w.key===key).dates.forEach(d=>setSlot(d,s,on));renderPop()}
+function toggleWk(key){PP.open.has(key)?PP.open.delete(key):PP.open.add(key);renderPop()}
+function wkAll(open){PP.open=new Set(open?weekGroups().map(w=>w.key):[]);renderPop()}
+function quick(t){
+  S.dates.forEach(d=>{
+    PP.draft[d]=t==='all'?['上午','下午']:t==='clear'?[]:t==='am'?['上午']:t==='pm'?['下午']:(isWk(d)?[]:['上午','下午']);
+  });
+  renderPop();
+}
+function renderPop(){
+  const pop=$('dpop');if(!pop||!PP)return;
+  const old=pop.querySelector('.dlist'),top=old?old.scrollTop:0;
+  const D=PP.draft;
+  const days=S.dates.reduce((n,d)=>n+D[d].length*.5,0);
+  const exc=S.dates.filter(d=>D[d].length!==2).length;
+    const wg=weekGroups();
+  const list=wg.map(w=>{
+    const open=PP.open.has(w.key);
+    const state=s=>{const n=w.dates.filter(d=>D[d].includes(s)).length;return n===w.dates.length?2:(n?1:0)};
+    const cb=s=>{const st=state(s);return `<label><input type="checkbox" ${st===2?'checked':''} ${st===1?'data-ind="1"':''} onchange="wkSet('${w.key}','${s}',this.checked)">${s}</label>`};
+    const body=open?w.dates.map(d=>`<div class="dr"><span class="dn">${d.slice(5)} 周${wd[pd(d).getDay()]}${isWk(d)?'<span class="we">周末</span>':''}</span>`+
+      SL.map(s=>`<label><input type="checkbox" ${D[d].includes(s)?'checked':''} onchange="daySet('${d}','${s}',this.checked)">${s}</label>`).join('')+`</div>`).join(''):'';
+    return `<div class="wk"><div class="wh" onclick="toggleWk('${w.key}')"><span class="car">${open?'▾':'▸'}</span><b>${w.dates[0].slice(5)} ~ ${w.dates[w.dates.length-1].slice(5)} · ${w.dates.length}天</b>
+      <span onclick="event.stopPropagation()" style="display:flex;gap:10px">${cb('上午')}${cb('下午')}</span></div>${body}</div>`;
+  }).join('');
+  pop.innerHTML=`<div class="dsum">共 ${S.dates.length} 个培训日 · 授课 ${days} 天${exc?` <span>（例外 ${exc} 天）</span>`:''}</div>
+  <div class="dq"><button class="btn sm" onclick="quick('all')">全部全天</button><button class="btn sm" onclick="quick('wd')">仅工作日</button><button class="btn sm" onclick="quick('am')">全部上午</button><button class="btn sm" onclick="quick('pm')">全部下午</button><button class="btn sm" onclick="quick('clear')">清空</button></div>
+  <div class="dlist">${list}</div>
+  <div class="ft"><span><a style="color:var(--blue);cursor:pointer" onclick="wkAll(true)">展开全部</a>　<a style="color:var(--sub);cursor:pointer" onclick="wkAll(false)">收起全部</a></span>
+  <span style="display:flex;gap:8px"><button class="btn sm" onclick="closePop()">取消</button><button class="btn sm pri" onclick="popOk()">确定</button></span></div>`;
+  pop.querySelectorAll('input[data-ind]').forEach(i=>i.indeterminate=true);
+  pop.querySelector('.dlist').scrollTop=top;
+}
+function popOk(){
+  const exc={};
+  S.dates.forEach(d=>{if(PP.draft[d].length!==2)exc[d]=PP.draft[d].slice()});
+  S.pay[PP.id].exc=exc;
+  closePop();renderAll();saved();
+}
+function closePop(){const p=$('dpop');if(p)p.remove();PP=null}
+
+/* 人员选择 */
+function delLec(id){S.lec=S.lec.filter(p=>p.id!==id);renderAll();saved()}
+function delAst(id){S.ast=S.ast.filter(p=>p.id!==id);renderAll();saved()}
+function delOnsite(i){S.onsite.splice(i,1);renderAll();saved()}
+$('onsiteIn').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.value.trim()){S.onsite.push(e.target.value.trim());e.target.value='';renderAll();saved()}
+});
+function ddList(kind){
+  const input=$(kind==='lec'?'lecIn':'astIn'),dd=$(kind==='lec'?'lecDd':'astDd');
+  const q=input.value.trim();
+  const src=kind==='lec'?LECTURERS:ASSISTANTS;
+  const chosen=(kind==='lec'?S.lec:S.ast).map(p=>p.id);
+  const list=src.filter(p=>!q||p.name.includes(q));
+  let h=list.map(p=>{
+    const off=chosen.includes(p.id);
+    const meta=p.phone||'手机号待补充';
+    return `<div class="it ${off?'off':''}" ${off?'':`onclick="pick('${kind}','${p.id}')"`}><span>${p.name}${off?'（已选）':''}</span><small>${meta}</small></div>`}).join('');
+  if(!list.length)h=`<div class="empty">${kind==='lec'?'讲师运营系统中未找到该讲师':'未找到该助教'}</div>`;
+  if(kind==='ast')h+=`<div class="it add" onclick="openModal()">＋ 新增助教${q?'「'+q+'」':''}</div>`;
+  dd.innerHTML=h;dd.classList.add('on');
+}
+function pick(kind,id){
+  if(kind==='lec'){S.lec.push(LECTURERS.find(p=>p.id===id));$('lecIn').value=''}
+  else{S.ast.push(ASSISTANTS.find(p=>p.id===id));$('astIn').value=''}
+  closeDd();renderAll();saved();
+}
+function closeDd(){document.querySelectorAll('.dd').forEach(d=>d.classList.remove('on'))}
+['lec','ast'].forEach(k=>{
+  const i=$(k==='lec'?'lecIn':'astIn');
+  i.addEventListener('focus',()=>{closeDd();ddList(k)});
+  i.addEventListener('input',()=>ddList(k));
+  i.addEventListener('click',e=>e.stopPropagation());
+  $(k==='lec'?'lecDd':'astDd').addEventListener('click',e=>e.stopPropagation());
+});
+document.addEventListener('click',()=>{closeDd();closePop()});
+
+/* 新增助教弹窗 */
+function openModal(){
+  closeDd();$('nName').value=$('astIn').value.trim();$('nPhone').value='';$('nErr').textContent='';
+  $('mask').classList.add('on');setTimeout(()=>$('nName').focus(),0);
+}
+function closeModal(){$('mask').classList.remove('on')}
+function saveAssistant(){
+  const name=$('nName').value.trim(),phone=$('nPhone').value.trim(),err=$('nErr');
+  if(!name){err.textContent='请填写助教姓名';return}
+  if(phone){
+    if(!/^1\d{10}$/.test(phone)){err.textContent='手机号格式不正确';return}
+    if(ASSISTANTS.some(a=>a.phone===phone)){err.textContent='该手机号已被其他人员占用';return}
+  }
+  const a={id:'A'+String(ASSISTANTS.length+1).padStart(3,'0'),name,phone,isNew:true};
+  ASSISTANTS.push(a);S.ast.push(a);$('astIn').value='';
+  closeModal();renderAll();toast('已新增助教并选择：'+name);
+}
+renderAll();
+</script>
+<script src="./返回目录.js" data-style="top:3px;left:50%;transform:translateX(-50%)"></script>
+</body>
+</html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>添加执行单 · 方案B</title>
+<style>
+:root{--blue:#2f6bff;--blue-bg:#eaf1ff;--ink:#1f2937;--sub:#6b7280;--line:#e5e7eb;--bg:#f2f4f7;--orange:#d97706;--orange-bg:#fff4e0;--red:#e5484d;--green:#16a34a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;padding-bottom:70px}
+.top{height:44px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 16px;color:var(--sub);font-size:12px;gap:6px}
+.top b{color:var(--ink);font-weight:500}.top .sp{flex:1}.top .user{color:var(--ink)}
+.sub{height:44px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 16px;font-weight:600;gap:10px}
+.sub .demo{margin-left:auto;font-weight:400;font-size:12px;color:var(--sub)}.sub .demo select{height:26px;width:auto;margin-left:6px}
+.wrap{max-width:1240px;margin:16px auto;padding:0 16px}
+.panel{background:#fff;border-radius:4px;padding:6px 22px;margin-bottom:14px}
+.kv{display:flex;align-items:center;min-height:36px;border-bottom:1px solid #f3f4f6}.kv:last-child{border:none}
+.kv>span:first-child{width:120px;text-align:right;color:var(--sub);padding-right:14px;flex:none}
+.kv:nth-child(even){background:#fafafa}
+.req:before{content:"* ";color:var(--red)}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;height:32px;border:1px solid #d1d5db;border-radius:3px;padding:0 10px;font:inherit;background:#fff;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+input:disabled,select:disabled{background:#f5f6f8;color:#8b93a1}
+textarea{height:80px;padding:8px 10px;resize:vertical}
+.kv select,.kv input{max-width:300px}
+.btn{height:32px;padding:0 14px;border:1px solid #d1d5db;background:#fff;border-radius:3px;cursor:pointer;font:inherit;color:var(--ink)}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}.btn.pri:hover{color:#fff;opacity:.9}
+.btn.sm{height:26px;padding:0 10px;font-size:12px}.btn[disabled]{opacity:.45;cursor:not-allowed}
+.hint{color:#9ca3af;font-size:12px}
+.tag{font-size:11px;padding:0 5px;border-radius:2px;line-height:17px;display:inline-block;white-space:nowrap}
+.tag.o{background:var(--orange-bg);color:var(--orange);border:1px solid #f6d49b}
+.tag.g{background:#e8f7ee;color:var(--green);border:1px solid #b7e4c7}
+.tag.b{background:var(--blue-bg);color:#1d4ed8;border:1px solid #bcd4ff}
+.tag.r{background:#fff1f1;color:var(--red);border:1px solid #f5bcbc}
+.tag.k{background:#f1f5f9;color:#475569;border:1px solid #cbd5e1}
+/* 排期段与命中状态 */
+.rg{display:flex;gap:6px;align-items:center}
+.segs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px;font-size:12px;color:var(--sub)}
+.seg{height:24px;padding:0 9px;border:1px solid #d1d5db;border-radius:12px;background:#fff;cursor:pointer;font-size:12px;color:#374151}
+.seg:hover{border-color:var(--blue);color:var(--blue)}.seg.on{background:var(--blue-bg);border-color:#9ec5ff;color:#1d4ed8}
+.hitst{margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px}
+.cand{margin-top:8px;border:1px dashed #cbd5e1;border-radius:4px;padding:8px 10px;background:#fafbfc}
+.cand .tip{color:var(--orange);font-size:12px;margin-bottom:6px}
+.cand .list{display:flex;flex-direction:column;gap:6px}
+.cd{display:flex;align-items:center;gap:8px;padding:5px 8px;border:1px solid #d1d5db;border-radius:3px;background:#fff;cursor:pointer;font-size:12px;flex-wrap:wrap}
+.cd:hover{border-color:var(--blue)}.cd.on{border-color:#9ec5ff;background:var(--blue-bg)}
+.cd .ck{width:14px;height:14px;border:1px solid #9ca3af;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#fff;flex:none}
+.cd.on .ck{background:var(--blue);border-color:var(--blue)}.cd small{color:var(--sub)}
+/* 执行单卡片 */
+.ecard{background:#fff;border-radius:4px;padding:6px 22px 18px;margin-bottom:14px}
+.ehd{display:flex;align-items:center;gap:10px;padding:12px 0 6px;font-weight:600;font-size:15px}
+.ehd .del{margin-left:auto;font-weight:400;font-size:12px;color:var(--blue);cursor:pointer}.ehd .del.off{color:#c0c4cc;cursor:not-allowed}
+.g2{display:grid;grid-template-columns:1fr 1fr;column-gap:40px}
+.fl{display:flex;align-items:flex-start;margin:7px 0}.fl>label{width:106px;text-align:right;padding:6px 12px 0 0;color:#4b5563;flex:none;font-size:12.5px}
+.fl>.c{flex:1;min-width:0}.fl.full{grid-column:1/3}
+.errtxt{color:var(--red);font-size:12px;margin-top:2px}.err input,.err select,.pbox.err{border-color:var(--red)!important}
+.ro{height:32px;line-height:32px;color:var(--ink)}
+.dbtn{width:100%;height:32px;border:1px solid #d1d5db;border-radius:3px;background:#fff;text-align:left;padding:0 10px;cursor:pointer;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.err .dbtn{border-color:var(--red)}
+.pbox{border:1px solid #d1d5db;border-radius:3px;padding:3px 8px;min-height:32px;position:relative;background:#fff}
+.pbox .chips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0}
+.pbox input{border:none;height:24px;padding:0;width:100%;font-size:12.5px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border:1px solid #9ec5ff;background:var(--blue-bg);color:#1d4ed8;border-radius:3px;font-size:12px}
+.chip small{opacity:.7}.chip i{font-style:normal;cursor:pointer;color:#6b8fd6}.chip i:hover{color:var(--red)}.chip.lock{border-color:#cbd5e1;background:#f1f5f9;color:#475569}
+.dd{position:absolute;left:0;right:0;top:100%;margin-top:2px;background:#fff;border:1px solid #d1d5db;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.1);z-index:20;max-height:220px;overflow:auto;display:none}
+.dd.on{display:block}.dd .it{padding:6px 10px;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+.dd .it:hover{background:#f3f6ff}.dd .it.off{color:#b4b9c2;cursor:not-allowed;background:#fafafa}.dd .it small{color:var(--sub)}
+.dd .add{border-top:1px solid var(--line);color:var(--blue);font-weight:500;position:sticky;bottom:0;background:#fff}.dd .empty{padding:10px;color:#9ca3af}
+/* 课酬明细 */
+.pay{border:1px solid var(--line);border-radius:4px;margin-top:10px}
+.pay .ph{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#f9fafb;border-bottom:1px solid var(--line);cursor:pointer;border-radius:4px 4px 0 0}
+.pay .ph b{font-weight:600}.pay .ph em{font-style:normal;color:var(--sub);font-size:12px}.pay .ph .car{margin-left:auto;color:var(--sub)}
+.pay.shut .ph{border-bottom:none;border-radius:4px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);font-size:12.5px;vertical-align:middle}
+th{background:#fafafa;font-weight:500;color:#4b5563;white-space:nowrap}tr:last-child td{border-bottom:none}
+td input[type=number]{width:84px;height:28px}td select{height:28px;width:92px;padding:0 4px}
+.ptot{display:flex;justify-content:space-between;gap:14px;padding:8px 14px;background:#fafafa;border-top:1px solid var(--line);font-size:12.5px;border-radius:0 0 4px 4px;flex-wrap:wrap}
+.ptot b{color:var(--blue)}.ptot .w{color:var(--orange)}
+tr.lk td{background:#fafafa;color:#6b7280}
+/* 提醒与底栏 */
+.warns{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.warn{background:var(--orange-bg);border:1px solid #f6d49b;color:#92560a;border-radius:3px;padding:6px 12px;font-size:12px}
+.warns a{color:var(--blue);cursor:pointer;font-size:12px}
+.add{margin:6px 0 14px}.add a{color:var(--blue);cursor:pointer}
+.foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 24px;display:flex;align-items:center;gap:22px;z-index:25}
+.foot .s{display:flex;gap:6px;align-items:baseline}.foot .s span{color:var(--sub)}
+.foot .s.bad b{color:var(--red)}.foot .e{color:var(--red);font-size:12px}
+.foot .btn{margin-left:auto}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:50}.mask.on{display:flex}
+.modal{background:#fff;border-radius:6px;width:440px;padding:20px 22px}.modal h4{margin:0 0 12px;font-size:15px}
+.modal .f{margin-bottom:12px}.modal .f>label{display:block;margin-bottom:4px}
+.modal .err{color:var(--red);font-size:12px;min-height:16px}
+.modal .ops{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
+.modal ul{margin:0 0 4px;padding-left:18px}.modal li{margin-bottom:4px}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:rgba(31,41,55,.9);color:#fff;padding:6px 14px;border-radius:4px;font-size:12px;opacity:0;transition:.25s;pointer-events:none;z-index:60}.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="top">☰ <span>执行成本管理 ▾</span> / <span>项目执行列表-企培业务</span> / <b>执行单流转</b><span class="sp"></span><span class="user">承艳军 (chengyj)</span></div>
+<div class="sub"><span style="cursor:pointer" onclick="toast('返回上一页')">←</span><span id="pageTitle">添加执行单</span>
+<span class="demo">原型演示状态：<select id="demo" onchange="setDemo(this.value)"><option value="new">新建执行单（合同有排期）</option><option value="nosched">新建执行单（合同无排期）</option><option value="edit">编辑已有执行单（含已提交账单）</option></select></span></div>
+
+<div class="wrap">
+<div class="panel" id="info"></div>
+<div id="cards"></div>
+<div class="add"><a onclick="addCard()">+ 再填一份</a></div>
+<div class="warns" id="warns"></div>
+</div>
+
+<div class="foot" id="foot"></div>
+<div class="mask" id="mask"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 模拟数据 ================= */
+const TODAY='2026-11-10';
+const wd=['日','一','二','三','四','五','六'];
+const CATS=['授课','助教','出题 / 题库','源文件','视频','打包价','其他'];
+const UNITS=['天','半天','小时','场','题','个','套','打包'];
+const CONTRACT={no:'A-BC-QP1026-1281',sign:'中国移动通信集团江西有限公司',final:'中国移动通信集团江西有限公司',project:'（一采）-江西移动虚拟课实中心-FDE管理外招认证',content:'定制培训',amount:127200,used:45200,sales:'侯欣洋',entry:'承艳军'};
+const COURSES=[{n:'FDE管理者认证（定制）',price:4000},{n:'数字化领导力（定制）',price:3500},{n:'项目管理实战（定制）',price:3000}];
+const OWNERS=['华东一部','华南二部','金融制造组'];
+const PMS=['张雅淇','承艳军','李明'];
+const LECTURERS=[{id:'L001',name:'肖婷',phone:'13611110001'},{id:'L002',name:'马宇峰',phone:'13611110002'},{id:'L003',name:'王磊',phone:'13611110003'},{id:'L004',name:'李娜',phone:''},{id:'L005',name:'周明',phone:'13611110005'}];
+let ASSISTANTS=[{id:'A001',name:'刘洋',phone:'13800001111'},{id:'A002',name:'陈静',phone:'13900002222'},{id:'A003',name:'赵敏',phone:''}];
+const OCCUPY={L002:[{date:'2026-11-24',slot:'全天',project:'中国银行数字化培训'}]};
+/* 合同唯一对应的排期（一个排期只关联一个合同） */
+const SCHED={id:'P1',name:'江西移动FDE管理认证班',dates:['2026-11-09','2026-11-10','2026-11-11','2026-11-12','2026-11-23','2026-11-24','2026-11-25','2026-12-07','2026-12-08','2026-12-09'],method:'线下',city:'江西 · 南昌',pm:'张雅淇',lec:['L001','L002'],ast:['A002'],
+  pay:{L001:{exc:{'2026-11-10':['下午']},price:1000,cat:'授课'},L002:{exc:{'2026-11-09':[],'2026-11-10':[],'2026-11-11':[],'2026-11-12':[]},price:2000,cat:'授课'},A002:{exc:{},price:500,cat:'助教'}}};
+/* 该合同下已存在的执行单（用于重复录入提醒） */
+const EXISTING=[{no:'ZX202611-021',pids:{L001:['2026-11-09','2026-11-10'],A002:['2026-11-09','2026-11-10']}}];
+
+/* ================= 状态 ================= */
+const S={mode:'new',sched:null,pm:'',cards:[],nid:1};
+const $=id=>document.getElementById(id);
+const fm=n=>n.toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1600)}
+const SL=['上午','下午'];
+function pd(x){return new Date(x+'T00:00:00')}
+function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function addDays(x,n){const d=pd(x);d.setDate(d.getDate()+n);return fmt(d)}
+function isWk(x){const g=pd(x).getDay();return g===0||g===6}
+function segmentsOf(dates){
+  const segs=[];
+  dates.forEach(d=>{
+    const last=segs[segs.length-1];
+    if(last){
+      let x=addDays(last[last.length-1],1),ok=true;
+      while(x<d){if(!isWk(x)){ok=false;break}x=addDays(x,1)}
+      if(ok){last.push(d);return}
+    }
+    segs.push([d]);
+  });
+  return segs;
+}
+function dlShort(ds){return segmentsOf(ds).map(g=>g.length===1?g[0].slice(5):g[0].slice(5)+'~'+g[g.length-1].slice(5)).join('、')}
+function findP(role,id){return (role==='lec'?LECTURERS:ASSISTANTS).find(p=>p.id===id)}
+function slotsFor(pid,d){
+  const pay=S.sched&&S.sched.pay[pid];
+  if(!pay)return SL.slice();
+  return (d in pay.exc)?pay.exc[d]:SL.slice();
+}
+function inRoster(pid){return !!S.sched&&(S.sched.lec.includes(pid)||S.sched.ast.includes(pid))}
+
+/* ================= 排期命中 ================= */
+function validRange(c){return !!(c.from&&c.to&&c.to>=c.from)}
+function hitDates(c){return (S.sched&&validRange(c))?S.sched.dates.filter(d=>d>=c.from&&d<=c.to):[]}
+function candidates(c,role){
+  const h=hitDates(c);
+  if(!h.length)return [];
+  return S.sched[role].map(id=>findP(role,id)).filter(p=>p&&h.some(d=>slotsFor(p.id,d).length)).map(p=>{
+    const days=h.reduce((n,d)=>n+slotsFor(p.id,d).length*.5,0);
+    const mine=h.filter(d=>slotsFor(p.id,d).length);
+    const used=EXISTING.filter(e=>(e.pids[p.id]||[]).some(d=>mine.includes(d))).map(e=>e.no);
+    return {...p,role,days,price:S.sched.pay[p.id]?S.sched.pay[p.id].price:'',used};
+  });
+}
+/* 同一日期下是否有多位讲师 */
+function ambiguous(c){
+  const lc=candidates(c,'lec');
+  return hitDates(c).some(d=>lc.filter(x=>slotsFor(x.id,d).length).length>=2);
+}
+/* 选择执行时段后自动带出：助教全部带出；讲师仅在无歧义时带出，歧义由项目经理自选 */
+function autofill(c){
+  if(!S.sched)return;
+  const lc=candidates(c,'lec'),ac=candidates(c,'ast');
+  const want=new Set([...ac.map(x=>x.id),...(ambiguous(c)?[]:lc.map(x=>x.id))]);
+  ['lec','ast'].forEach(role=>{c[role]=c[role].filter(p=>{
+    if(p.src==='auto'&&!want.has(p.id)&&!isLocked(c,p.id)){delete c.rows[p.id];return false}return true})});
+  lc.forEach(x=>{if(want.has(x.id))addPerson(c,'lec',x.id,'auto')});
+  ac.forEach(x=>{if(want.has(x.id))addPerson(c,'ast',x.id,'auto')});
+}
+
+/* ================= 数据构造 ================= */
+function newCard(){
+  return {id:S.nid++,content:'定制培训',from:'',to:'',daysManual:null,owner:'',course:'',ratio:0,adj:0,adjAmt:0,free:'',mid:false,note:'',
+    method:S.sched?S.sched.method:'线下',lec:[],ast:[],rows:{},open:true,errs:{}};
+}
+function addPerson(c,role,id,src){
+  const base=findP(role,id);if(!base)return;
+  const list=role==='lec'?c.lec:c.ast;
+  if(list.some(x=>x.id===id))return;
+  list.push({id,name:base.name,phone:base.phone,src,role});
+  const pre=S.sched&&S.sched.pay[id];
+  c.rows[id]={cat:pre&&pre.cat?pre.cat:'',price:pre?String(pre.price):'',unit:'天',qty:null,status:null};
+}
+
+/* ================= 计算 ================= */
+function naturalDays(c){if(!validRange(c))return 0;return Math.round((pd(c.to)-pd(c.from))/864e5)+1}
+function autoDays(c){return naturalDays(c)}
+function daysVal(c){if(c.daysManual!==null&&c.daysManual!=='')return +c.daysManual;return autoDays(c)}
+function coursePrice(c){const k=COURSES.find(x=>x.n===c.course);return k?k.price:null}
+function cardAmount(c){const p=coursePrice(c);if(p===null)return null;return (p+(+c.adj||0))*daysVal(c)+(+c.adjAmt||0)}
+function personDays(c,pid){return daysVal(c)}
+function rowQty(c,pid){const r=c.rows[pid];return r.qty!==null&&r.qty!==''?+r.qty:personDays(c,pid)}
+function rowAmt(c,pid){const r=c.rows[pid];if(r.price===''||r.price===null)return null;return (+r.price)*rowQty(c,pid)}
+function cardPersons(c){return [...c.lec,...c.ast]}
+function paySum(c){return cardPersons(c).reduce((n,p)=>n+(rowAmt(c,p.id)||0),0)}
+/* 已进入审批/账期的课酬账单是独立快照：编辑执行单不影响它，也不会重新生成，所以执行单内不做锁定 */
+function isLocked(c,pid){return false}
+function isSubmitted(c,pid){const r=c.rows[pid];return !!(r&&r.status&&r.status!=='待提交')}
+function lastDate(c,pid){return c.to||''}
+function totalNow(){return S.cards.reduce((n,c)=>n+(cardAmount(c)||0),0)}
+function contractLeft(){return CONTRACT.amount-CONTRACT.used}
+
+/* ================= 渲染 ================= */
+function renderAll(){renderInfo();renderCards();recalc()}
+function renderInfo(){
+  const kv=(k,v,req)=>`<div class="kv"><span class="${req?'req':''}">${k}：</span><span style="flex:1">${v}</span></div>`;
+  $('info').innerHTML=
+   kv('合同编号',`<select><option>${CONTRACT.no}</option></select>`,1)+kv('签约客户名称',CONTRACT.sign)+kv('最终客户名称',CONTRACT.final)+kv('项目名称',CONTRACT.project)
+   +kv('合作内容',CONTRACT.content)+kv('合同金额',fm(CONTRACT.amount))+kv('销售人员',CONTRACT.sales)
+   +kv('项目经理',`<span class="${S.errPm?'err':''}"><select onchange="S.pm=this.value;S.errPm=false;renderInfo()"><option value="">请选择</option>${PMS.map(x=>`<option ${S.pm===x?'selected':''}>${x}</option>`).join('')}</select>${S.errPm?'<div class="errtxt">请选择项目经理</div>':''}</span>`,1)
+   +kv('执行单录入人员',CONTRACT.entry);
+}
+function fld(label,html,o={}){return `<div class="fl ${o.full?'full':''} ${o.err?'err':''}"><label class="${o.req?'req':''}">${label}</label><div class="c">${html}${o.err?`<div class="errtxt">${o.err}</div>`:''}</div></div>`}
+function opt(list,v,ph){return (ph?`<option value="">${ph}</option>`:'')+list.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('')}
+function hitStatus(c){
+  if(c.from&&c.to&&c.to<c.from)return '<div class="errtxt">结束日期不能早于开始日期</div>';
+  if(!S.sched||!validRange(c))return '';
+  const h=hitDates(c);
+  if(!h.length)return `<div class="hitst"><span class="tag o">未命中排期</span><span class="hint">按所选执行时段计 ${naturalDays(c)} 天</span></div>`;
+  let edge=0,x=c.from;
+  while(x<h[0]){if(!isWk(x))edge++;x=addDays(x,1)}
+  x=addDays(h[h.length-1],1);
+  while(x<=c.to){if(!isWk(x))edge++;x=addDays(x,1)}
+  return `<div class="hitst"><span class="tag g">命中排期 ${h.length} 天</span>${edge?`<span class="tag o">时段首尾另有 ${edge} 个工作日不在排期内，需手动确认</span>`:''}</div>`;
+}
+function dateField(c){
+  let h=`<div class="rg"><input type="date" value="${c.from}" onchange="setRange(${c.id},'from',this.value)"><span>→</span><input type="date" value="${c.to}" onchange="setRange(${c.id},'to',this.value)"></div>`;
+  if(S.sched){
+    h+=`<div class="segs">排期段：${segmentsOf(S.sched.dates).map(g=>{const f=g[0],t=g[g.length-1];
+      return `<button class="seg ${c.from===f&&c.to===t?'on':''}" onclick="pickSeg(${c.id},'${f}','${t}')">${g.length===1?f.slice(5):f.slice(5)+'~'+t.slice(5)}</button>`}).join('')}</div>`;
+  }
+  return h+hitStatus(c);
+}
+function pbox(c,role){
+  const list=role==='lec'?c.lec:c.ast,err=role==='lec'&&c.errs.lec;
+  const chips=list.map(p=>{const lk=isLocked(c,p.id);
+    return `<span class="chip ${lk?'lock':''}">${p.name} <small>${p.phone||'手机号待补充'}</small>${lk?'<span title="已有课酬账单进入审批或之后状态，不可移除">🔒</span>':`<i onclick="rmP(${c.id},'${role}','${p.id}')">✕</i>`}</span>`}).join('');
+  let panel='';
+  if(role==='lec'&&S.sched){
+    const cs=candidates(c,'lec');
+    if(cs.length&&(cs.length>=2||!c.lec.some(p=>p.id===cs[0].id))){
+      panel=`<div class="cand">${!c.lec.length&&cs.length>=2?`<div class="tip">该时段有 ${cs.length} 位讲师，请选择</div>`:''}<div class="list">${cs.map(x=>{const on=c.lec.some(p=>p.id===x.id);
+        return `<div class="cd ${on?'on':''}" onclick="togglePick(${c.id},'${x.id}')"><span class="ck">${on?'✓':''}</span><b>${x.name}</b><small>${x.phone||'手机号待补充'}</small><small>授课 ${x.days} 天</small>${x.price!==''?`<small>¥${x.price}/天</small>`:''}${x.used.length?`<span class="tag o">已在执行单 ${x.used.join('、')} 录入</span>`:''}</div>`}).join('')}</div></div>`;
+    }
+  }
+  return `<div class="pbox ${err?'err':''}" onclick="event.stopPropagation()"><div class="chips">${chips}</div>
+   <input id="in_${c.id}_${role}" type="text" placeholder="${role==='lec'?'搜索讲师姓名后选择':'搜索助教姓名后选择，可添加多人'}" autocomplete="off" oninput="dd(${c.id},'${role}')" onfocus="dd(${c.id},'${role}')">
+   <div class="dd" id="dd_${c.id}_${role}"></div></div>${err?'<div class="errtxt">请选择讲师名称</div>':''}${panel}`;
+}
+function rowDatesText(c,p){
+  if(!validRange(c))return '请先选择执行时段';
+  const h=hitDates(c);
+  if(S.sched&&h.length&&c.rows[p.id]&&inRoster(p.id)&&!h.some(d=>slotsFor(p.id,d).length))return '<span class="tag o">所选时段内无排期</span>';
+  return `${c.from.slice(5)}~${c.to.slice(5)}（${naturalDays(c)}天）`;
+}
+function statusTag(c,p){
+  const r=c.rows[p.id];
+  if(r.status)return `<span class="tag ${r.status==='待提交'?'b':'k'}">账单${r.status}${r.status==='待提交'?'':' · 已锁定'}</span>`;
+  if(p.src==='auto')return '<span class="tag o">待确认</span>';
+  if(S.sched&&!inRoster(p.id))return '<span class="tag k">非排期人员</span>';
+  return '<span class="tag g">已指定</span>';
+}
+function rowsHtml(c){
+  const ps=cardPersons(c);
+  if(!ps.length)return '<div style="padding:16px;text-align:center;color:#9ca3af">选择执行时段并确定讲师、助教后，将自动生成课酬明细行</div>';
+  const body=ps.map(p=>{
+    const r=c.rows[p.id],lk=isLocked(c,p.id),dis=lk?'disabled':'';
+    return `<tr class="${lk?'lk':''}">
+     <td><b>${p.name}</b><div class="hint">${p.phone||'<span class="tag o">手机号待补充</span>'}</div>${lk?`<div class="hint">🔒 账单${r.status}，已锁定</div>`:''}</td>
+     <td><span class="tag ${p.role==='lec'?'b':'g'}">${p.role==='lec'?'讲师':'助教'}</span></td>
+     <td style="max-width:200px">${rowDatesText(c,p)}</td>
+     <td><select ${dis} onchange="setRow(${c.id},'${p.id}','cat',this.value)">${opt(CATS,r.cat,'选填')}</select></td>
+     <td><input type="number" min="0" step="0.01" ${dis} placeholder="选填" value="${r.price}" oninput="setRow(${c.id},'${p.id}','price',this.value,1)"></td>
+     <td><input type="number" min="0" step="0.5" ${dis} id="rq_${c.id}_${p.id}" value="${rowQty(c,p.id)}" oninput="setRow(${c.id},'${p.id}','qty',this.value,1)"></td>
+     <td><select ${dis} onchange="setRow(${c.id},'${p.id}','unit',this.value)">${opt(UNITS,r.unit)}</select></td>
+     <td id="ra_${c.id}_${p.id}">—</td></tr>`}).join('');
+  return `<table><thead><tr><th>人员</th><th>角色</th><th>授课/服务日期</th><th>费用类别</th><th>课酬单价</th><th>数量</th><th>单位</th><th>总金额</th></tr></thead><tbody>${body}</tbody></table>`;
+}
+function cardHtml(c,i){
+  const e=c.errs,lockedAny=cardPersons(c).some(p=>isLocked(c,p.id));
+  return `<section class="ecard" id="card_${c.id}"><div class="ehd">执行单 ${i+1}
+   <span class="del ${lockedAny?'off':''}" ${lockedAny?'title="已有课酬账单进入审批或之后状态，不可删除"':`onclick="delCard(${c.id})"`}>删除</span></div>
+  <div class="g2">
+   ${fld('合作内容',`<select onchange="setF(${c.id},'content',this.value)">${opt(['定制培训','公开课','咨询'],c.content)}</select>`,{req:1})}
+   ${fld('执行时段',dateField(c),{req:1,err:e.dates?((c.from&&c.to&&c.to<c.from)?'结束日期不能早于开始日期':'请选择执行时段'):''})}
+   ${fld('执行天数',`<input type="number" min="0" step="0.5" placeholder="请输入" value="${daysVal(c)||''}" onchange="setF(${c.id},'daysManual',this.value);renderAll()">`,{req:1,err:e.days?'请填写执行天数':''})}
+   ${fld('其中：免费情况',`<input type="text" placeholder="请输入" value="${c.free}" oninput="setF(${c.id},'free',this.value)">`)}
+   ${fld('项目归属',`<select onchange="setF(${c.id},'owner',this.value);">${opt(OWNERS,c.owner,'请选择')}</select>`,{req:1,err:e.owner?'请选择项目归属':''})}
+   ${fld('课程名称',`<select onchange="setF(${c.id},'course',this.value);recalc()">${opt(COURSES.map(x=>x.n),c.course,'请选择')}</select>`,{req:1,err:e.course?'请选择课程名称':''})}
+   ${fld('单价',`<div class="ro" id="price_${c.id}">—</div>`,{req:1})}
+   ${fld('拆班比例',`<input type="number" min="0" value="${c.ratio}" oninput="setF(${c.id},'ratio',this.value)">`)}
+   ${fld('单价调整额',`<input type="number" value="${c.adj}" oninput="setF(${c.id},'adj',this.value);recalc()">`,{req:1})}
+   ${fld('讲师名称',pbox(c,'lec'),{req:1})}
+   ${fld('助教名称',pbox(c,'ast'))}
+   ${fld('培训方式',S.sched?`<div class="ro">${c.method}${S.sched.city&&c.method==='线下'?' · '+S.sched.city:''}</div>`:`<select onchange="setF(${c.id},'method',this.value)">${opt(['线下','线上'],c.method)}</select>`)}
+   ${fld('调整执行金额',`<input type="number" value="${c.adjAmt}" oninput="setF(${c.id},'adjAmt',this.value);recalc()">`,{req:1})}
+   ${fld('执行金额',`<div class="ro" id="amt_${c.id}">—</div><div class="errtxt" id="over_${c.id}"></div>`,{req:1})}
+   ${fld('中台参与',`<input type="checkbox" ${c.mid?'checked':''} onchange="setF(${c.id},'mid',this.checked)">`)}
+   ${fld('执行金额说明',`<textarea placeholder="请输入" oninput="setF(${c.id},'note',this.value)">${c.note}</textarea>`,{full:1})}
+   ${fld('附件备注',`<button class="btn sm pri" onclick="toast('演示：上传附件')">上传</button>`,{full:1})}
+  </div>
+  <div class="pay ${c.open?'':'shut'}"><div class="ph" onclick="togglePay(${c.id})"><b>师资课酬明细</b><span class="car">${c.open?'收起 ▴':'展开 ▾'}</span></div>
+   ${c.open?rowsHtml(c)+`<div class="ptot"><span id="pc_${c.id}"></span><span id="ps_${c.id}"></span></div>`:''}</div>
+  </section>`;
+}
+function renderCards(){$('cards').innerHTML=S.cards.map(cardHtml).join('')}
+function recalc(){
+  S.cards.forEach(c=>{
+    const p=coursePrice(c),a=cardAmount(c);
+    const pe=$('price_'+c.id);if(pe)pe.textContent=p===null?'--':fm(p);
+    const ae=$('amt_'+c.id);if(ae)ae.textContent=a===null?'--':fm(a);
+    cardPersons(c).forEach(x=>{const el=$('ra_'+c.id+'_'+x.id);if(el){const v=rowAmt(c,x.id);el.textContent=v===null?'—':'¥'+v.toLocaleString()}});
+    const ps=$('ps_'+c.id);
+    if(ps){const sum=paySum(c);ps.innerHTML=`课酬合计：<b>¥${sum.toLocaleString()}</b>`;
+      const pc=$('pc_'+c.id);if(pc)pc.innerHTML=`共 ${cardPersons(c).length} 人`+((a!==null&&sum>a)?` <span class="w">· 课酬合计超过本执行单金额 ¥${fm(a)}，仅提醒，不拦截</span>`:'')}
+  });
+  const tot=totalNow(),left=contractLeft(),over=tot>left;
+  S.cards.forEach(c=>{const o=$('over_'+c.id);if(o)o.textContent=(over&&cardAmount(c)!==null)?`执行金额合计超出合同剩余可执行金额 ¥${fm(left)}`:''});
+  $('foot').innerHTML=`<div class="s"><span>合同金额</span><b>${fm(CONTRACT.amount)}</b></div><div class="s"><span>已执行</span><b>${fm(CONTRACT.used)}</b></div>
+   <div class="s"><span>本次执行</span><b>${fm(tot)}</b></div><div class="s ${over?'bad':''}"><span>合同剩余</span><b>${fm(left-tot)}</b></div>
+   ${over?'<span class="e">本次执行金额超过合同剩余可执行金额，不能提交</span>':''}<button class="btn pri" onclick="submit()">提 交</button>`;
+  renderWarns();
+}
+let warnsOpen=false;
+function warnList(){
+  const out=[];
+  if(!S.sched)return out;
+  /* 本页多份执行单之间，同人同时段重复 */
+  const map={};
+  S.cards.forEach((c,i)=>{const h=hitDates(c);cardPersons(c).forEach(p=>h.forEach(d=>slotsFor(p.id,d).forEach(s=>{const k=p.id+'|'+d+'|'+s;(map[k]=map[k]||{p,d,idx:[]}).idx.push(i+1)})))});
+  const g={};
+  Object.values(map).filter(x=>x.idx.length>1).forEach(x=>{const k=x.p.id+'|'+x.idx.join('、');(g[k]=g[k]||{p:x.p,idx:x.idx,ds:[]}).ds.push(x.d)});
+  Object.values(g).forEach(x=>out.push(`${x.p.name} ${dlShort([...new Set(x.ds)].sort())} 同时出现在执行单 ${x.idx.join('、')}，仅提醒；生成账单时同人同时段会被拦截`));
+  S.cards.forEach((c,i)=>{
+    const h=hitDates(c);
+    cardPersons(c).forEach(p=>{
+      const mine=h.filter(d=>slotsFor(p.id,d).length);
+      /* 合同下已有执行单 */
+      EXISTING.forEach(e=>{const ov=mine.filter(d=>(e.pids[p.id]||[]).includes(d));if(ov.length)out.push(`执行单 ${i+1}：${p.name} ${dlShort(ov)} 已在执行单 ${e.no} 中录入，仅提醒；生成账单时同人同时段会被拦截`)});
+      /* 其他项目占用 */
+      const occ=OCCUPY[p.id]||[],hit={};
+      mine.forEach(d=>occ.filter(o=>o.date===d).forEach(o=>{if(slotsFor(p.id,d).some(s=>(o.slot==='全天'?SL:[o.slot]).includes(s)))(hit[o.project]=hit[o.project]||[]).push(d)}));
+      Object.keys(hit).forEach(k=>out.push(`执行单 ${i+1}：${p.name} ${dlShort(hit[k])} 已在「${k}」有排期，仅提醒`));
+    });
+  });
+  return out;
+}
+function renderWarns(){
+  const w=warnList(),show=warnsOpen?w:w.slice(0,3);
+  $('warns').innerHTML=show.map(x=>`<div class="warn">⚠ ${x}</div>`).join('')+(w.length>3?`<div><a onclick="warnsOpen=!warnsOpen;renderWarns()">${warnsOpen?'收起':'展开更多（+'+(w.length-3)+'）'}</a></div>`:'');
+}
+
+/* ================= 交互 ================= */
+function card(id){return S.cards.find(c=>c.id===id)}
+function setF(id,k,v){const c=card(id);c[k]=(k==='daysManual'&&v==='')?null:v;if(c.errs[k])delete c.errs[k]}
+function setRow(id,pid,k,v,live){const c=card(id);c.rows[pid][k]=v;if(live)recalc();else renderAll()}
+function togglePay(id){const c=card(id);c.open=!c.open;renderCards();recalc()}
+function setRange(id,k,v){
+  const c=card(id);c[k]=v;delete c.errs.dates;
+  if(c.from&&c.to&&c.to<c.from)toast('结束日期不能早于开始日期');
+  c.daysManual=null;autofill(c);renderAll();
+}
+function pickSeg(id,f,t){const c=card(id);c.from=f;c.to=t;delete c.errs.dates;c.daysManual=null;autofill(c);renderAll()}
+function addCard(){
+  S.cards.push(newCard());renderAll();
+  setTimeout(()=>{const el=$('card_'+S.cards[S.cards.length-1].id);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},50);
+}
+function delCard(id){
+  if(S.cards.length<=1){toast('至少保留一份执行单');return}
+  S.cards=S.cards.filter(c=>c.id!==id);renderAll();
+}
+function togglePick(cid,pid){
+  const c=card(cid);
+  if(c.lec.some(p=>p.id===pid)){if(isLocked(c,pid))return;rmP(cid,'lec',pid);return}
+  addPerson(c,'lec',pid,'pick');delete c.errs.lec;c.daysManual=null;renderAll();
+}
+
+/* 人员选择 */
+function dd(cid,role){
+  closeDd(cid+'_'+role);
+  const c=card(cid),input=$('in_'+cid+'_'+role),box=$('dd_'+cid+'_'+role);if(!input||!box)return;
+  const q=input.value.trim(),src=role==='lec'?LECTURERS:ASSISTANTS;
+  const chosen=(role==='lec'?c.lec:c.ast).map(p=>p.id);
+  const list=src.filter(p=>!q||p.name.includes(q));
+  let h=list.map(p=>{const off=chosen.includes(p.id);
+    return `<div class="it ${off?'off':''}" ${off?'':`onclick="pick(${cid},'${role}','${p.id}')"`}><span>${p.name}${off?'（已选）':''}</span><small>${p.phone||'手机号待补充'}</small></div>`}).join('');
+  if(!list.length)h=`<div class="empty">${role==='lec'?'讲师运营系统中未找到该讲师':'未找到该助教'}</div>`;
+  if(role==='ast')h+=`<div class="it add" onclick="openAst(${cid})">＋ 新增助教${q?'「'+q+'」':''}</div>`;
+  box.innerHTML=h;box.classList.add('on');
+}
+function closeDd(except){document.querySelectorAll('.dd').forEach(d=>{if(!except||d.id!=='dd_'+except)d.classList.remove('on')})}
+function pick(cid,role,id){const c=card(cid);addPerson(c,role,id,'pick');if(role==='lec')delete c.errs.lec;c.daysManual=null;renderAll()}
+function rmP(cid,role,id){const c=card(cid);if(role==='lec')c.lec=c.lec.filter(p=>p.id!==id);else c.ast=c.ast.filter(p=>p.id!==id);delete c.rows[id];c.daysManual=null;renderAll()}
+document.addEventListener('click',()=>closeDd());
+
+/* 弹窗 */
+function showModal(h){$('modal').innerHTML=h;$('mask').classList.add('on')}
+function closeModal(){$('mask').classList.remove('on')}
+let astCid=null;
+function openAst(cid){
+  astCid=cid;closeDd();
+  const q=$('in_'+cid+'_ast').value.trim();
+  showModal(`<h4>新增助教</h4><div class="f"><label class="req">助教姓名</label><input type="text" id="nName" maxlength="20" value="${q}" placeholder="请输入姓名"></div>
+   <div class="f"><label>手机号 <span class="hint">（可后补；缺失不影响，加入待结算清单前需补充）</span></label><input type="text" id="nPhone" maxlength="11" placeholder="请输入11位手机号"></div>
+   <div class="err" id="nErr"></div><div class="ops"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" onclick="saveAst()">确定并选择</button></div>`);
+  setTimeout(()=>$('nName').focus(),0);
+}
+function saveAst(){
+  const name=$('nName').value.trim(),phone=$('nPhone').value.trim(),err=$('nErr');
+  if(!name){err.textContent='请填写助教姓名';return}
+  if(phone){if(!/^1\d{10}$/.test(phone)){err.textContent='手机号格式不正确';return}
+    if(ASSISTANTS.some(a=>a.phone===phone)){err.textContent='该手机号已被其他人员占用';return}}
+  const a={id:'A'+String(ASSISTANTS.length+1).padStart(3,'0'),name,phone};ASSISTANTS.push(a);
+  addPerson(card(astCid),'ast',a.id,'pick');closeModal();renderAll();toast('已新增助教并选择：'+name);
+}
+
+/* ================= 提交 ================= */
+function validate(){
+  let ok=true,first=null;
+  S.errPm=!S.pm;if(S.errPm){ok=false;first=first||'info'}
+  S.cards.forEach(c=>{
+    c.errs={};
+    if(!validRange(c))c.errs.dates=1;
+    if(!(daysVal(c)>0))c.errs.days=1;
+    if(!c.owner)c.errs.owner=1;
+    if(!c.course)c.errs.course=1;
+    if(!c.lec.length)c.errs.lec=1;
+    if(Object.keys(c.errs).length){ok=false;first=first||('card_'+c.id)}
+  });
+  if(totalNow()>contractLeft()){ok=false;first=first||'foot'}
+  renderAll();
+  if(first&&first!=='foot'){const el=first==='info'?$('info'):$(first);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})}
+  return ok;
+}
+function submit(){
+  if(!validate()){toast(totalNow()>contractLeft()?'执行金额超过合同剩余可执行金额':'请先补全必填项');return}
+  const rows=[];S.cards.forEach(c=>cardPersons(c).forEach(p=>rows.push({c,p,locked:isSubmitted(c,p.id)})));
+  if(S.mode==='edit'){
+    const sync=rows.filter(x=>!x.locked&&x.c.rows[x.p.id].status).length,lk=rows.filter(x=>x.locked).length;
+    const added=rows.filter(x=>!x.c.rows[x.p.id].status);
+    const future=added.filter(x=>lastDate(x.c,x.p.id)>TODAY).length,noPhone=added.filter(x=>!x.p.phone).length;
+    added.forEach(x=>{x.c.rows[x.p.id].status='待提交'});
+    showModal(`<h4>保存成功</h4><ul>${added.length?`<li>新增人员生成课酬草稿 <b>${added.length}</b> 张</li>`:''}<li>同步更新待提交的课酬账单 <b>${sync}</b> 张</li><li>已进入审批、账期中或可提现的课酬账单 <b>${lk}</b> 张，不受本次修改影响，也不会重新生成</li>
+     ${future?`<li><b>${future}</b> 张新草稿最后执行日期晚于今天，执行日期到达前不能加入待结算清单</li>`:''}${noPhone?`<li><b>${noPhone}</b> 张新草稿人员缺少手机号，加入待结算清单前需补充</li>`:''}</ul>
+     <div class="ops"><button class="btn" onclick="closeModal();renderAll()">继续编辑</button><button class="btn pri" onclick="closeModal();toast('演示：跳转课酬账单')">查看课酬账单</button></div>`);
+    return;
+  }
+  const total=rows.length,pend=rows.filter(x=>x.p.src==='auto').length,future=rows.filter(x=>lastDate(x.c,x.p.id)>TODAY).length;
+  const noPhone=rows.filter(x=>!x.p.phone).length;
+  showModal(`<h4>提交成功</h4><ul><li>共提交 <b>${S.cards.length}</b> 份执行单，生成课酬草稿 <b>${total}</b> 张</li>
+   <li>其中带入人员「待确认」<b>${pend}</b> 张，请到课酬账单确认或更换</li>
+   ${future?`<li><b>${future}</b> 张草稿最后执行日期晚于今天，执行日期到达前不能加入待结算清单</li>`:''}
+   ${noPhone?`<li><b>${noPhone}</b> 张草稿人员缺少手机号，加入待结算清单前需补充</li>`:''}</ul>
+   <div class="ops"><button class="btn" onclick="closeModal()">继续添加</button><button class="btn pri" onclick="closeModal();toast('演示：跳转课酬账单')">查看课酬草稿</button></div>`);
+}
+
+/* ================= 演示状态 ================= */
+function setDemo(v){
+  S.mode=v==='edit'?'edit':'new';S.errPm=false;S.nid=1;warnsOpen=false;
+  $('pageTitle').textContent=v==='edit'?'编辑执行单':'添加执行单';
+  S.sched=v==='nosched'?null:SCHED;
+  S.pm=S.sched?S.sched.pm:'';
+  S.cards=[newCard()];
+  if(v==='edit'){
+    const c=S.cards[0];c.from='2026-11-09';c.to='2026-11-12';c.owner='华东一部';c.course=COURSES[0].n;
+    autofill(c);addPerson(c,'lec','L001','pick');addPerson(c,'lec','L002','pick');
+    c.rows.L001.status='待提交';
+    c.rows.L002.status='审批中';c.rows.L002.qty=String(personDays(c,'L002'));
+    c.rows.A002.status='账期中';c.rows.A002.qty=String(personDays(c,'A002'));
+  }
+  renderAll();
+}
+setDemo('new');
+</script>
+<script src="./返回目录.js" data-style="top:3px;left:50%;transform:translateX(-50%)"></script>
+</body>
+</html>

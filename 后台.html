@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>师资结算后台 · 交互原型 V3.0</title>
+<style>
+:root{
+  --primary:#315cec;--primary-2:#2448c7;--primary-soft:#eef2ff;--nav:#111a2e;
+  --nav-2:#18233b;--bg:#f5f7fb;--card:#fff;--text:#172033;--sub:#68728a;
+  --line:#e5e9f2;--green:#179b70;--green-bg:#e9f8f2;--orange:#d87b16;
+  --orange-bg:#fff4e6;--red:#d94b58;--red-bg:#fff0f1;--purple:#7655d6;
+  --purple-bg:#f3efff;--shadow:0 8px 30px rgba(26,39,77,.07);--side:238px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg);font-size:14px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+.layout{min-height:100vh}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--side);background:linear-gradient(180deg,var(--nav),#0d1526);color:#fff;z-index:20;display:flex;flex-direction:column}
+.brand{height:72px;display:flex;align-items:center;gap:11px;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#6384ff,#315cec);display:grid;place-items:center;box-shadow:0 8px 20px rgba(49,92,236,.36)}
+.brand-mark svg{width:20px;height:20px}
+.brand-title{font-size:16px;font-weight:700;letter-spacing:.3px}
+.brand-sub{font-size:10px;color:#98a4bd;margin-top:3px}
+.nav{padding:16px 10px;overflow:auto;flex:1}
+.nav-group{font-size:10px;color:#66738f;padding:13px 12px 7px;letter-spacing:1px}
+.nav-item{height:42px;display:flex;align-items:center;gap:11px;padding:0 12px;border-radius:8px;color:#aab4c8;margin:2px 0;transition:.18s}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,.06)}
+.nav-item.active{color:#fff;background:linear-gradient(90deg,#315cec,#3e68ef);box-shadow:0 6px 15px rgba(49,92,236,.24)}
+.nav-item svg{width:17px;height:17px;flex:none}
+.side-foot{padding:15px 18px;border-top:1px solid rgba(255,255,255,.08);color:#77849e;font-size:11px;line-height:1.7}
+.topbar{position:fixed;left:var(--side);right:0;top:0;height:72px;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);z-index:15;display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.crumb{font-size:13px;color:var(--sub);display:flex;align-items:center;gap:8px}
+.crumb b{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.prototype-badge{font-size:12px;font-weight:700;color:var(--primary);background:var(--primary-soft);padding:7px 10px;border-radius:20px}
+.role-select{height:36px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--text);padding:0 34px 0 12px;outline:none}
+.avatar{width:34px;height:34px;border-radius:50%;background:#172033;color:#fff;display:grid;place-items:center;font-size:12px}
+.main{margin-left:var(--side);padding:96px 28px 48px;min-height:100vh}
+.page{max-width:1500px;margin:0 auto}
+.page-title{display:flex;justify-content:flex-start;align-items:flex-start;margin-bottom:20px;gap:18px}
+.page-title h1{font-size:24px;margin:0 0 7px;letter-spacing:-.3px}
+.page-title p{margin:0;color:var(--sub);font-size:13px;line-height:1.7}
+.actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.btn{height:36px;border-radius:7px;border:1px solid var(--line);background:#fff;color:#354056;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-weight:600;font-size:13px;transition:.15s}
+.btn:hover{border-color:#aebcf3;color:var(--primary)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 5px 14px rgba(49,92,236,.2)}
+.btn.primary:hover{background:var(--primary-2)}
+.btn.danger{color:var(--red);border-color:#facbd0;background:#fff}
+.btn.warn{color:#b9660c;border-color:#f3c78f;background:#fffaf3}
+.btn.green{color:#087e59;border-color:#a8dec9;background:#f6fffb}
+.btn:disabled{cursor:not-allowed;opacity:.45}
+.btn.sm{height:30px;padding:0 10px;font-size:12px}
+.link{color:var(--primary);border:0;background:none;padding:0;font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.stat:after{content:"";position:absolute;width:72px;height:72px;border-radius:50%;right:-22px;top:-22px;background:var(--primary-soft)}
+.stat-label{color:var(--sub);font-size:12px;margin-bottom:10px}
+.stat-value{font-size:27px;font-weight:750;letter-spacing:-.6px}
+.stat-note{font-size:11px;color:var(--sub);margin-top:8px}
+.stat-note.good{color:var(--green)}
+.grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow);margin-bottom:16px}
+.card-head{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--line)}
+.card-head h3{margin:0;font-size:15px}
+.card-body{padding:18px}
+.filters{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.input,.select{height:34px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:0 10px;color:var(--text);outline:none;min-width:130px}
+.fl{display:flex;align-items:center;gap:8px}.fl>span:first-child{font-size:12px;color:#505a70;white-space:nowrap}
+.date-range{display:flex;align-items:center;gap:6px}.date-range i{font-style:normal;color:var(--sub);font-size:12px}.date-range .input{min-width:128px}
+.filter-actions{margin-left:auto;display:flex;gap:8px}
+.filters-more{display:none;width:100%;align-items:center;gap:10px;flex-wrap:wrap;padding-top:12px;margin-top:2px;border-top:1px dashed var(--line)}.filters-more.open{display:flex}
+.fbtn{height:34px;min-width:68px;padding:0 18px;border:0;border-radius:7px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;transition:.15s}
+.fbtn.query{background:var(--primary)}.fbtn.query:hover{background:var(--primary-2)}
+.fbtn.reset{background:#8f9ab0}.fbtn.reset:hover{background:#7d889f}
+.fbtn.export{background:#fff;color:var(--text);border:1px solid var(--line)}.fbtn.export:hover{background:#f5f7fb;border-color:#c9d2e3}
+.input:focus,.select:focus,textarea:focus{border-color:#91a5f6;box-shadow:0 0 0 3px rgba(49,92,236,.08)}
+.search{min-width:230px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:separate;border-spacing:0;white-space:nowrap}
+th{height:42px;background:#fafbfc;color:#68728a;font-size:12px;font-weight:600;text-align:left;padding:0 12px;border-bottom:1px solid var(--line)}
+td{height:52px;padding:8px 12px;border-bottom:1px solid #edf0f5;font-size:13px;color:#354056}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:#fbfcff}
+tbody tr.disabled-row td{background:#fcfcfd;color:#9aa2b2}
+.table-wrap th:first-child,.table-wrap td:first-child{position:sticky;left:0;z-index:2;background:#fff}
+.table-wrap th:last-child,.table-wrap td:last-child{position:sticky;right:0;z-index:2;background:#fff}
+.table-wrap th:first-child,.table-wrap th:last-child{background:#fafbfc;z-index:3}
+.table-wrap th:first-child::after,.table-wrap td:first-child::after{content:'';position:absolute;top:0;bottom:0;right:-8px;width:8px;background:linear-gradient(to right,rgba(31,45,80,.07),rgba(31,45,80,0));pointer-events:none}
+.table-wrap th:last-child::after,.table-wrap td:last-child::after{content:'';position:absolute;top:0;bottom:0;left:-8px;width:8px;background:linear-gradient(to left,rgba(31,45,80,.07),rgba(31,45,80,0));pointer-events:none}
+.table-wrap th:first-child,.table-wrap th:last-child{border-right:0}
+.table-wrap tbody tr:hover td:first-child,.table-wrap tbody tr:hover td:last-child{background:#fbfcff}
+.table-wrap tbody tr.disabled-row td:first-child,.table-wrap tbody tr.disabled-row td:last-child{background:#fcfcfd}
+.help{position:relative;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#e8ecf5;color:#68728a;font-size:12px;font-weight:700;cursor:help}
+.help:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);right:-10px;width:280px;white-space:normal;padding:9px 12px;border-radius:8px;background:#1f2a44;color:#fff;font-size:12px;font-weight:400;line-height:1.6;z-index:30;box-shadow:0 8px 20px rgba(20,30,60,.25)}
+.table-wrap table.has-check th:first-child,.table-wrap table.has-check td:first-child{width:44px;min-width:44px;max-width:44px}
+.table-wrap table.has-check th:first-child::after,.table-wrap table.has-check td:first-child::after{display:none}
+.table-wrap table.has-check th:nth-child(2),.table-wrap table.has-check td:nth-child(2){position:sticky;left:44px;z-index:2;background:#fff}
+.table-wrap table.has-check th:nth-child(2){background:#fafbfc;z-index:3}
+.table-wrap table.has-check th:nth-child(2)::after,.table-wrap table.has-check td:nth-child(2)::after{content:'';position:absolute;top:0;bottom:0;right:-8px;width:8px;background:linear-gradient(to right,rgba(31,45,80,.07),rgba(31,45,80,0));pointer-events:none}
+.table-wrap table.has-check tbody tr:hover td:nth-child(2){background:#fbfcff}
+.table-wrap table.has-check tbody tr.disabled-row td:nth-child(2){background:#fcfcfd}
+.pager{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--line);font-size:12px}
+.pager-r{display:flex;align-items:center;gap:6px}
+.pager-size{height:30px;min-width:96px;font-size:12px}
+.pbtn{min-width:30px;height:30px;padding:0 8px;border:1px solid var(--line);border-radius:6px;background:#fff;color:#354056;font-size:12px;cursor:pointer}
+.pbtn:hover:not(:disabled){border-color:#aebcf3;color:var(--primary)}
+.pbtn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.pbtn:disabled{opacity:.45;cursor:not-allowed}
+.pdots{padding:0 4px;color:#8a94a8}
+.pjump{display:flex;align-items:center;gap:6px;margin-left:8px;color:#68728a}
+.pinput{width:48px;min-width:48px;height:30px;text-align:center;padding:0 4px}
+.page-foot{position:fixed;left:var(--side);right:0;bottom:0;z-index:14;display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);box-shadow:0 -6px 18px rgba(27,39,73,.08)}
+.page-foot-space{height:72px}
+@media(max-width:760px){.page-foot{left:0}}
+.num{font-variant-numeric:tabular-nums;font-weight:650;color:#202a41}
+.muted{color:var(--sub);font-size:12px}
+.tag{display:inline-flex;align-items:center;gap:4px;height:23px;border-radius:5px;padding:0 8px;font-size:11px;font-weight:650;background:#f0f2f6;color:#677087}
+.tag.blue{background:var(--primary-soft);color:var(--primary)}
+.tag.green{background:var(--green-bg);color:var(--green)}
+.tag.orange{background:var(--orange-bg);color:var(--orange)}
+.tag.red{background:var(--red-bg);color:var(--red)}
+.tag.purple{background:var(--purple-bg);color:var(--purple)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.modal-note{margin:0 0 14px;color:#596682;font-size:13px;line-height:1.7}
+.tabs{display:flex;border-bottom:1px solid var(--line);padding:0 18px;background:#fff;border-radius:11px 11px 0 0}
+.tab{height:48px;padding:0 16px;border:0;background:none;color:var(--sub);position:relative;font-weight:600}
+.tab.active{color:var(--primary)}
+.tab.active:after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:2px;background:var(--primary);border-radius:2px}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.info-grid.slim{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.ap-bar{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:12px 18px;background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:16px}
+.ap-bar.rej{border-color:#f5c2c2;background:#fffafa}
+.ap-steps{display:flex;align-items:center;flex:1;min-width:360px}
+.ap-step{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.ap-dot{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:#eef0f4;color:#98a1b5;flex:none}
+.ap-step.done .ap-dot{background:#e9f7ef;color:#1a7f4b}.ap-step.cur .ap-dot{background:var(--primary);color:#fff}.ap-step.rej .ap-dot{background:#fdecec;color:#b42318}
+.ap-txt{display:flex;flex-direction:column;line-height:1.35;font-size:12px;color:#98a1b5}.ap-txt b{font-size:13px;color:var(--text);font-weight:600}
+.ap-step.wait .ap-txt b{color:#98a1b5}.ap-step.cur .ap-txt em,.ap-step.rej .ap-txt em{font-style:normal}.ap-step.cur .ap-txt em{color:var(--primary)}.ap-step.rej .ap-txt em{color:#b42318}.ap-step.done .ap-txt em{font-style:normal;color:#1a7f4b}
+.ap-line{flex:1;min-width:24px;height:2px;background:#e3e6ed;margin:0 12px}.ap-line.done{background:#9ad5b3}
+.ap-rej{flex-basis:100%;font-size:13px;line-height:1.7;color:#b42318;padding-top:8px;border-top:1px dashed #f5c2c2}
+.info-item{padding:13px 18px;border-bottom:1px solid #eef1f5}
+.info-item .k{font-size:11px;color:var(--sub);margin-bottom:7px}
+.info-item .v{font-size:13px;color:#2c364d;min-height:18px}
+.money-box{background:linear-gradient(135deg,#263e92,#315cec);color:#fff;border-radius:11px;padding:22px;box-shadow:0 12px 26px rgba(49,92,236,.22)}
+.money-box .label{font-size:12px;opacity:.72}
+.money-box .amount{font-size:29px;font-weight:750;margin:8px 0 18px}
+.money-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;border-top:1px solid rgba(255,255,255,.18);padding-top:14px}
+.money-row b{display:block;margin-top:5px}
+.timeline{padding:4px 0 2px}
+.time-item{position:relative;padding:0 0 22px 27px;color:#3a445a}
+.time-item:before{content:"";position:absolute;left:5px;top:4px;width:8px;height:8px;border-radius:50%;background:#b8c1d6;border:3px solid #fff;box-shadow:0 0 0 1px #c8cede}
+.time-item:after{content:"";position:absolute;left:9px;top:17px;bottom:0;width:1px;background:#dfe3eb}
+.time-item:last-child:after{display:none}
+.time-item.done:before{background:var(--green);box-shadow:0 0 0 1px var(--green)}
+.time-item.current:before{background:var(--primary);box-shadow:0 0 0 3px #dce4ff}
+.time-item b{font-size:13px}
+.time-item p{margin:5px 0 0;color:var(--sub);font-size:11px;line-height:1.6}
+.steps{display:flex;align-items:center;margin:10px 0 20px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px}
+.step{display:flex;align-items:center;gap:9px;color:var(--sub);font-size:12px;flex:1}
+.step:after{content:"";height:1px;background:#dfe3eb;flex:1;margin:0 12px}
+.step:last-child{flex:0 0 auto}.step:last-child:after{display:none}
+.step i{font-style:normal;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#edf0f5;color:#7e879b;font-weight:700}
+.step.done i{background:var(--green-bg);color:var(--green)}
+.step.current{color:var(--primary);font-weight:700}.step.current i{background:var(--primary);color:#fff}
+.check{width:15px;height:15px;accent-color:var(--primary)}
+.selectbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#eef3ff;border:1px solid #dbe4ff;border-radius:8px;margin-bottom:12px;color:#495c8b;font-size:12px}
+.empty{padding:60px 20px;text-align:center;color:var(--sub)}
+.empty svg{width:54px;height:54px;color:#c6ccda;margin-bottom:12px}
+.bar-list{display:flex;flex-direction:column;gap:16px}
+.bar-row{display:grid;grid-template-columns:80px 1fr 68px;gap:12px;align-items:center;font-size:12px}
+.bar{height:7px;background:#eef1f6;border-radius:6px;overflow:hidden}.bar span{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#315cec,#7a94f5)}
+.process{display:flex;align-items:center;gap:8px;overflow:auto;padding:4px 0 8px}
+.process-node{min-width:125px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.process-node.active{border-color:#7e96f2;background:#f6f8ff}.process-node.done{border-color:#b9e2d3;background:#f6fffb}
+.process-node b{font-size:12px}.process-node span{display:block;color:var(--sub);font-size:10px;margin-top:5px}
+.arrow{color:#aab2c2}
+.lock{display:flex;align-items:center;gap:8px;color:#a46418;font-size:12px}
+.modal-mask{position:fixed;inset:0;background:rgba(15,24,43,.46);z-index:100;display:grid;place-items:center;padding:20px;animation:fade .15s}
+.modal{background:#fff;width:min(520px,100%);border-radius:13px;box-shadow:0 24px 70px rgba(0,0,0,.2);animation:pop .17s}
+.modal-head{height:58px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.modal-head h3{margin:0;font-size:16px}.modal-close{border:0;background:none;font-size:22px;color:#7d8698}
+.modal-body{padding:20px}.modal-foot{padding:13px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:9px}
+.form-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 24px}.stack{display:grid;gap:16px}.sel-wrap{position:relative}.sel-list{position:absolute;z-index:30;top:38px;left:0;right:0;max-height:260px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(20,30,60,.12)}.sel-opt{display:flex;gap:10px;align-items:center;padding:9px 12px;cursor:pointer}.sel-opt:hover{background:#f3f6ff}.sel-opt.disabled{opacity:.5;cursor:not-allowed}.sel-empty{padding:14px;text-align:center;color:var(--sub);font-size:12px}.input:disabled{background:#f6f7f9;color:#4a5468}
+.field{margin-bottom:16px}.field label{display:block;font-size:12px;color:#505a70;margin-bottom:7px;font-weight:600}
+.field label em{color:var(--red);font-style:normal}.field .input,.field .select,.field textarea{width:100%}
+.field textarea{min-height:88px;resize:vertical;border:1px solid var(--line);border-radius:7px;padding:10px;outline:none}
+.toast-wrap{position:fixed;right:24px;top:84px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast{min-width:280px;max-width:390px;background:#fff;border:1px solid var(--line);border-radius:9px;box-shadow:0 12px 32px rgba(27,39,73,.16);padding:12px 14px;display:flex;align-items:flex-start;gap:10px;animation:slide .25s}
+.toast-icon{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--green-bg);color:var(--green);font-weight:800}.toast.error .toast-icon{background:var(--red-bg);color:var(--red)}
+.toast b{font-size:12px}.toast p{margin:3px 0 0;color:var(--sub);font-size:11px}
+.forbidden{display:grid;place-items:center;min-height:430px;background:#fff;border:1px solid var(--line);border-radius:11px;text-align:center}
+.forbidden svg{width:60px;height:60px;color:#bbc2d1}.forbidden h2{font-size:18px;margin:13px 0 7px}.forbidden p{color:var(--sub);font-size:12px}
+.mobile-toggle{display:none;border:0;background:none;color:#fff}
+@keyframes fade{from{opacity:0}to{opacity:1}}@keyframes pop{from{transform:translateY(8px);opacity:.5}to{transform:none;opacity:1}}@keyframes slide{from{transform:translateX(20px);opacity:0}}
+@media(max-width:1050px){.form-3{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,1fr)}.grid-2,.split{grid-template-columns:1fr}.info-grid{grid-template-columns:repeat(2,1fr)}}
+.cf-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.cf-month{display:flex;align-items:center;gap:6px}.cf-month .select{min-width:150px;font-weight:700}
+.cf-sum{color:var(--sub);font-size:13px}.cf-sum b{color:var(--text)}
+.cf-banner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 16px;border-radius:9px;margin-bottom:14px;background:#fff7e8;border:1px solid #f6d9a8;color:#8a5200;font-size:13px;line-height:1.7}
+.cf-banner.red{background:#fff0f1;border-color:#f5c2c2;color:#b42318}.cf-banner.info{background:#eef3ff;border-color:#dbe4ff;color:#495c8b}
+.cf-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-bottom:14px}
+.cf-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 15px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:8px}
+.cf-card:hover{border-color:#b9c9ff}.cf-card.on{border-color:var(--primary);box-shadow:0 0 0 2px rgba(49,92,236,.14)}
+.cf-card-h{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.cf-sub{font-size:11px;color:var(--sub)}
+.cf-amt{font-size:20px;font-weight:700}.cf-amt span{font-size:12px;color:var(--sub);font-weight:400;margin-left:8px}
+.cf-bar{height:7px;border-radius:5px;background:#e8ebf2;display:flex;overflow:hidden}.cf-bar i{display:block;height:100%}.cf-bar .d{background:#18a977}.cf-bar .f{background:#e5484d}
+.cf-stat{font-size:12px;color:#596682;display:flex;gap:12px;flex-wrap:wrap}.cf-stat b{color:var(--text)}
+.cf-rec{font-size:11px;color:var(--sub)}.cf-rec.ok{color:#087e59}.cf-rec.bad{color:#d92d20;font-weight:600}
+.cf-card .btn{align-self:flex-start}
+.cf-shell{display:flex;flex-direction:column;height:calc(100vh - 112px);min-height:520px}
+body.cf-page .main{padding-bottom:16px;min-height:0}
+body.cf-focus .sidebar,body.cf-focus .topbar{display:none}
+body.cf-focus .main{margin-left:0;padding:12px 16px}
+body.cf-focus .cf-shell{height:calc(100vh - 24px)}
+.cf-layout{flex:1;min-height:0;display:grid;grid-template-columns:268px minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:16px}
+.cf-layout.mini{grid-template-columns:76px minmax(0,1fr)}
+.cf-main{min-width:0;min-height:0;display:flex;flex-direction:column}
+.cf-main>.card:not(.cf-ph){flex:1;min-height:0;display:flex;flex-direction:column;margin-bottom:0}
+.cf-main>.card:not(.cf-ph) .cf-wrap{flex:1;min-height:0;max-height:none}
+.cf-side{height:100%;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.cf-side.mini{align-items:stretch;gap:8px}
+.cf-mini-m{text-align:center;font-weight:800;font-size:15px;padding:4px 0}
+.cf-si.mini{align-items:center;padding:10px 4px;gap:5px;text-align:center}.cf-si.mini b{font-size:12px}
+.cf-side-t{display:flex;justify-content:space-between;align-items:center}
+.cf-side-g{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:8px 4px 0}
+.cf-si.empty{opacity:.55;cursor:default;background:#fafbfd}.cf-si.empty:hover{border-color:var(--line)}
+.cf-mini-g{font-size:11px;color:var(--sub);text-align:center;padding-top:4px}
+.cf-ph .cf-bar{width:120px;flex:none}.cf-ph .cf-rec{white-space:nowrap}
+.filters.cf-f{padding:10px 14px;margin-bottom:10px;gap:8px 12px}.cf-f .fl .input{width:108px!important;min-width:90px!important}.cf-f .fbtn{padding:0 12px;min-width:56px}.cf-f .filters-more .fl .input{width:120px!important}
+.cf-side-m{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px}
+.cf-side-mt{display:flex;align-items:center;gap:6px}.cf-msel{flex:1;min-width:0;height:40px;font-size:18px;font-weight:800}
+.cf-side-tag{display:flex;align-items:center;gap:8px;margin:8px 0 0;font-size:12px;color:var(--sub)}
+.cf-side-sum{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.cf-side-sum div{background:#f7f9fc;border-radius:8px;padding:8px 10px}.cf-side-sum span{display:block;font-size:11px;color:var(--sub)}.cf-side-sum b{font-size:20px}.cf-side-sum .warn b{color:var(--orange)}
+.cf-side-t{font-size:12px;color:var(--sub);padding:2px 4px 0}
+.cf-si{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 13px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:.15s}
+.cf-si:hover{border-color:#b9c9ff}.cf-si.on{border-color:var(--primary);background:#f5f8ff;box-shadow:0 0 0 2px rgba(49,92,236,.12)}
+.cf-si-sub{color:var(--sub);font-size:12px;font-weight:400;white-space:nowrap}.cf-si-h{display:flex;justify-content:space-between;align-items:center;font-size:13px}.cf-si-s{font-size:11px;color:var(--sub)}.cf-si-ok{color:#18a977;font-weight:700}.cf-si-bad{color:#e5484d;font-weight:700}
+.cf-ph{padding:11px 16px;margin-bottom:10px;display:flex;flex-direction:column;gap:9px}
+.cf-ph-top{display:flex;align-items:center;gap:16px}.cf-ph-top h3{margin:0;font-size:16px;display:flex;align-items:center;gap:8px}
+.cf-ph-amt{font-size:18px;font-weight:700;white-space:nowrap}.cf-ph-amt span{font-size:12px;color:var(--sub);font-weight:400;margin-left:8px}
+.cf-tools{margin-left:auto;align-self:center;display:flex;align-items:center;gap:8px;padding:4px 0;white-space:nowrap;flex:none}.cf-tools .btn{white-space:nowrap}.cf-side-tag .tag{white-space:nowrap;flex:none}
+.cf-dd{position:relative}.cf-dd summary{list-style:none;display:flex;align-items:center}.cf-dd summary::-webkit-details-marker{display:none}
+.cf-dd-menu{position:absolute;right:0;top:40px;z-index:30;width:230px;background:#fff;border:1px solid var(--line);border-radius:9px;box-shadow:0 10px 28px rgba(20,30,60,.14);padding:6px}
+.cf-dd-i{display:flex;align-items:center;justify-content:space-between;border-radius:6px;padding:0 4px 0 0}.cf-dd-i:hover{background:#f5f7fb}.cf-dd-i button{flex:1;text-align:left;border:0;background:none;padding:8px 10px;font-size:13px;cursor:pointer}.cf-dd-i i{font-style:normal;color:#98a1b5;cursor:pointer;padding:0 8px}.cf-dd-i i:hover{color:var(--red)}
+.cf-dd-e{padding:8px 10px;font-size:12px;color:var(--sub)}.cf-dd-sep{height:1px;background:var(--line);margin:4px 0}.cf-dd-a{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 10px;font-size:13px;color:var(--primary);cursor:pointer;border-radius:6px}.cf-dd-a:hover{background:#f5f7fb}
+.cf-saved{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-4px 0 14px;font-size:12px}
+.issue-bar{display:flex;align-items:center;justify-content:flex-start;gap:14px;flex-wrap:wrap;padding:10px 14px;background:#fff;border:1px solid var(--line);border-top:0;font-size:13px;color:#505a70}
+.issue-bar .ib-sum b{color:var(--text)}.issue-bar .ib-sum b.ok{color:var(--green)}.issue-bar .ib-sum b.warn{color:var(--red)}
+.notice-bar{background:#fff8e6;border:1px solid #f3d9a8;color:#8a5a00;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;line-height:1.7}
+.ib-chips{display:flex;gap:8px;flex-wrap:wrap}
+.ib-chip{height:28px;padding:0 12px;border:1px solid var(--line);background:#fff;border-radius:14px;font-size:12px;color:#505a70;cursor:pointer}
+.ib-chip b{margin-left:2px}.ib-chip:hover{border-color:#bac9fb}
+.ib-chip.soft{color:#b25e00;border-color:#f3d9a8;background:#fffaf0}
+.ib-chip.warn{color:#b42318;border-color:#f5c2c2;background:#fff7f7}.ib-chip.ok{color:var(--green)}
+.ib-chip.on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary)}
+.ps{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12px;white-space:nowrap}
+.ps.ok{background:#e9f7ef;color:#1a7f4b}.ps.bad{background:#fdecec;color:#b42318;cursor:pointer}.ps.bad:hover{background:#fbd9d9}
+.ipop{position:fixed;z-index:1000;width:300px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(31,45,80,.18);padding:10px 12px;font-size:12px;color:#505a70;pointer-events:none}
+.ipop-h{font-weight:600;color:var(--text);margin-bottom:6px}
+.ipop-i{display:flex;flex-direction:column;gap:2px;padding:6px 0;border-top:1px dashed var(--line)}.ipop-i b{color:#b42318}
+.ipop.wide{width:460px}.ipop .mini{width:100%;border-collapse:collapse}.ipop .mini th,.ipop .mini td{padding:4px 6px;text-align:left;border-top:1px dashed var(--line);white-space:nowrap;font-size:12px}.ipop .mini th{font-weight:600;color:var(--text);border-top:0}.ipop .mini td.num{text-align:right}
+.multi{cursor:help;border-bottom:1px dotted #98a1b5}.multi b{color:var(--primary);font-weight:600}
+.ipop-f{margin-top:6px;color:#98a1b5}
+.chip{display:inline-flex;align-items:center;height:26px;border:1px solid var(--line);background:#fff;border-radius:13px;padding:0 4px 0 11px;font-size:12px;color:#505a70;gap:2px}
+.chip button{border:0;background:none;font-size:12px;color:inherit;padding:0}.chip i{font-style:normal;cursor:pointer;color:#98a1b5;padding:0 6px}.chip i:hover{color:var(--red)}
+.chip.on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary)}.chip.add{padding:0 11px;border-style:dashed;cursor:pointer}
+.cf-n{display:inline-block;min-width:20px;padding:0 6px;height:18px;line-height:18px;border-radius:9px;background:#eef0f5;color:#68728a;font-size:11px;text-align:center;margin-left:3px}
+.cf-n.warn{background:var(--orange-bg);color:var(--orange)}
+.cf-wrap{max-height:calc(100vh - 230px);min-height:240px}
+.cf-wrap thead th{position:sticky;top:0;z-index:3}.cf-wrap thead th:first-child,.cf-wrap thead th:last-child{z-index:4}
+.cf-wrap tr.cf-sel td{background:#f5f8ff}
+.selectbar.sticky{position:sticky;top:84px;z-index:12;box-shadow:0 6px 16px rgba(49,92,236,.12)}
+.cf-sumbox{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 12px}
+.cf-sumbox div{background:#f7f9fc;border:1px solid var(--line);border-radius:8px;padding:10px 12px}.cf-sumbox span{display:block;font-size:11px;color:var(--sub);margin-bottom:4px}.cf-sumbox b{font-size:15px}
+.cf-mini{width:100%;margin:0 0 12px;font-size:12px}.cf-mini th{height:32px}.cf-mini td{padding:7px 12px;border-bottom:1px solid var(--line)}
+.cf-warn{background:#fff7e8;border:1px solid #f6d9a8;color:#8a5200;border-radius:8px;padding:10px 13px;font-size:12px;line-height:1.7;margin:0 0 12px}
+.cf-tip{background:#f7f9fc;border:1px solid var(--line);color:#596682;border-radius:8px;padding:9px 13px;font-size:12px;line-height:1.7;margin:0 0 12px}
+.cf-check{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin-top:4px}
+.cf-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:13px}.cf-cols label{display:flex;align-items:center;gap:7px}
+.cf-mask{position:fixed;inset:0;background:rgba(15,24,43,.4);z-index:100;display:flex;justify-content:flex-end;animation:fade .15s}
+.cf-drawer{width:min(480px,100%);height:100%;background:#fff;box-shadow:-12px 0 40px rgba(0,0,0,.14);display:flex;flex-direction:column}
+.cf-dh{display:flex;justify-content:space-between;align-items:flex-start;padding:20px 22px 14px;border-bottom:1px solid var(--line)}.cf-dh h3{margin:0;font-size:18px}
+.cf-db{flex:1;overflow:auto;padding:6px 22px 20px}.cf-db h4{margin:20px 0 10px;font-size:13px;color:#3a455e;border-left:3px solid var(--primary);padding-left:8px}
+.cf-db .info-grid{grid-template-columns:1fr 1fr}
+.cf-df{padding:13px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:9px}
+.cf-log{display:flex;flex-direction:column;gap:12px;border-left:2px solid #e3e8f3;margin-left:5px;padding-left:16px}
+.cf-log div{position:relative;font-size:13px}.cf-log i{position:absolute;left:-23px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--primary)}
+.cf-log span{display:block;color:var(--sub);font-size:11px;margin-top:2px}
+@media(max-width:760px){:root{--side:220px}.sidebar{transform:translateX(-100%);transition:.2s}.sidebar.open{transform:none}.mobile-toggle{display:block}.topbar{left:0;padding:0 14px;background:#111a2e;color:#fff}.crumb{display:none}.main{margin-left:0;padding:90px 14px 36px}.prototype-badge{display:none}.page-title{flex-direction:column}.stats{grid-template-columns:1fr}.info-grid{grid-template-columns:1fr}.search{min-width:100%;width:100%}.money-row{grid-template-columns:1fr}.modal-mask{place-items:end center;padding:0}.modal{border-radius:13px 13px 0 0}.top-actions{gap:7px}.role-select{max-width:150px}}
+#cartFab{position:fixed;right:44px;bottom:56px;z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:72px;height:72px;padding:0;border:0;border-radius:50%;background:#315cec;color:#fff;font-size:11px;font-weight:600;line-height:1.2;box-shadow:0 10px 26px rgba(49,92,236,.42);cursor:pointer;transition:.15s}
+#cartFab:hover{background:#2a50d4;transform:translateY(-2px)}
+#cartFab svg{width:22px;height:22px}
+#cartFab span{display:block;white-space:nowrap;font-size:11px}
+#cartFab em{position:absolute;top:-2px;right:-2px;font-style:normal;min-width:20px;height:20px;line-height:20px;padding:0 4px;border-radius:10px;background:#ef4444;color:#fff;font-size:12px;font-weight:700;text-align:center;border:2px solid #fff;box-sizing:content-box}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <header class="topbar">
+    <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="打开导航">☰</button>
+    <div class="crumb" id="crumb"></div>
+    <div class="top-actions">
+      <span class="prototype-badge">交互原型 V3.0</span>
+      <select class="role-select" id="roleSelect" onchange="switchRole(this.value)" aria-label="切换演示角色">
+        <option value="pm">项目经理 · 纪超</option>
+        <option value="operator">月度账单经办人 · 张佳</option>
+        <option value="finance">财务 · 胡世超</option>
+        <option value="admin">系统管理员</option>
+      </select>
+      <span class="avatar" id="avatar">李</span>
+    </div>
+  </header>
+  <main class="main"><div class="page" id="app"></div></main>
+</div>
+<div class="toast-wrap" id="toasts"></div>
+<div id="modalRoot"></div>
+<script>
+'use strict';
+
+const ICONS={
+  bill:'<path d="M6 2h10l4 4v16H4V2h2zm9 1v4h4M8 12h8M8 16h8M8 8h3"/>',
+  apply:'<path d="M5 3h14v18H5zM9 3v3h6V3M8 11h8M8 15h6"/>',
+  account:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 9v-2a7 7 0 0 1 14 0v2"/>',
+  withdraw:'<path d="M3 7h18v12H3zM7 7V4h10v3M3 11h18M8 15h3"/>',
+  payment:'<path d="M3 6h18v14H3zM3 10h18M7 15h4"/>',
+  confirm:'<path d="M4 12l5 5L20 6"/>',
+  refund:'<path d="M5 8h11a5 5 0 0 1 0 10H9M5 8l4-4M5 8l4 4"/>',
+  setting:'<path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm8.5 3a8 8 0 0 0-.2-1.7l2-1.5-2-3.4-2.4 1a8 8 0 0 0-2.9-1.7L14.7 2h-4l-.4 2.7a8 8 0 0 0-2.9 1.7l-2.4-1-2 3.4 2 1.5a8 8 0 0 0 0 3.4l-2 1.5 2 3.4 2.4-1a8 8 0 0 0 2.9 1.7l.4 2.7h4l.4-2.7a8 8 0 0 0 2.9-1.7l2.4 1 2-3.4-2-1.5c.1-.6.2-1.1.2-1.7z"/>',
+  lock:'<path d="M6 10V7a6 6 0 0 1 12 0v3M4 10h16v12H4zM12 15v3"/>',
+  shield:'<path d="M12 2l8 3v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V5zM9 12l2 2 4-5"/>',
+  cart:'<path d="M3 4h2l2.2 11h11l2-8H6M9 20h.01M17 20h.01"/>',
+  empty:'<path d="M4 5h16v14H4zM8 9h8M8 13h5"/>'
+};
+function icon(name){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICONS[name]||ICONS.bill)+'</svg>'}
+function money(n){return '¥ '+Number(n).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function qs(){return new URLSearchParams((location.hash.split('?')[1]||''))}
+function route(){return (location.hash.split('?')[0]||'#'+landing()).replace('#','')}
+function tag(text,color=''){return '<span class="tag '+color+'">'+(color?'<i class="dot"></i>':'')+text+'</span>'}
+function title(name,desc,actions=''){return actions?'<div class="page-title"><div class="actions">'+actions+'</div></div>':''}
+
+const PM_NAME='纪超';
+const roleMeta={
+  pm:{name:'项目经理',person:'纪超',initial:'纪',desc:'仅查看自己负责的项目'},
+  operator:{name:'月度账单经办人',person:'张佳',initial:'张',desc:'仅提现单 / 付款单 / 付款确认'},
+  finance:{name:'财务',person:'胡世超',initial:'胡',desc:'全量页面只读 / 下载，维护特殊账期与系统配置'},
+  admin:{name:'超级管理员',person:'系统管理员',initial:'管',desc:'全部项目与全部数据'}
+};
+const navItems=[
+  {group:'课酬结算',label:'课酬账单',path:'/bills',icon:'bill',roles:['pm','finance','admin']},
+  {label:'待结算清单',path:'/cart',icon:'cart',roles:['pm','admin'],nav:false},
+  {label:'结算申请单',path:'/applications',icon:'apply',roles:['pm','finance','admin']},
+  {group:'师资账户',label:'讲师账户',path:'/accounts/teacher',icon:'account',roles:['pm','finance','admin']},
+  {label:'助教账户',path:'/accounts/assistant',icon:'account',roles:['pm','finance','admin']},
+  {label:'机构账户',path:'/accounts/org',icon:'account',roles:['pm','finance','admin']},
+  {group:'提现与付款',label:'提现单',path:'/withdrawals',icon:'withdraw',roles:['operator','finance','admin']},
+  {label:'付款单',path:'/payments/monthly',icon:'payment',roles:['operator','finance','admin']},
+  {label:'付款确认',path:'/confirm',icon:'confirm',roles:['operator','finance','admin']},
+  {label:'付款失败审批（同步）',path:'/refunds',icon:'refund',roles:['finance','admin']},
+  {group:'系统',label:'系统配置',path:'/settings',icon:'setting',roles:['finance','admin']}
+];
+
+const PEOPLE=[
+  {personId:'T10086',name:'刘畅',phone:'138****6218',role:'讲师'},
+  {personId:'T10309',name:'郭晨',phone:'139****8701',role:'讲师'},
+  {personId:'T10231',name:'林晓',phone:'',role:'助教'},
+  {personId:'T10412',name:'周凯',phone:'135****2204',role:'助教'},
+  {personId:'T10528',name:'宋琪',phone:'137****3209',role:'助教'}
+];
+const CATS=['授课','助教','出题 / 题库','源文件','视频','打包价','其他'];
+const UNITS=['天','半天','小时','场','题','个','套','打包'];
+const EXEMPT_CATS=['助教','出题 / 题库'];
+const needContract=b=>!(b.role==='助教'||EXEMPT_CATS.includes(b.category));
+const PAY_CONTRACT={'企业数字化转型训练营':'B-BC-QP0926-0565','研发效能公开课':'B-BC-QP0926-0572','云原生架构师认证营':'B-BC-QP0926-0588','AI 产品经理实战班':'','战略客户定制培训':'B-BC-QP0926-0601','渠道伙伴峰会':'B-BC-QP0926-0614','金融行业大模型工作坊':'B-BC-QP0926-0620','数据分析训练营':'B-BC-QP0926-0633','安全工程师训练营':'B-BC-QP0926-0648','项目管理认证班':'B-BC-QP0926-0655'};
+function exportCsv(name,head,rows){
+  const csv=[head].concat(rows).map(r=>r.map(x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download=name+'.csv';document.body.appendChild(a);a.click();a.remove();
+  toast('已导出',name+'（共 '+rows.length+' 条，CSV 可用 Excel 打开）');
+}
+const PAYC=[
+  {no:'B-BC-QP0926-0565',pact:'A-BC-QP1026-1201',total:24000},
+  {no:'B-BC-QP0926-0566',pact:'A-BC-QP1026-1201',total:36000},
+  {no:'B-BC-QP0926-0572',pact:'A-BC-QP1026-1215',total:20000},
+  {no:'B-BC-QP0926-0588',pact:'A-BC-QP1026-1233',total:15000},
+  {no:'B-BC-QP0826-0418',pact:'A-BC-QP1026-1233',total:40000},
+  {no:'B-BC-QP0826-0336',pact:'A-BC-QP1026-1247',total:30000},
+  {no:'B-BC-QP0926-0601',pact:'A-BC-QP1026-1259',total:60000},
+  {no:'B-BC-QP0926-0614',pact:'A-BC-QP1026-1262',total:30000},
+  {no:'B-BC-QP0926-0620',pact:'A-BC-QP1026-1270',total:50000},
+  {no:'B-BC-QP0926-0633',pact:'A-BC-QP1026-1288',total:25000},
+  {no:'B-BC-QP0926-0648',pact:'A-BC-QP1026-1291',total:30000},
+  {no:'B-BC-QP0926-0655',pact:'A-BC-QP1026-1304',total:30000}
+];
+const EXEC_ORDERS={'企业数字化转型训练营':['ZX202610-030','ZX202610-036'],'研发效能公开课':['ZX202610-045'],'云原生架构师认证营':['ZX202609-088','ZX202610-052'],'AI 产品经理实战班':['ZX202610-041'],'战略客户定制培训':['ZX202610-033','ZX202610-049'],'渠道伙伴峰会':['ZX202610-027'],'金融行业大模型工作坊':['ZX202609-112'],'数据分析训练营':['ZX202610-058'],'安全工程师训练营':['ZX202610-060'],'项目管理认证班':['ZX202610-063']};
+const payC=no=>PAYC.find(x=>x.no===no);
+const payOptions=pact=>PAYC.filter(x=>x.pact===pact);
+const payUsed=(no,exceptId)=>state.bills.filter(x=>x.contract===no&&x.confirmed&&needContract(x)&&x.id!==exceptId);
+const payUsedAmt=(no,exceptId)=>payUsed(no,exceptId).reduce((n,x)=>n+x.amount,0);
+const payOk=b=>!needContract(b)||(b.confirmed&&!contractMissing(b));
+const bIssue=b=>b.issue||(b.status==='待提交'?(!payOk(b)?'付款合同号未关联':''):'');
+const bIssues=b=>{if(b.status!=='待提交')return [];const l=[];if(b.issue)l.push(b.issue);if(!payOk(b))l.push('付款合同号未关联');return l};
+const ISSUE_HINT={'手机号缺失':'师资手机号缺失，请先到师资信息补充手机号','手机号重复':'手机号与其他师资重复，请核实更正','机构账户未创建':'师资所属机构账户未创建，请先创建机构账户','付款合同号未关联':'请进入账单详情，选择并确认关联付款合同号'};
+function showIssuePop(el){
+  hideIssuePop();const l=el.getAttribute('data-r').split('|'),pop=document.createElement('div');pop.id='issuePop';pop.className='ipop';
+  pop.innerHTML='<div class="ipop-h">待处理 '+l.length+' 项，处理完才能加入待结算清单</div>'+l.map(r=>'<div class="ipop-i"><b>'+r+'</b><span>'+(ISSUE_HINT[r]||'请进入详情处理')+'</span></div>').join('')+'<div class="ipop-f">点击标签进入账单详情处理</div>';
+  document.body.appendChild(pop);const r=el.getBoundingClientRect(),h=pop.offsetHeight;
+  pop.style.left=Math.max(8,Math.min(r.left,window.innerWidth-pop.offsetWidth-8))+'px';
+  pop.style.top=(r.bottom+h+12>window.innerHeight?Math.max(8,r.top-h-6):r.bottom+6)+'px';
+}
+function hideIssuePop(){const p=document.getElementById('issuePop');if(p)p.remove()}
+const issueGroup=r=>r;
+const execTag=b=>b.exec||tag('待关联执行单','orange');
+const contractMissing=b=>needContract(b)&&(!b.contract||b.contract==='付款合同未返回');
+const qtyText=b=>money(b.price)+' × '+b.qty+' '+b.unit;
+const PROJECT_CONTRACT={'企业数字化转型训练营':'A-BC-QP1026-1201','研发效能公开课':'A-BC-QP1026-1215','云原生架构师认证营':'A-BC-QP1026-1233','AI 产品经理实战班':'A-BC-QP1026-1247','战略客户定制培训':'A-BC-QP1026-1259','渠道伙伴峰会':'A-BC-QP1026-1262','金融行业大模型工作坊':'A-BC-QP1026-1270','数据分析训练营':'A-BC-QP1026-1288','安全工程师训练营':'A-BC-QP1026-1291','项目管理认证班':'A-BC-QP1026-1304'};
+const pactOf=project=>PROJECT_CONTRACT[project]||'—';
+function wComp(w){const ks=Object.keys(PROJECT_CONTRACT),a=Math.min(w.amount,9600);
+  const rows=[{bill:'KB202609-0162',exec:'ZX202609-112',project:w.project,amount:a}];
+  if(w.amount>9600){const cross=[...w.id].reduce((n,c)=>n+c.charCodeAt(0),0)%2===0;
+    rows.push({bill:'KB202610-0188',exec:'ZX202610-036',project:cross?ks[(ks.indexOf(w.project)+1)%ks.length]:w.project,amount:w.amount-9600})}
+  rows.forEach(r=>r.pact=pactOf(r.project));return rows}
+const wPacts=w=>[...new Set(wComp(w).map(r=>r.pact))];
+const wProjects=w=>[...new Set(wComp(w).map(r=>r.project))];
+function wPactCell(w){const l=wPacts(w);return l.length>1?'<span title="'+l.join('、')+'">'+l[0]+' <span class="tag blue">共 '+l.length+' 个</span></span>':l[0]}
+const allocTable=(w,cls)=>'<div style="overflow:auto"><table'+(cls?' class="'+cls+'"':'')+'><thead><tr><th>课酬账单</th><th>执行单</th><th>项目</th><th>合同号</th><th style="text-align:right">构成金额</th></tr></thead><tbody>'+wComp(w).map(r=>'<tr><td>'+r.bill+'</td><td>'+(r.exec||tag('待关联执行单','orange'))+'</td><td>'+r.project+'</td><td>'+r.pact+'</td><td class="num">'+money(r.amount)+'</td></tr>').join('')+'</tbody></table></div>';
+const F=(name,size,time)=>({name,size,time:time||'2026-10-30 10:12',by:'纪超'});
+const mk=o=>{const b=Object.assign({files:[],pm:PM_NAME,phone:'',issue:'',source:'执行单联动',remark:'',appId:'',inCart:false,category:o.role==='助教'?'助教':'授课',unit:'天',qty:1,price:o.amount},o);if(b.pact===undefined)b.pact=pactOf(b.project);if(b.confirmed===undefined)b.confirmed=!!b.contract&&b.contract!=='付款合同未返回'&&b.status!=='待提交';return b};
+const SEED_BILLS=[
+  mk({files:[F('付款金额核对截图.png',812345),F('课时确认单.pdf',2457600,'2026-10-30 10:15')],id:'KB202610-0188',personId:'T10086',name:'刘畅',phone:'138****6218',role:'讲师',project:'企业数字化转型训练营',exec:'ZX202610-036',date:'2026-10-26',amount:9600,status:'待提交',contract:'B-BC-QP0926-0565',confirmed:true,inCart:true,price:4800,qty:2}),
+  mk({id:'KB202610-0189',personId:'T10231',name:'林晓',role:'助教',project:'企业数字化转型训练营',exec:'ZX202610-036',date:'2026-10-26',amount:2800,status:'待提交',contract:'B-BC-QP0926-0565',issue:'手机号缺失'}),
+  mk({id:'KB202610-0191',pm:'孙磊',personId:'T10416',name:'高远',phone:'136****1180',role:'讲师',project:'研发效能公开课',exec:'ZX202610-045',date:'2026-10-29',amount:6800,status:'待提交',contract:'B-BC-QP0926-0572',issue:'手机号重复',source:'手工创建'}),
+  mk({id:'KB202610-0192',personId:'T10528',name:'宋琪',phone:'137****3209',role:'助教',project:'云原生架构师认证营',exec:'ZX202610-052',date:'2026-10-30',amount:3200,status:'待提交',contract:'B-BC-QP0926-0588'}),
+  mk({files:[F('讲师确认邮件.pdf',356000)],id:'KB202610-0194',personId:'T10412',name:'周凯',phone:'135****2204',role:'助教',project:'AI 产品经理实战班',exec:'',date:'2026-10-28',amount:2400,status:'待提交',contract:'B-BC-QP0826-0336',inCart:true,source:'手工创建'}),
+  mk({files:[F('金额一致性说明.docx',98000,'2026-10-24 16:02')],id:'KB202610-0176',personId:'T10086',name:'刘畅',phone:'138****6218',role:'讲师',project:'企业数字化转型训练营',exec:'ZX202610-030',date:'2026-10-22',amount:9600,status:'审批中',contract:'B-BC-QP0926-0565',appId:'JS202611-0008'}),
+  mk({id:'KB202610-0177',personId:'T10412',name:'周凯',phone:'135****2204',role:'助教',project:'企业数字化转型训练营',exec:'ZX202610-030',date:'2026-10-22',amount:2800,status:'审批中',contract:'B-BC-QP0926-0565',appId:'JS202611-0008'}),
+  mk({id:'KB202610-0190',personId:'T10309',name:'郭晨',phone:'139****8701',role:'讲师',project:'AI 产品经理实战班',exec:'ZX202610-041',date:'2026-10-28',amount:12800,status:'可提现',contract:'付款合同未返回',appId:'JS202611-0007'}),
+  mk({id:'KB202609-0171',personId:'T10633',name:'贺敏',phone:'133****5520',role:'讲师',project:'云原生架构师认证营',exec:'ZX202609-088',date:'2026-09-20',amount:11200,status:'账期中',contract:'B-BC-QP0826-0418',appId:'JS202610-0096'}),
+  mk({id:'KB202609-0172',personId:'T10640',name:'沈拓',phone:'133****7781',role:'讲师',project:'研发效能公开课',exec:'ZX202609-096',date:'2026-09-21',amount:10200,status:'账期中',contract:'B-BC-QP0926-0572',appId:'JS202610-0096'}),
+  mk({id:'KB202609-0173',personId:'T10528',name:'宋琪',phone:'137****3209',role:'助教',project:'渠道伙伴峰会',exec:'ZX202609-097',date:'2026-09-21',amount:3200,status:'账期中',contract:'',appId:'JS202610-0096'}),
+  mk({files:[F('课时明细表.xlsx',145000,'2026-10-22 11:40')],id:'KB202610-0181',personId:'T10720',name:'许航',phone:'135****9902',role:'讲师',project:'战略客户定制培训',exec:'ZX202610-049',date:'2026-10-28',amount:18000,status:'驳回待修改',contract:'B-BC-QP0926-0601',appId:'JS202610-0092'}),
+  mk({id:'KB202610-0165',personId:'T10640',name:'沈拓',phone:'133****7781',role:'讲师',project:'战略客户定制培训',exec:'ZX202610-033',date:'2026-10-18',amount:18000,status:'提现中',contract:'B-BC-QP0926-0601',appId:'JS202610-0085'}),
+  mk({id:'KB202610-0158',pm:'孙磊',personId:'T10633',name:'贺敏',phone:'133****5520',role:'讲师',project:'渠道伙伴峰会',exec:'ZX202610-027',date:'2026-10-15',amount:9200,status:'提现中',contract:'B-BC-QP0926-0614',appId:'JS202610-0083'}),
+  mk({id:'KB202610-0196',personId:'T10802',name:'吴启明',phone:'137****4455',role:'讲师',project:'数据分析训练营',exec:'ZX202610-058',date:'2026-10-31',amount:8000,status:'待提交',contract:'B-BC-QP0926-0633',issue:'机构账户未创建'}),
+  mk({id:'KB202609-0162',personId:'T10086',name:'刘畅',phone:'138****6218',role:'讲师',project:'金融行业大模型工作坊',exec:'ZX202609-112',date:'2026-09-21',amount:16000,status:'提现中',contract:'B-BC-QP0926-0620',appId:'JS202609-0061'})
+];
+const OPS_POOL=[
+  {personId:'T10086',name:'刘畅',role:'讲师',phone:'13800006218',company:'某科技集团 / 技术总监',city:'浙江省 / 杭州市',type:'个人讲师',source:'官网投递',annual:'否',email:'liuchang@example.com'},
+  {personId:'T10309',name:'郭晨',role:'讲师',phone:'13900008701',company:'某云服务公司 / 研发总监',city:'北京市 / 北京市',type:'个人讲师',source:'同行推荐',annual:'是',email:'guochen@example.com'},
+  {personId:'T10416',name:'高远',role:'讲师',phone:'13600001180',company:'某软件公司 / 架构师',city:'上海市 / 上海市',type:'个人讲师',source:'其他',annual:'否',email:'gaoyuan@example.com'},
+  {personId:'T10633',name:'贺敏',role:'讲师',phone:'13300005520',company:'某咨询公司 / 合伙人',city:'广东省 / 深圳市',type:'机构讲师',source:'机构合作',annual:'是',email:'hemin@example.com'},
+  {personId:'T10640',name:'沈拓',role:'讲师',phone:'13300007781',company:'某培训机构 / 高级讲师',city:'江苏省 / 南京市',type:'机构讲师',source:'机构合作',annual:'否',email:'shentuo@example.com'},
+  {personId:'T10720',name:'许航',role:'讲师',phone:'13500009902',company:'某互联网公司 / 产品总监',city:'四川省 / 成都市',type:'个人讲师',source:'官网投递',annual:'否',email:'xuhang@example.com'},
+  {personId:'T10801',name:'陈立',role:'讲师',phone:'13611223344',company:'某金融科技公司 / 数据负责人',city:'北京市 / 北京市',type:'个人讲师',source:'同行推荐',annual:'否',email:'chenli@example.com'},
+  {personId:'T10802',name:'吴启明',role:'讲师',phone:'13722334455',company:'某咨询机构 / 首席顾问',city:'浙江省 / 杭州市',type:'机构讲师',source:'机构合作',annual:'是',email:'wuqiming@example.com'},
+  {personId:'T10803',name:'周明远',role:'讲师',phone:'',company:'某制造企业 / 技术专家',city:'湖北省 / 武汉市',type:'个人讲师',source:'其他',annual:'否',email:'zhoumy@example.com'},
+  {personId:'T10805',name:'钱程',role:'讲师',phone:'13812346218',company:'某电商公司 / 运营总监',city:'浙江省 / 杭州市',type:'个人讲师',source:'官网投递',annual:'否',email:'qiancheng@example.com'},
+  {personId:'T10231',name:'林晓',role:'助教',phone:'',company:'某科技公司 / 项目助理',city:'浙江省 / 杭州市',type:'—',source:'内部推荐',annual:'—',email:'linxiao@example.com'},
+  {personId:'T10412',name:'周凯',role:'助教',phone:'13500002204',company:'某软件公司 / 工程师',city:'上海市 / 上海市',type:'—',source:'官网投递',annual:'—',email:'zhoukai@example.com'},
+  {personId:'T10528',name:'宋琪',role:'助教',phone:'13700003209',company:'某云服务公司 / 运维工程师',city:'北京市 / 北京市',type:'—',source:'内部推荐',annual:'—',email:'songqi@example.com'},
+  {personId:'T10901',name:'王欣',role:'助教',phone:'13955667788',company:'某教育公司 / 教务专员',city:'广东省 / 广州市',type:'—',source:'官网投递',annual:'—',email:'wangxin@example.com'},
+  {personId:'T10902',name:'李佳',role:'助教',phone:'13866778899',company:'某科技公司 / 运营专员',city:'江苏省 / 苏州市',type:'—',source:'内部推荐',annual:'—',email:'lijia@example.com'}
+];
+OPS_POOL.forEach((x,i)=>{x.gender=i%3===1?'女':'男';x.idNo='110101199'+(i%10)+'0'+(i%9+1)+'15'+String(100+i*7).slice(0,3)+'X';x.price=x.role==='讲师'?(3000+(i%5)*1000)+' 元/天':''});
+const maskPhone=ph=>ph?ph.slice(0,3)+'****'+ph.slice(7):'';
+const state={
+  role:'pm',
+  selectedConfirms:new Set(),
+  cf:Object.assign({month:'2026-11',tab:'pending',all:false,remind:5,cols:['kind','name','role','ttype','phone','payee','pact','method','amount','batch','date','status'],saved:[{name:'仅看代收',f:{proxy:true,tab:'pending'}}]},{q:'',name:'',payee:'',method:'',kind:'',min:'',max:'',proxy:false,multi:[],batch:'',pact:'',phone:'',role:'',ttype:'',project:'',reason:'',fail:'',status:''}),
+  bills:SEED_BILLS,
+  pg:{},
+  accNew:{kind:'',sel:null,name:'',gender:'男',idNo:'',phone:'',type:'个人讲师',price:'',entity:'个人',orgId:''},
+  orgNew:{name:'',code:'',rep:'',phone:''},
+  cfg:{teacher:60,assistant:30},
+  mdTab:'pay',mdSel:new Set(),mdFor:'',
+  appView:{q:'',project:'',pact:'',type:'',status:'',pm:''},
+  billView:{tab:'todo',issue:'',q:'',src:'全部来源',name:'',phone:'',project:'',pm:'',pact:'',contract:'',d1:'',d2:''},
+  selectedBills:new Set(),
+  cart:new Set(['KB202610-0188','KB202610-0194']),
+  selectedCart:new Set(['KB202610-0188','KB202610-0194']),
+  applications:[
+    {id:'JS202611-0008',version:1,type:'常规',status:'审批中',node:1,owner:'纪超',created:'2026-11-03 10:18',reason:'',rejectReason:'',history:[]},
+    {id:'JS202611-0007',version:2,type:'紧急',status:'已通过',owner:'纪超',created:'2026-11-02 16:40',reason:'客户项目提前验收，需本周支付',rejectReason:'',history:[{version:1,rejectReason:'紧急材料不完整；请补充客户验收凭证',bills:[{id:'KB202610-0190',name:'郭晨',amount:12800}]}]},
+    {id:'JS202610-0096',version:1,type:'常规',status:'已通过',owner:'纪超',created:'2026-10-30 14:20',reason:'',rejectReason:'',history:[]},
+    {id:'JS202610-0092',version:1,type:'紧急',status:'已驳回',owner:'纪超',created:'2026-10-29 11:08',reason:'战略客户指定付款周期',rejectReason:'项目交付日期有误；请修正为 10 月 27 日后重提',history:[]},
+    {id:'JS202610-0085',version:1,type:'紧急',status:'已通过',owner:'纪超',created:'2026-10-27 15:30',reason:'战略客户指定付款周期',rejectReason:'',history:[]},
+    {id:'JS202610-0083',version:1,type:'紧急',status:'已通过',owner:'孙磊',created:'2026-10-25 10:20',reason:'项目提前验收',rejectReason:'',history:[]},
+    {id:'JS202609-0061',version:1,type:'常规',status:'已通过',owner:'纪超',created:'2026-09-18 10:00',reason:'',rejectReason:'',history:[]}
+  ],
+  accounts:[
+    {id:'SU100086',personId:'T10086',name:'刘畅',phone:'138****6218',roles:'讲师',wechat:'已绑定',bank:'已完善',available:18600,pending:9600,frozen:12000,paid:48600,project:'企业数字化转型训练营',invite:'2026-10-10 09:30',termDays:90,entity:'个人'},
+    {id:'SU100231',personId:'T10231',name:'林晓',phone:'待补充',roles:'助教',wechat:'未绑定',bank:'未填写',available:3200,pending:2800,frozen:0,paid:12800,project:'企业数字化转型训练营',invite:'尚未发送'},
+    {id:'SU100309',personId:'T10309',name:'郭晨',phone:'139****8701',roles:'讲师',wechat:'未绑定',bank:'未填写',available:12800,pending:0,frozen:0,paid:32000,project:'AI 产品经理实战班',invite:'2026-11-02 17:00'},
+    {id:'SU100412',personId:'T10412',name:'周凯',phone:'135****2204',roles:'助教',wechat:'已绑定',bank:'已完善',available:2400,pending:1800,frozen:0,paid:7200,project:'AI 产品经理实战班',invite:'2026-10-18 11:05'},
+    {id:'SU100528',personId:'T10528',name:'宋琪',phone:'137****3209',roles:'助教',wechat:'已绑定',bank:'已完善',available:5200,pending:3200,frozen:2800,paid:9600,project:'云原生架构师认证营',invite:'2026-09-05 14:12'},
+    {id:'JS-T10633',personId:'T10633',name:'贺敏',phone:'133****5520',roles:'讲师',entity:'机构',orgId:'SU200001',gender:'女',idNo:'440300199008120024',type:'机构讲师',price:'6000 元/天',project:'云原生架构师认证营'},
+    {id:'JS-T10640',personId:'T10640',name:'沈拓',phone:'133****7781',roles:'讲师',entity:'机构',orgId:'SU200002',gender:'男',idNo:'320100198803150011',type:'机构讲师',price:'5600 元/天',project:'战略客户定制培训'}
+  ],
+  orgs:[
+    {id:'SU200001',orgName:'某咨询公司',code:'91440300MA5EXAMPL1',rep:'李明',phone:'137****1001',wechat:'已绑定',bank:'已完善',bankInfo:'某咨询公司 · 招商银行深圳南山支行 7559 **** 2208',available:22400,pending:11200,frozen:9200,paid:63800,invite:'2026-09-28 10:20'},
+    {id:'SU200002',orgName:'某培训机构',code:'91320100MA1EXAMPL2',rep:'王芳',phone:'139****3302',wechat:'未绑定',bank:'未填写',bankInfo:'',available:10200,pending:0,frozen:18000,paid:0,invite:'2026-11-02 17:00'}
+  ],
+  withdrawals:[
+    {id:'TX202610-0218',kind:'普通',name:'刘畅',account:'SU100086',method:'云账户',amount:12000,status:'提现中',date:'2026-10-08 10:21',payment:'YF202611-YZH',bank:'招商银行 6225 **** 0188',project:'企业数字化转型训练营',deferred:false},
+    {id:'TX202610-0224',kind:'普通',name:'宋琪',account:'SU100528',method:'开发票',amount:2800,status:'提现中',date:'2026-10-09 15:12',payment:'YF202611-FP',bank:'建设银行 6217 **** 9310',project:'云原生架构师认证营',deferred:false},
+    {id:'TX202610-0227',kind:'普通',name:'陈瑶',account:'SU100619',method:'劳务费',amount:6600,status:'提现中',date:'2026-10-10 09:32',payment:'YF202611-LWF',bank:'工商银行 6222 **** 6210',project:'数据分析训练营',deferred:false},
+    {id:'TX202611-0003',kind:'紧急',name:'郭晨',account:'SU100309',method:'云账户',amount:12800,status:'提现中',date:'2026-11-02 19:20',payment:'JF202611-0003',bank:'招商银行 6225 **** 8701',project:'AI 产品经理实战班',deferred:false},
+    {id:'TX202610-0209',kind:'普通',name:'何松',account:'SU100702',method:'云账户',amount:7600,status:'失败待审批',date:'2026-10-07 13:42',payment:'YF202611-YZH',bank:'中国银行 6216 **** 1220',project:'安全工程师训练营',deferred:false,failReason:'银行卡状态异常',internal:'银行返回账户不可用，请退款后由讲师换卡重提'},
+    {id:'TX202609-0182',kind:'普通',name:'张岚',account:'SU100811',method:'劳务费',amount:5800,status:'已到账',date:'2026-09-09 10:11',payment:'YF202610-LWF',bank:'农业银行 6228 **** 5123',project:'项目管理认证班',deferred:false}
+  ],
+  monthly:[
+    {id:'YF202611-YZH',month:'2026-11',method:'云账户',count:18,amount:186400,status:'待提交易快报',eak:'—',note:'11 月云账户批次',locked:false},
+    {id:'YF202611-FP',month:'2026-11',method:'开发票',count:11,amount:98200,status:'待提交易快报',eak:'—',note:'电子发票需逐笔核对',locked:false},
+    {id:'YF202611-LWF',month:'2026-11',method:'劳务费',count:23,amount:214600,status:'已提交易快报',eak:'EKB-202611-00821',note:'代扣个税批次',locked:true},
+    {id:'JF202611-0003',kind:'紧急',month:'2026-11',method:'云账户',count:1,amount:12800,status:'待提交易快报',eak:'—',note:'紧急付款单（项目经理发起紧急提现，无账期）',locked:false},
+    {id:'YF202610-YZH',month:'2026-10',method:'云账户',count:16,amount:148000,status:'已提交易快报',eak:'EKB-202610-00609',note:'10 月云账户批次',locked:true}
+  ],
+};
+
+
+// 按月度付款单的“提现单数 / 付款金额”补齐明细数据，保证列表条数与汇总一致
+(function(){
+  const names=['刘畅','郭晨','高远','杨帆','郑凯','许航','陈立','曹宇','周明远','钱程','王欣','李佳','张岚','何松','陈瑶','赵磊','孙悦','马骏'];
+  const banks=['招商银行 6225 **** ','中国银行 6216 **** ','建设银行 6217 **** ','工商银行 6222 **** ','农业银行 6228 **** '];
+  const projs=['企业数字化转型训练营','研发效能公开课','云原生架构师认证营','AI 产品经理实战班','战略客户定制培训','数据分析训练营','安全工程师训练营','渠道伙伴峰会'];
+  state.monthly.forEach((p,pi)=>{
+    if(p.kind==='紧急')return;
+    const have=state.withdrawals.filter(w=>w.payment===p.id&&w.kind==='普通'&&!w.deferred);
+    const need=p.count-have.length;if(need<=0)return;
+    let rest=p.amount-have.reduce((s,w)=>s+w.amount,0);
+    for(let i=0;i<need;i++){
+      const amt=i===need-1?rest:Math.round(rest/(need-i)/100)*100;rest-=amt;
+      state.withdrawals.push({id:'TX'+p.month.replace('-','')+'-'+String(300+pi*40+i).padStart(4,'0'),kind:'普通',name:names[(i+pi*3)%names.length],account:'SU'+(100900+pi*40+i),method:p.method,amount:amt,status:'提现中',date:p.month+'-0'+(1+i%9)+' '+String(9+i%8).padStart(2,'0')+':'+String(10+i*3%50).padStart(2,'0'),payment:p.id,bank:banks[(i+pi)%banks.length]+String(1000+(i*137+pi*911)%9000),project:projs[(i+pi)%projs.length],deferred:false});
+    }
+  });
+})();
+// 收款人：默认与讲师 / 助教同名，个别为代收（演示）
+(function(){
+  const alt=['王晓丽','张明','李娜','赵静'];
+  state.withdrawals.forEach((w,i)=>{if(!w.payee)w.payee=(w.id==='TX202610-0209')?'何丽':(/^TX2026\d\d-03\d\d$/.test(w.id)&&i%5===2)?alt[i%alt.length]:w.name});
+})();
+// 付款确认演示数据：补充已到账 / 付款失败 / 暂不付款，便于演示进度与对账
+(function(){
+  const by=id=>state.withdrawals.filter(w=>w.payment===id);
+  by('YF202610-YZH').forEach((w,i)=>{
+    if(i>=3){w.status='已到账';w.confirmAt='2026-10-2'+(i%8)+' 15:'+String(10+i)}
+    if(i===5){w.status='付款失败';w.failReason='银行卡状态异常';w.internal='云账户回执：卡号已冻结';w.failAt='2026-10-28 16:10';delete w.confirmAt}
+    if(i===6){w.status='失败待审批';w.failReason='收款账户信息错误';w.internal='户名与身份证不一致';w.failAt='2026-10-29 10:05';delete w.confirmAt}
+  });
+  const lw=by('YF202611-LWF'),pl=state.monthly.find(x=>x.id==='YF202611-LWF');
+  lw.forEach((w,i)=>{
+    if(i>=1&&i<=14){w.status='已到账';w.confirmAt='2026-11-1'+(i%8+1)+' 14:'+String(10+i)}
+    if(i===15){w.deferred=true;w.status='暂不付款（已退回余额）';w.pauseReason='个税材料待补充';w.pauseAt='2026-11-12 09:40';if(pl){pl.count--;pl.amount-=w.amount}}
+  });
+  by('YF202611-FP').forEach((w,i)=>{if(i<2){w.status='已到账';w.confirmAt='2026-11-16 11:2'+i}});
+})();
+const TEACHER_EXTRA={'杨帆':['讲师','个人讲师','139****1204'],'郑凯':['讲师','机构讲师','136****8830'],'曹宇':['助教','—','137****5561'],'赵磊':['讲师','个人讲师','158****0927'],'孙悦':['助教','—','186****4412'],'马骏':['讲师','机构讲师','135****7706'],'张岚':['讲师','个人讲师','152****3318'],'何松':['讲师','个人讲师','177****6205'],'陈瑶':['助教','—','133****9041']};
+function teacherInfo(w){
+  const ac=state.accounts.find(a=>a.id===w.account),op=OPS_POOL.find(o=>(ac&&o.personId===ac.personId)||o.name===w.name),ex=TEACHER_EXTRA[w.name];
+  const role=op?op.role:ex?ex[0]:ac?ac.roles:'—',type=op?(op.type||'—'):ex?ex[1]:'—';
+  let ph=op&&op.phone?op.phone.slice(0,3)+'****'+op.phone.slice(-4):ex?ex[2]:ac&&ac.phone&&ac.phone!=='待补充'?ac.phone:'';
+  return {role,type,phone:ph||'手机号缺失'};
+}
+/* ---- 通用筛选：三个页面（提现单 / 付款确认 / 月度付款单详情）共用一套字段 ---- */
+const fAttr=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const FI=(id,v,ph,label,enter)=>'<label class="fl"><span>'+label+'</span><input class="input" style="min-width:110px;width:130px" id="'+id+'" value="'+fAttr(v)+'" placeholder="'+ph+'" onkeydown="if(event.key===\'Enter\')'+enter+'"></label>';
+const FS=(id,label,v,opts)=>'<label class="fl"><span>'+label+'</span><select class="select" style="min-width:100px" id="'+id+'">'+opts.map(o=>'<option value="'+fAttr(o[0])+'" '+((v||'')===o[0]?'selected':'')+'>'+o[1]+'</option>').join('')+'</select></label>';
+const FAMT=(a,b,f,min,max)=>'<label class="fl"><span>金额</span><span class="date-range"><input class="input" style="min-width:80px;width:90px" id="'+a+'" value="'+fAttr(f[min])+'" placeholder="最小"><i>~</i><input class="input" style="min-width:80px;width:90px" id="'+b+'" value="'+fAttr(f[max])+'" placeholder="最大"></span></label>';
+const FPROXY=(id,f)=>'<label class="fl" style="cursor:pointer"><input type="checkbox" class="check" id="'+id+'" '+(f.proxy?'checked':'')+'><span>仅看代收</span></label>';
+const F_ROLE=[['','全部'],['讲师','讲师'],['助教','助教']],F_TTYPE=[['','全部'],['个人讲师','个人讲师'],['机构讲师','机构讲师']];
+const fProjOpts=rows=>[['','全部']].concat([...new Set(rows.flatMap(w=>wProjects(w)))].sort().map(x=>[x,x]));
+function fReadInto(o,pairs,proxyId){
+  pairs.forEach(a=>{const e=document.getElementById(a[0]);if(e)o[a[1]]=e.value});
+  const e=document.getElementById(proxyId);if(e)o.proxy=e.checked;
+}
+function fActive(f){return Object.keys(f).some(k=>k!=='more'&&f[k]!==''&&f[k]!=null&&f[k]!==false)}
+function wfMatch(w,f){
+  const has=(a,b)=>String(a==null?'':a).toLowerCase().includes(String(b).trim().toLowerCase()),t=teacherInfo(w),pe=w.payee||w.name;
+  if(f.q&&!has(w.id,f.q))return false;
+  if(f.who&&!(has(w.name,f.who)||has(pe,f.who)))return false;
+  if(f.name&&!has(w.name,f.name))return false;
+  if(f.payee&&!has(pe,f.payee))return false;
+  if(f.phone&&!has(t.phone,f.phone))return false;
+  if(f.pact&&!wPacts(w).some(x=>has(x,f.pact))&&!has(PAY_CONTRACT[w.project],f.pact))return false;
+  if(f.project&&!wProjects(w).includes(f.project))return false;
+  if(f.bill&&!wComp(w).some(r=>has(r.bill,f.bill)))return false;
+  if(f.exec&&!wComp(w).some(r=>has(r.exec,f.exec)))return false;
+  if(f.role&&t.role!==f.role)return false;
+  if(f.ttype&&t.type!==f.ttype)return false;
+  if(f.kind&&w.kind!==f.kind)return false;
+  if(f.method&&w.method!==f.method)return false;
+  if(f.pay&&!has(w.payment,f.pay))return false;
+  if(f.status&&w.status!==f.status)return false;
+  if(f.min!==''&&f.min!=null&&w.amount<Number(f.min))return false;
+  if(f.max!==''&&f.max!=null&&w.amount>Number(f.max))return false;
+  if(f.from&&String(w.date).slice(0,10)<f.from)return false;
+  if(f.to&&String(w.date).slice(0,10)>f.to)return false;
+  if(f.proxy&&!cfIsProxy(w))return false;
+  if(f.reason&&!has(w.pauseReason,f.reason))return false;
+  if(f.by&&!has(w.pauseBy||CF_OPERATOR,f.by))return false;
+  if(f.fail&&!has(w.failReason,f.fail))return false;
+  return true;
+}
+const payeeCell=w=>w.payee&&w.payee!==w.name?'<b>'+w.payee+'</b> '+'<span title="收款人与讲师不一致（待业务确认口径），付款前请核对">'+tag('代收','orange')+'</span>':(w.payee||w.name);
+const PG_DEF={confirm:20},PG_SIZES={confirm:[20,50,100,200]};
+function pgState(key,total){const o=state.pg[key]||(state.pg[key]={page:1,size:PG_DEF[key]||10});const pages=Math.max(1,Math.ceil(total/o.size));if(o.page>pages)o.page=pages;return o}
+function slicePg(key,rows){const o=pgState(key,rows.length);return rows.slice((o.page-1)*o.size,o.page*o.size)}
+function setPage(key,p){state.pg[key].page=Number(p)||1;render()}
+function setSize(key,v){state.pg[key].size=Number(v);state.pg[key].page=1;render()}
+function pager(key,total){
+  const o=pgState(key,total),pages=Math.max(1,Math.ceil(total/o.size)),cur=o.page,list=[];
+  for(let i=1;i<=pages;i++){if(i===1||i===pages||Math.abs(i-cur)<=1)list.push(i);else if(list[list.length-1]!=='…')list.push('…')}
+  const btn=(label,pg,dis,act)=>'<button class="pbtn'+(act?' active':'')+'" '+(dis?'disabled':'')+' onclick="setPage(\''+key+'\','+pg+')">'+label+'</button>';
+  return '<div class="pager"><span class="muted">共 '+total+' 条，第 '+cur+' / '+pages+' 页</span><span class="pager-r"><select class="select pager-size" onchange="setSize(\''+key+'\',this.value)">'+(PG_SIZES[key]||[10,20,50]).map(n=>'<option value="'+n+'" '+(o.size===n?'selected':'')+'>'+n+' 条/页</option>').join('')+'</select>'+btn('‹',cur-1,cur<=1)+list.map(x=>x==='…'?'<span class="pdots">…</span>':btn(x,x,false,x===cur)).join('')+btn('›',cur+1,cur>=pages)+'<span class="pjump">前往<input class="input pinput" value="'+cur+'" onchange="setPage(\''+key+'\',Math.min('+pages+',Math.max(1,Number(this.value)||1)))">页</span></span></div>';
+}
+function visibleNav(){return navItems.filter(x=>x.roles.includes(state.role))}
+const canOp=()=>['pm','admin'].includes(state.role);   // 业务操作权限：仅项目经理 / 管理员；财务、经办人为只读 + 下载
+const canTerm=()=>['finance','admin'].includes(state.role); // 讲师特殊账期：财务 / 管理员维护
+function hasAccess(path){
+  if(['/bills/new','/accounts/new','/accounts/org/new'].includes(path)) return canOp();
+  if(['/applications/detail','/bills/detail','/accounts/detail','/accounts/org/detail'].includes(path)) return ['pm','finance','admin'].includes(state.role);
+  if(path==='/payments/monthly/detail') return ['operator','finance','admin'].includes(state.role);
+  const item=navItems.find(x=>x.path===path);
+  return !item||item.roles.includes(state.role);
+}
+function landing(){return state.role==='operator'?'/withdrawals':state.role==='finance'?'/payments/monthly':visibleNav()[0].path}
+function renderShell(){
+  let last='';
+  document.getElementById('sidebar').innerHTML='<div class="brand"><div class="brand-mark">'+icon('confirm')+'</div><div><div class="brand-title">师资结算后台</div><div class="brand-sub">PAYMENT CENTER · V3.0</div></div></div><nav class="nav">'+visibleNav().filter(x=>x.nav!==false).map(x=>{
+    const group=x.group&&x.group!==last?'<div class="nav-group">'+(last=x.group)+'</div>':'';
+    const active=route()===x.path||(x.path==='/bills'&&route().startsWith('/bills'))||(x.path==='/applications'&&route().startsWith('/applications'))||(x.path==='/accounts/org'&&route().startsWith('/accounts/org'))||(['/accounts/detail','/accounts/new'].includes(route())&&x.path==='/accounts/'+(qs().get('from')||'teacher'))||(x.path==='/payments/monthly'&&route().startsWith('/payments/monthly'));
+    return group+'<a class="nav-item '+(active?'active':'')+'" href="#'+x.path+'">'+icon(x.icon)+'<span>'+x.label+'</span>'+(x.path==='/cart'&&state.cart.size?'<em style="margin-left:auto;font-style:normal;background:#315cec;color:#fff;border-radius:10px;padding:1px 8px;font-size:11px">'+state.cart.size+'</em>':'')+'</a>'
+  }).join('')+'</nav><div class="side-foot">当前数据范围<br><b style="color:#aab4c8">'+roleMeta[state.role].desc+'</b></div>';
+  document.getElementById('roleSelect').value=state.role;
+  document.getElementById('avatar').textContent=roleMeta[state.role].initial;
+  const p=route(), item=navItems.find(x=>p===x.path||p.startsWith(x.path+'/')||(['/accounts/detail','/accounts/new'].includes(p)&&x.path==='/accounts/'+(qs().get('from')||'teacher')));
+  document.getElementById('crumb').innerHTML='<span>师资结算后台</span><span>/</span><b>'+(item?item.label:'')+(p==='/accounts/detail'||p==='/accounts/org/detail'?'</b><span>/</span><b>详情':p==='/accounts/new'||p==='/accounts/org/new'?'</b><span>/</span><b>新增':'')+'</b>';
+}
+function switchRole(role){
+  state.role=role; state.selectedBills.clear(); state.selectedConfirms.clear(); state.billView.tab=canOp()?'todo':'all'; if(state.pg['bills'])state.pg['bills'].page=1;
+  location.hash=landing(); closeModal(); render();
+  toast('角色已切换','当前以“'+roleMeta[role].name+'”权限查看系统');
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+function go(path){location.hash=path}
+function toast(head,msg,type=''){
+  const el=document.createElement('div');el.className='toast '+type;
+  el.innerHTML='<span class="toast-icon">'+(type==='error'?'!':'✓')+'</span><div><b>'+head+'</b><p>'+msg+'</p></div>';
+  document.getElementById('toasts').appendChild(el);setTimeout(()=>el.remove(),3200);
+}
+function modal(head,body,okText,onOk,okClass='primary'){
+  document.getElementById('modalRoot').innerHTML='<div class="modal-mask" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><h3>'+head+'</h3><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body">'+body+'</div><div class="modal-foot"><button class="btn" onclick="closeModal()">取消</button><button class="btn '+okClass+'" id="modalOk">'+okText+'</button></div></div></div>';
+  document.getElementById('modalOk').onclick=onOk;
+}
+function closeModal(){document.getElementById('modalRoot').innerHTML=''}
+function forbidden(){
+  return '<div class="forbidden"><div>'+icon('shield')+'<h2>当前角色无权访问</h2><p>'+roleMeta[state.role].name+'的权限范围不包含此页面，请在顶部切换演示角色。</p><button class="btn primary" onclick="go(landing())">返回首页</button></div></div>';
+}
+
+const BILL_TAG={'待提交':'','审批中':'orange','驳回待修改':'red','账期中':'blue','可提现':'green','提现中':'orange'};
+function histPrice(b){const s=[...new Set(state.bills.filter(x=>x.personId===b.personId&&x.category===b.category&&x.id!==b.id).map(x=>money(x.price)+' / '+x.unit))];return s.length?s.join('、'):'<span class="muted">无历史</span>'}
+function contractCell(b){if(!needContract(b))return tag('豁免（'+(b.role==='助教'?'助教':'出题费')+'）','');if(contractMissing(b))return tag('缺付款合同号','red');return b.contract+' '+(b.confirmed?tag('已确认','green'):tag('待确认','orange'))}
+function billTag(b){return tag(b.status,BILL_TAG[b.status]||'')}
+function canAddCart(b){return b.status==='待提交'&&!bIssue(b)&&!state.cart.has(b.id)}
+function contractFileRows(list){
+  const hash=t=>[...t].reduce((n,c)=>n+c.charCodeAt(0),0);
+  const pacts=[...new Set(list.map(b=>b.pact).filter(Boolean))];
+  const pays=[...new Set(list.filter(b=>needContract(b)&&b.contract&&b.contract!=='付款合同未返回').map(b=>b.contract))];
+  const mkf=(name,no)=>({name,size:(300+hash(no+name)%1800)*1024});
+  return pacts.map(no=>({type:'销售合同',no,files:[mkf('销售合同_'+no+'.pdf',no),mkf(no+'_补充协议.pdf',no)]})).concat(pays.map(no=>({type:'付款合同',no,files:[mkf('付款合同_'+no+'.pdf',no)]})));
+}
+function contractFileCard(list){
+  const rows=contractFileRows(list);
+  return '<section class="card"><div class="card-head"><h3>合同附件</h3><span class="muted">仅财务审批时可见 · 随申请单从合同系统同步</span></div><div class="card-body" style="padding-top:0">'+(rows.length?'<div class="table-wrap"><table><thead><tr><th>合同类型</th><th>合同号</th><th>附件</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+tag(r.type,r.type==='销售合同'?'blue':'purple')+'</td><td>'+r.no+'</td><td>'+r.files.map(f=>'<button class="link" onclick="toast(\'原型演示\',\'合同附件由合同系统同步，原型未真实存储\')">'+f.name+'</button> <span class="muted">'+fmtSize(f.size)+'</span>').join('<br>')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="muted">暂无合同附件</div>')+'</div></section>';
+}
+function appBills(a){return state.bills.filter(b=>b.appId===a.id)}
+function appAmount(a){return appBills(a).reduce((s,b)=>s+b.amount,0)}
+function appPacts(a){const l=[...new Set(appBills(a).map(b=>b.pact).filter(Boolean))];return l.length?l.join('、'):'—'}
+function appContracts(a){
+  const m=new Map();
+  appBills(a).forEach(b=>{const k=b.pact||'—';if(!m.has(k))m.set(k,{pact:k,projects:new Set(),pays:new Set(),count:0,amount:0});const g=m.get(k);g.projects.add(b.project);g.count++;g.amount+=b.amount;if(needContract(b)&&b.contract&&b.contract!=='付款合同未返回')g.pays.add(b.contract)});
+  return [...m.values()].map(g=>({pact:g.pact,project:[...g.projects].join('、'),pays:[...g.pays],count:g.count,amount:g.amount}));
+}
+function appMulti(a,key){
+  const l=key==='project'?[...new Set(appBills(a).map(b=>b.project))]:[...new Set(appBills(a).map(b=>b.pact).filter(Boolean))];
+  if(!l.length)return '—';
+  if(l.length===1)return l[0];
+  return '<span class="multi" onmouseenter="showAppPop(this,\''+a.id+'\')" onmouseleave="hideIssuePop()">'+l[0]+' <b>等 '+l.length+' 个</b></span>';
+}
+function showAppPop(el,id){
+  hideIssuePop();const a=state.applications.find(x=>x.id===id),pop=document.createElement('div');pop.id='issuePop';pop.className='ipop wide';
+  pop.innerHTML='<div class="ipop-h">涉及 '+appContracts(a).length+' 个合同</div><table class="mini"><thead><tr><th>合同号</th><th>项目</th><th>账单</th><th style="text-align:right">本次课酬金额</th></tr></thead><tbody>'+appContracts(a).map(g=>'<tr><td>'+g.pact+'</td><td>'+g.project+'</td><td>'+g.count+' 张</td><td class="num">'+money(g.amount)+'</td></tr>').join('')+'</tbody></table>';
+  document.body.appendChild(pop);const r=el.getBoundingClientRect(),h=pop.offsetHeight;
+  pop.style.left=Math.max(8,Math.min(r.left,window.innerWidth-pop.offsetWidth-8))+'px';
+  pop.style.top=(r.bottom+h+12>window.innerHeight?Math.max(8,r.top-h-6):r.bottom+6)+'px';
+}
+function appProject(a){const l=[...new Set(appBills(a).map(b=>b.project))];return l.length?l.join('、'):'—'}
+function appStatusColor(st){return st==='已驳回'?'red':st==='已通过'?'green':'orange'}
+
+const BILL_TABS=[['todo','待申请',['待提交']],['applied','已申请',['审批中','驳回待修改']],['done','已通过',['账期中','可提现','提现中']],['all','全部',null]];
+function billList(skipIssue){
+  const v=state.billView,tab=BILL_TABS.find(t=>t[0]===v.tab);
+  const issueOk=b=>skipIssue||v.tab!=='todo'||!v.issue||(v.issue==='noexec'?!b.exec:v.issue==='ok'?!bIssues(b).length:bIssues(b).map(issueGroup).includes(v.issue));
+  const has=(x,k)=>!k.trim()||String(x||'').toLowerCase().includes(k.trim().toLowerCase());
+  const ph=(x,k)=>{k=k.trim();if(!k)return true;x=x||'';return k.length===11?(x.slice(0,3)===k.slice(0,3)&&x.slice(-4)===k.slice(-4)):x.includes(k)};
+  return state.bills.filter(b=>(!tab[2]||tab[2].includes(b.status))&&(v.src==='全部来源'||b.source===v.src)&&has(b.id,v.q)&&has(b.name,v.name)&&ph(b.phone,v.phone)&&has(b.project,v.project)&&has(b.pm,v.pm)&&(state.role!=='pm'||b.pm===PM_NAME)&&has(b.pact,v.pact)&&has(b.contract,v.contract)&&(!v.d1||b.date>=v.d1)&&(!v.d2||b.date<=v.d2)&&issueOk(b));
+}
+function setBillTab(t){state.billView.tab=t;state.billView.issue='';state.selectedBills.clear();if(state.pg['bills'])state.pg['bills'].page=1;render()}
+function applyBillFilter(){const v=state.billView,g=id=>document.getElementById(id).value;Object.assign(v,{q:g('billQ'),name:g('billName'),phone:g('billPhone'),project:g('billProject'),pm:(document.getElementById('billPm')||{value:''}).value,pact:g('billPact'),contract:g('billContract'),d1:g('billD1'),d2:g('billD2'),src:g('billSrc')});state.selectedBills.clear();if(state.pg['bills'])state.pg['bills'].page=1;render()}
+function resetBillFilter(){Object.assign(state.billView,{q:'',issue:'',name:'',phone:'',project:'',pm:'',pact:'',contract:'',d1:'',d2:'',src:'全部来源'});if(state.pg['bills'])state.pg['bills'].page=1;state.selectedBills.clear();render()}
+function setIssueFilter(k){state.billView.issue=k;state.selectedBills.clear();if(state.pg['bills'])state.pg['bills'].page=1;render()}
+function exportBills(){
+  exportCsv('课酬账单明细',['课酬账单号','来源','师资','手机号','项目','合同号','项目经理','执行单','执行日期','角色','费用类别','单价','数量','单位','金额','付款合同号','付款合同确认','状态','附件数量','待处理原因'],billList().map(b=>[b.id,b.source,b.name,b.phone||'手机号缺失',b.project,b.pact||'',b.pm,b.exec||'待关联执行单',b.date,b.role,b.category,b.price,b.qty,b.unit,b.amount,(b.contract&&b.contract!=='付款合同未返回')?b.contract:'',needContract(b)?(b.confirmed?'已确认':'待确认'):'无需',b.status,fileLen(b),bIssues(b).join('；')]));
+}
+function issueBar(){
+  const base=billList(true).filter(b=>b.status==='待提交');
+  if(!base.length)return '';
+  const v=state.billView,okN=base.filter(b=>!bIssues(b).length).length,badN=base.length-okN,noN=base.filter(b=>!b.exec).length,g={};
+  base.forEach(b=>[...new Set(bIssues(b).map(issueGroup))].forEach(k=>g[k]=(g[k]||0)+1));
+  const chip=(k,t,n,cls)=>'<button class="ib-chip '+(cls||'')+(v.issue===k?' on':'')+'" onclick="setIssueFilter(\''+k+'\')">'+t+(n!=null?' <b>'+n+'</b>':'')+'</button>';
+  return '<div class="issue-bar"><span class="ib-chips">'+chip('','全部')+chip('ok','可申请',okN,'ok')+Object.keys(g).map(k=>chip(k,k,g[k],'warn')).join('')+(noN?chip('noexec','待关联执行单',noN,'soft'):'')+'</span></div>';
+}
+function bills(){
+  const v=state.billView,todo=v.tab==='todo',chk=todo&&canOp(),list=billList(),pick=canPick(),showPm=state.role!=='pm';
+  const cnt=t=>state.bills.filter(b=>!t[2]||t[2].includes(b.status)).length;
+  const fi=(id,val,ph)=>'<label class="fl"><span>'+ph+'</span><input class="input" id="'+id+'" value="'+val+'" placeholder="请输入"></label>';
+  return '<div class="filters">'+fi('billQ',v.q,'课酬账单号')+fi('billName',v.name,'姓名')+fi('billPhone',v.phone,'手机号')+fi('billProject',v.project,'项目名称')+(showPm?fi('billPm',v.pm,'项目经理'):'')+fi('billPact',v.pact,'合同号')+fi('billContract',v.contract,'付款合同号')+'<label class="fl"><span>执行日期</span><span class="date-range"><input class="input" type="date" id="billD1" value="'+v.d1+'"><i>至</i><input class="input" type="date" id="billD2" value="'+v.d2+'"></span></label><label class="fl"><span>来源</span><select class="select" id="billSrc">'+['全部来源','执行单联动','手工创建'].map(o=>'<option '+(v.src===o?'selected':'')+'>'+o+'</option>').join('')+'</select></label><span class="filter-actions"><button class="fbtn query" onclick="applyBillFilter()">查询</button><button class="fbtn reset" onclick="resetBillFilter()">重置</button><button class="fbtn export" onclick="exportBills()">导出</button></span></div>'+title('课酬账单','',(canOp()?'<button class="btn primary" onclick="state.newFiles=[];go(\'/bills/new\')">手工创建账单</button>':''))+
+  '<div class="tabs">'+BILL_TABS.map(t=>'<button class="tab '+(v.tab===t[0]?'active':'')+'" onclick="setBillTab(\''+t[0]+'\')">'+t[1]+' ('+cnt(t)+')</button>').join('')+'</div>'+(todo?issueBar():'')+
+  (todo&&state.selectedBills.size?'<div class="selectbar"><span>已选择 <b>'+state.selectedBills.size+'</b> 张账单，合计 '+money(state.bills.filter(x=>state.selectedBills.has(x.id)).reduce((s,x)=>s+x.amount,0))+'</span><span style="display:flex;gap:8px"><button class="btn sm" onclick="state.selectedBills.clear();render()">取消选择</button><button class="btn sm primary" onclick="addSelectedToCart()">批量加入待结算清单</button></span></div>':'')+
+  '<section class="card" style="border-top:0;border-radius:0 0 11px 11px"><div class="table-wrap"><table class="'+(chk?'has-check':'')+'"><thead><tr>'+(chk?'<th><input type="checkbox" class="check" '+(pick.length&&pick.every(x=>state.selectedBills.has(x.id))?'checked':'')+' onchange="toggleAllBills(this.checked)"></th>':'')+'<th>课酬账单号</th>'+(todo?'<th>处理状态</th>':'')+'<th>来源</th><th>师资</th><th>手机号</th><th>项目</th><th>合同号</th>'+(showPm?'<th>项目经理</th>':'')+'<th>执行单</th><th>执行日期</th><th>角色</th><th>费用类别</th><th>单价</th><th>数量</th><th>单位</th><th>金额</th><th>付款合同号</th><th>附件</th>'+(todo?'':'<th>所属结算申请单</th>')+'<th>状态</th><th>操作</th></tr></thead><tbody>'+
+  (list.length?slicePg('bills',list).map(b=>{
+    const ok=canAddCart(b), why=bIssues(b).join('、')||(state.cart.has(b.id)?'已在待结算清单中':b.status!=='待提交'?'当前状态不可申请':'选择账单');
+    const app=b.appId?state.applications.find(x=>x.id===b.appId):null;
+    return '<tr class="'+(b.status==='待提交'&&bIssue(b)?'disabled-row':'')+'">'+(chk?'<td><input type="checkbox" class="check" '+(ok?'':'disabled')+' '+(state.selectedBills.has(b.id)?'checked':'')+' onchange="toggleBill(\''+b.id+'\',this.checked)" title="'+why+'"></td>':'')+'<td><b>'+b.id+'</b></td>'+(todo?'<td>'+(bIssues(b).length?'<span class="ps bad" data-r="'+bIssues(b).join('|')+'" onmouseenter="showIssuePop(this)" onmouseleave="hideIssuePop()" onclick="hideIssuePop();go(\'/bills/detail?id='+b.id+'\')">需处理 '+bIssues(b).length+' 项 ›</span>':'<span class="ps ok">可申请</span>')+'</td>':'')+'<td>'+b.source+'</td><td>'+b.name+'</td><td>'+(b.phone||'手机号缺失')+'</td><td>'+b.project+'</td><td>'+(b.pact||'—')+'</td>'+(showPm?'<td>'+b.pm+'</td>':'')+'<td>'+execTag(b)+'</td><td>'+b.date+'</td><td>'+tag(b.role,b.role==='讲师'?'blue':'purple')+'</td><td>'+b.category+'</td><td class="num">'+money(b.price)+'</td><td>'+b.qty+'</td><td>'+b.unit+'</td><td class="num">'+money(b.amount)+'</td><td>'+contractCell(b)+'</td><td>'+filesCell(b)+'</td>'+(todo?'':'<td>'+(app?'<button class="link" onclick="go(\'/applications/detail?id='+app.id+'\')">'+app.id+'</button>':'—')+'</td>')+'<td>'+billTag(b)+'</td><td><button class="link" onclick="go(\'/bills/detail?id='+b.id+'\')">'+(canOp()&&['待提交','驳回待修改'].includes(b.status)?'编辑':'详情')+'</button>'+(ok&&canOp()?' <button class="link" onclick="addToCart(\''+b.id+'\')">加入结算申请单</button>':'')+'</td></tr>'}).join(''):'<tr><td colspan="22" class="muted" style="text-align:center;height:120px">暂无符合条件的账单</td></tr>')+
+  '</tbody></table></div>'+pager('bills',list.length)+'</section>';
+}
+function canPick(){return billList().filter(canAddCart)}
+function toggleBill(id,checked){checked?state.selectedBills.add(id):state.selectedBills.delete(id);render()}
+function toggleAllBills(checked){canPick().forEach(x=>checked?state.selectedBills.add(x.id):state.selectedBills.delete(x.id));render()}
+function addSelectedToCart(){
+  const list=[...state.selectedBills].map(id=>state.bills.find(b=>b.id===id)).filter(b=>b&&canAddCart(b));
+  if(!list.length){toast('无法加入','所选账单均不符合加入条件','error');return}
+  list.forEach(b=>{state.cart.add(b.id);state.selectedCart.add(b.id)});
+  state.selectedBills.clear();toast('已加入待结算清单','共 '+list.length+' 张账单');render();
+}
+function addToCart(id){
+  const b=state.bills.find(x=>x.id===id);
+  if(!b||!canAddCart(b)){toast('无法加入',(b&&bIssues(b).join('、'))||'该账单不符合加入结算申请单的条件','error');return}
+  state.cart.add(id);state.selectedCart.add(id);toast('已加入结算申请单',id+' 可在待结算清单提交结算申请单');render();
+}
+function removeFromCart(id){state.cart.delete(id);state.selectedCart.delete(id);toast('已移出待结算清单','账单仍为待提交状态');render()}
+
+function billDetail(){
+  const b=state.bills.find(x=>x.id===qs().get('id'));
+  if(!b) return forbidden();
+  const editable=canOp()&&['待提交','驳回待修改'].includes(b.status), inCart=state.cart.has(b.id);
+  const app=b.appId?state.applications.find(x=>x.id===b.appId):null;
+  const actions='<button class="btn" onclick="go(\'/bills\')">返回列表</button>'+
+    (editable?'<button class="btn primary" onclick="saveBill(\''+b.id+'\')">保存修改</button>':'')+
+    (canOp()&&b.issue==='机构账户未创建'?'<button class="btn primary" onclick="go(\'/accounts/org/new\')">去创建机构账户</button>':'')+
+    (canOp()&&b.status==='待提交'&&!bIssue(b)?(inCart?'<button class="btn" onclick="removeFromCart(\''+b.id+'\')">移出待结算清单</button>':'<button class="btn" onclick="addToCart(\''+b.id+'\')">加入结算申请单</button>'):'')+
+    (canOp()&&b.status==='待提交'?'<button class="btn danger" onclick="deleteBill(\''+b.id+'\')">删除账单</button>':'')+
+    (app?'<button class="btn" onclick="go(\'/applications/detail?id='+app.id+'\')">查看结算申请单</button>':'');
+  const ro=(k,v)=>'<div class="info-item"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';
+  const sel=(k,id,opts,v)=>'<div class="field"><label>'+k+'</label><select class="select" id="'+id+'" '+(editable?'':'disabled')+'>'+opts.map(o=>'<option '+(o===v?'selected':'')+'>'+o+'</option>').join('')+'</select></div>';
+  const ro2=(k,v)=>'<div class="field"><label>'+k+'</label><div style="line-height:34px">'+v+'</div></div>';
+  const fld=(k,id,v,type)=>'<div class="field"><label>'+k+'</label><input class="input" id="'+id+'" type="'+(type||'text')+'" value="'+v+'" '+(editable?'':'disabled')+'></div>';
+  return title('课酬账单详情','',actions)+(b.exec?'':'<div class="notice-bar">该账单<b>尚未关联执行单</b>：不影响加入待结算清单、提交申请和后续付款，但<b>最终必须关联执行单</b>，请尽快在下方「关联执行单」中补齐。</div>')+
+  '<section class="card"><div class="card-head"><h3>基本信息</h3><span>'+billTag(b)+(inCart?' '+tag('待结算清单中','blue'):'')+'</span></div><div class="info-grid">'+ro('课酬账单号',b.id)+ro('来源',b.source)+ro('师资',b.name)+ro('角色',tag(b.role,b.role==='讲师'?'blue':'purple'))+ro('手机号',b.phone||'手机号缺失')+ro('项目',b.project)+ro('合同号',b.pact||'—')+ro('项目经理',b.pm)+ro('执行单',execTag(b))+ro('所属结算申请单',app?app.id:'—')+'</div></section>'+execCard(b,canOp())+
+  '<section class="card"><div class="card-head"><h3>可编辑信息</h3></div><div class="card-body"><div class="form-3">'+sel('费用类别','editCat',CATS,b.category)+fld('单价（元）','editPrice',b.price,'number')+fld('数量','editQty',b.qty,'number')+sel('单位','editUnit',UNITS,b.unit)+ro2('金额（税前，元）= 单价 × 数量','<b id="editAmtShow">'+money(b.amount)+'</b>')+fld('执行日期','editDate',b.date,'date')+fld('备注','editRemark',b.remark||'')+'</div></div></section>'+payCard(b,editable)+fileCard(b,editable);
+}
+const FILE_MAX=100*1024*1024;
+const fmtSize=n=>n>=1048576?(n/1048576).toFixed(1)+' MB':n>=1024?Math.round(n/1024)+' KB':n+' B';
+const filesCell=b=>(b.files&&b.files.length)?'<button class="link" onclick="showBillFiles(\''+b.id+'\')">'+b.files.length+' 个</button>':'<span class="muted">—</span>';
+const fileLen=b=>(b.files||[]).length;
+function fileRows(list,id,editable){
+  return list.map((f,i)=>'<tr><td>'+f.name+'</td><td>'+fmtSize(f.size)+'</td><td>'+f.by+'</td><td>'+f.time+'</td><td><button class="link" onclick="openBillFile(\''+id+'\','+i+')">下载</button>'+(editable?' <button class="link" style="color:var(--red)" onclick="delBillFile(\''+id+'\','+i+')">删除</button>':'')+'</td></tr>').join('');
+}
+function fileTable(list,id,editable){
+  return list.length?'<div class="table-wrap"><table><thead><tr><th>文件名</th><th>大小</th><th>上传人</th><th>上传时间</th><th>操作</th></tr></thead><tbody>'+fileRows(list,id,editable)+'</tbody></table></div>':'<div class="muted" style="padding:6px 0">暂无附件</div>';
+}
+function fileCard(b,editable){
+  const up=editable?'<label class="btn primary" style="cursor:pointer">上传附件<input type="file" multiple style="display:none" onchange="uploadBillFiles(\''+b.id+'\',this)"></label>':'';
+  return '<section class="card" id="fileCard"><div class="card-head"><h3>附件</h3><span style="display:flex;gap:10px;align-items:center">'+tag((b.files||[]).length+' 个','')+up+'</span></div><div class="card-body"><div class="muted" style="line-height:1.8;margin-bottom:10px">非必填。用于上传付款金额一致的证明或其他证明材料，作为审批凭证；文件类型不限，单个文件不超过 100MB。提交结算申请单时将<b>一并同步</b>到合同系统 / 钉钉，审批人可查看。'+(editable?'':'<br>当前状态不可上传或删除（仅「待提交」「驳回待修改」可修改附件）。')+'</div>'+fileTable(b.files||[],b.id,editable)+'</div></section>';
+}
+function nowStr(){return '2026-11-03 '+new Date().toTimeString().slice(0,5)}
+function addFiles(arr,input){
+  let bad=0,n=0;[...input.files].forEach(f=>{if(f.size>FILE_MAX){bad++;return}arr.push({name:f.name,size:f.size,time:nowStr(),by:state.role==='admin'?'管理员':'纪超',blob:f});n++});
+  input.value='';
+  if(bad)toast('部分文件未上传',bad+' 个文件超过 100MB 限制','error');
+  if(n)toast('附件已上传','共 '+n+' 个文件');
+  return n;
+}
+function uploadBillFiles(id,input){
+  const b=state.bills.find(x=>x.id===id);if(!b||!canOp()||!['待提交','驳回待修改'].includes(b.status)){toast('无法上传','当前状态不可修改附件','error');return}
+  b.files=b.files||[];addFiles(b.files,input);render();
+}
+function delBillFile(id,i){
+  const b=state.bills.find(x=>x.id===id);if(!b||!canOp()||!['待提交','驳回待修改'].includes(b.status)){toast('无法删除','当前状态不可修改附件','error');return}
+  const f=b.files.splice(i,1)[0];toast('附件已删除',f.name);render();
+}
+function openBillFile(id,i,newList){
+  const f=(newList?state.newFiles:(state.bills.find(x=>x.id===id).files))[i];
+  if(f&&f.blob){const a=document.createElement('a');a.href=URL.createObjectURL(f.blob);a.download=f.name;document.body.appendChild(a);a.click();a.remove();return}
+  toast('原型演示','示例附件「'+(f?f.name:'')+'」未真实存储，上传的文件可在当前页面会话内下载');
+}
+function showBillFiles(id){
+  const b=state.bills.find(x=>x.id===id);
+  modal('附件 · '+id+'（'+(b.files||[]).length+' 个）',fileTable(b.files||[],id,false)+'<div class="muted" style="margin-top:10px">提交结算申请单时一并同步到合同系统 / 钉钉。</div>','查看账单详情',()=>{closeModal();go('/bills/detail?id='+id)});
+}
+function payHintText(no,id){
+  if(!no)return '选择付款合同号后显示可付款金额';
+  const c=payC(no),u=payUsedAmt(no,id);
+  return '付款总金额 '+money(c.total)+'，已关联 '+money(u)+'，剩余可付款 '+money(c.total-u);
+}
+function payHintUpdate(id){document.getElementById('payHint').textContent=payHintText(document.getElementById('editPay').value,id)}
+function payCard(b,editable){
+  if(!needContract(b))return '<section class="card"><div class="card-head"><h3>关联付款合同号</h3>'+tag('豁免','')+'</div><div class="card-body muted">助教、出题费无需付款合同号。</div></section>';
+  const opts=payOptions(b.pact),cur=b.contract&&b.contract!=='付款合同未返回'?b.contract:'';
+  const sel='<select class="select" id="editPay" style="min-width:260px" onchange="payHintUpdate(\''+b.id+'\')" '+(editable&&!b.confirmed?'':'disabled')+'><option value="">请选择付款合同号</option>'+opts.map(c=>'<option value="'+c.no+'" '+(c.no===cur?'selected':'')+'>'+c.no+'</option>').join('')+'</select>';
+  const btn=editable?(b.confirmed?'<button class="btn" onclick="unconfirmPay(\''+b.id+'\')">修改</button>':'<button class="btn primary" onclick="confirmPay(\''+b.id+'\')">确认</button>'):'';
+  return '<section class="card"><div class="card-head"><h3>关联付款合同号</h3>'+(b.confirmed?tag('已确认','green'):tag('待确认','orange'))+'</div><div class="card-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+sel+btn+'</div><div class="muted" id="payHint" style="margin-top:10px">'+payHintText(cur,b.id)+'</div></div></section>';
+}
+function execCard(b,editable){
+  if(b.exec)return '';
+  const opts=EXEC_ORDERS[b.project]||[];
+  return '<section class="card"><div class="card-head"><h3>关联执行单</h3>'+tag('待补充','orange')+'</div><div class="card-body"><div class="muted" style="line-height:1.8;margin-bottom:12px">手工创建的账单可先不选执行单，<b>不影响申请与付款</b>，但<b>最终必须关联执行单</b>。执行单与付款合同号之间没有强关联关系，可分别选择。</div>'+(editable?'<div style="display:flex;gap:10px;align-items:center"><select class="select" id="linkExecSel" style="min-width:260px"><option value="">请选择执行单</option>'+opts.map(o=>'<option>'+o+'</option>').join('')+'</select><button class="btn primary" onclick="linkExec(\''+b.id+'\')">关联执行单</button></div>':'')+'</div></section>';
+}
+function linkExec(id){
+  const b=state.bills.find(x=>x.id===id),v=document.getElementById('linkExecSel').value;
+  if(!v){toast('请选择执行单','请先选择要关联的执行单','error');return}
+  b.exec=v;toast('已关联执行单',id+' 已关联 '+v);render();
+}
+function payOverModal(b,c,used){
+  const usedAmt=used.reduce((n,x)=>n+x.amount,0),over=b.amount-(c.total-usedAmt);
+  modal('已超过可付款金额','<div style="background:#fff4f4;border:1px solid #f5c2c2;border-radius:8px;padding:12px 14px;margin-bottom:14px;line-height:1.8;color:#b42318">付款合同号 <b>'+c.no+'</b> 付款总金额 <b>'+money(c.total)+'</b>，已关联课酬账单合计 <b>'+money(usedAmt)+'</b>，剩余可付款 <b>'+money(c.total-usedAmt)+'</b>；本单 <b>'+money(b.amount)+'</b>，已超过 <b>'+money(over)+'</b>，无法确认关联。</div><div class="muted" style="margin-bottom:8px">已关联该付款合同号的课酬账单（'+used.length+' 张）：</div><div class="table-wrap"><table><thead><tr><th>课酬账单号</th><th>师资</th><th>执行单</th><th>项目经理</th><th>状态</th><th style="text-align:right">金额</th></tr></thead><tbody>'+used.map(x=>'<tr><td><b>'+x.id+'</b></td><td>'+x.name+'</td><td>'+(x.exec||'—')+'</td><td>'+x.pm+'</td><td>'+billTag(x)+'</td><td class="num">'+money(x.amount)+'</td></tr>').join('')+'</tbody></table></div>','知道了',closeModal);
+  const m=document.querySelector('.modal');if(m)m.style.width='min(760px,100%)';
+}
+function confirmPay(id){
+  const b=state.bills.find(x=>x.id===id),no=document.getElementById('editPay').value;
+  if(!no){toast('请选择付款合同号','请先从该销售合同下选择付款合同号','error');return}
+  const c=payC(no),used=payUsed(no,b.id),usedAmt=used.reduce((n,x)=>n+x.amount,0);
+  if(b.amount>c.total-usedAmt){payOverModal(b,c,used);return}
+  b.contract=no;b.confirmed=true;
+  toast('付款合同号已确认',no+' 已占用额度 '+money(b.amount)+'，剩余可付款 '+money(c.total-usedAmt-b.amount));render();
+}
+function unconfirmPay(id){
+  const b=state.bills.find(x=>x.id===id);
+  b.confirmed=false;const had=state.cart.has(id);state.cart.delete(id);state.selectedCart.delete(id);
+  toast('已取消确认','额度已释放，可重新选择付款合同号'+(had?'；账单已移出待结算清单':''));render();
+}
+function saveBill(id){
+  const b=state.bills.find(x=>x.id===id),g=k=>document.getElementById(k).value,pr=Number(g('editPrice')),q=Number(g('editQty')),amt=Math.round(pr*q*100)/100;
+  if(!(pr>0)||!(q>0)){toast('无法保存','单价和数量必须大于 0','error');return}
+  if(b.confirmed&&b.contract){const nb=Object.assign({},b,{category:g('editCat'),amount:amt});if(needContract(nb)){const c=payC(b.contract),used=payUsed(b.contract,b.id);if(c&&amt>c.total-used.reduce((n,x)=>n+x.amount,0)){payOverModal(nb,c,used);return}}}
+  b.category=g('editCat');b.unit=g('editUnit');b.price=pr;b.qty=q;b.amount=amt;
+  if(state.cart.has(id)&&bIssue(b)){state.cart.delete(id);state.selectedCart.delete(id);toast('已移出待结算清单','修改后'+bIssue(b)+'，请处理后重新加入','error')}b.date=document.getElementById('editDate').value||b.date;b.remark=document.getElementById('editRemark').value.trim();
+  if(b.unit==='天'&&b.qty>31)toast('提示','数量与执行日期范围不一致，仅作提示，不拦截');
+  toast('已保存',state.cart.has(id)?'待结算清单中的账单信息已同步更新':b.status==='驳回待修改'?'请回到结算申请单重新提交':'账单信息已更新');render();
+}
+function deleteBill(id){
+  modal('删除课酬账单','<p class="modal-note">删除后不可恢复。账单若在待结算清单中，会同时从待结算清单移除。</p>','确认删除',()=>{
+    state.bills=state.bills.filter(x=>x.id!==id);state.cart.delete(id);state.selectedCart.delete(id);state.selectedBills.delete(id);closeModal();toast('账单已删除',id);go('/bills');
+  },'danger');
+}
+
+function billNew(){
+  return title('手工创建课酬账单','','<button class="btn" onclick="go(\'/bills\')">返回列表</button><button class="btn primary" onclick="createBill()">保存账单</button>')+
+  '<section class="card"><div class="card-body"><div class="form-3"><div class="field"><label><em>*</em> 师资</label><select class="select" id="newPerson" onchange="syncNewPay()">'+PEOPLE.map((p,i)=>'<option value="'+i+'">'+p.name+' · '+p.role+'</option>').join('')+'</select></div><div class="field"><label><em>*</em> 合同号</label><select class="select" id="newPact" onchange="syncNewPay()"><option value="">请选择合同</option>'+Object.keys(PROJECT_CONTRACT).map(k=>'<option value="'+k+'">'+PROJECT_CONTRACT[k]+'（'+k+'）</option>').join('')+'</select></div><div class="field"><label>项目名称</label><div id="newProjShow" class="muted" style="line-height:34px">选择合同后自动带出</div></div><div class="field"><label>费用类别</label><select class="select" id="newCat" onchange="syncNewPay()">'+CATS.map(o=>'<option>'+o+'</option>').join('')+'</select></div><div class="field"><label>单位</label><select class="select" id="newUnit">'+UNITS.map(o=>'<option>'+o+'</option>').join('')+'</select></div><div class="field"><label><em>*</em> 单价（元）</label><input class="input" id="newPrice" type="number" placeholder="0.00"></div><div class="field"><label><em>*</em> 数量</label><input class="input" id="newQty" type="number" value="1"></div><div class="field"><label>付款合同号（可先不选，创建后需确认）</label><select class="select" id="newPay"><option value="">选择合同后可选</option></select></div><div class="field"><label>执行单（可先不选，但最终必须关联）</label><select class="select" id="newExec"><option value="">选择合同后可选</option></select><div class="muted" style="font-size:12px;margin-top:4px">不影响后续申请与付款，创建后可在账单详情补关联</div></div><div class="field"><label>执行日期</label><input class="input" id="newDate" type="date" value="2026-11-03"></div><div class="field"><label>备注</label><input class="input" id="newRemark"></div></div></div></section>'+
+  '<section class="card"><div class="card-head"><h3>附件</h3><label class="btn primary" style="cursor:pointer">上传附件<input type="file" multiple style="display:none" onchange="uploadNewFiles(this)"></label></div><div class="card-body"><div class="muted" style="line-height:1.8;margin-bottom:10px">非必填。可上传付款金额一致的证明或其他证明材料，文件类型不限，单个文件不超过 100MB；创建后也可在账单详情页补传。</div><div id="newFileList">'+newFileHtml()+'</div></div></section>';
+}
+function newFileHtml(){const l=state.newFiles||[];return l.length?'<div class="table-wrap"><table><thead><tr><th>文件名</th><th>大小</th><th>操作</th></tr></thead><tbody>'+l.map((f,i)=>'<tr><td>'+f.name+'</td><td>'+fmtSize(f.size)+'</td><td><button class="link" onclick="openBillFile(\'\','+i+',true)">下载</button> <button class="link" style="color:var(--red)" onclick="delNewFile('+i+')">删除</button></td></tr>').join('')+'</tbody></table></div>':'<div class="muted">暂无附件</div>'}
+function uploadNewFiles(input){state.newFiles=state.newFiles||[];addFiles(state.newFiles,input);document.getElementById('newFileList').innerHTML=newFileHtml()}
+function delNewFile(i){state.newFiles.splice(i,1);document.getElementById('newFileList').innerHTML=newFileHtml()}
+function syncNewPay(){
+  const pr=document.getElementById('newPact').value,p=PEOPLE[Number(document.getElementById('newPerson').value)],cat=document.getElementById('newCat').value;
+  document.getElementById('newProjShow').textContent=pr||'选择合同后自动带出';
+  const proj=pr;
+  const ex=p.role==='助教'||EXEMPT_CATS.includes(cat),np=document.getElementById('newPay'),ne=document.getElementById('newExec');
+  np.innerHTML=!pr?'<option value="">选择合同后可选</option>':ex?'<option value="">助教 / 出题费豁免，无需付款合同</option>':'<option value="">请选择付款合同号（可稍后选）</option>'+payOptions(pactOf(pr)).map(c=>'<option value="'+c.no+'">'+c.no+'（总额 '+money(c.total)+'，剩余 '+money(c.total-payUsedAmt(c.no))+'）</option>').join('');
+  np.disabled=!pr||ex;
+  ne.innerHTML='<option value="">暂不关联（稍后在账单详情关联）</option>'+(EXEC_ORDERS[proj]||[]).map(o=>'<option>'+o+'</option>').join('');
+}
+function createBill(){
+  const p=PEOPLE[Number(document.getElementById('newPerson').value)],pr=document.getElementById('newPact').value,price=Number(document.getElementById('newPrice').value),qty=Number(document.getElementById('newQty').value),cat=document.getElementById('newCat').value,unit=document.getElementById('newUnit').value,amt=Math.round(price*qty*100)/100;
+  if(!pr||!(price>0)||!(qty>0)){toast('请完善信息','合同号、单价、数量均为必填','error');return}
+  const ct=(p.role==='助教'||EXEMPT_CATS.includes(cat))?'':document.getElementById('newPay').value,ex0=document.getElementById('newExec').value;
+  const id='KB202611-'+String(state.bills.length+200).padStart(4,'0');
+  state.bills.unshift(mk({files:(state.newFiles||[]).slice(),id,personId:p.personId,name:p.name,phone:p.phone,role:p.role,project:pr,exec:ex0,date:document.getElementById('newDate').value||'2026-11-03',amount:amt,price,qty,unit,category:cat,status:'待提交',contract:ct,confirmed:false,issue:p.phone?'':'手机号缺失',source:'手工创建',remark:document.getElementById('newRemark').value.trim()}));
+  state.newFiles=[];toast('账单已创建',id+' 为待提交状态，请在详情页确认付款合同号后加入待结算清单'+(ex0?'':'；该账单未关联执行单，不影响申请，但最终必须补关联'));go('/bills/detail?id='+id);
+}
+
+function cartPage(){
+  const items=state.bills.filter(b=>state.cart.has(b.id)),sel=items.filter(b=>state.selectedCart.has(b.id));
+  return title('待结算清单','','<button class="btn primary" onclick="go(\'/bills\')">继续添加账单</button>')+
+  (items.length?'<section class="card"><div class="table-wrap"><table class="has-check"><thead><tr><th><input type="checkbox" class="check" '+(sel.length===items.length?'checked':'')+' onchange="toggleAllCart(this.checked)"></th><th>课酬账单号</th><th>师资</th><th>项目</th><th>合同号</th><th>执行日期</th><th>角色</th><th>费用类别</th><th>单价</th><th>数量</th><th>单位</th><th>金额</th><th>付款合同号</th><th>执行单</th><th>附件</th><th>操作</th></tr></thead><tbody>'+
+  slicePg('cart',items).map(b=>'<tr><td><input type="checkbox" class="check" '+(state.selectedCart.has(b.id)?'checked':'')+' onchange="toggleCart(\''+b.id+'\',this.checked)"></td><td><b>'+b.id+'</b></td><td>'+b.name+'</td><td>'+b.project+'</td><td>'+(b.pact||'—')+'</td><td>'+b.date+'</td><td>'+tag(b.role,b.role==='讲师'?'blue':'purple')+'</td><td>'+b.category+'</td><td class="num">'+money(b.price)+'</td><td>'+b.qty+'</td><td>'+b.unit+'</td><td class="num">'+money(b.amount)+'</td><td>'+contractCell(b)+'</td><td>'+execTag(b)+'</td><td>'+filesCell(b)+'</td><td><button class="link" onclick="go(\'/bills/detail?id='+b.id+'\')">编辑</button> <button class="link" style="color:var(--red)" onclick="removeFromCart(\''+b.id+'\')">移出</button></td></tr>').join('')+'</tbody></table></div>'+pager('cart',items.length)+'</section>'+
+  '<section class="card"><div class="card-body" style="display:flex;align-items:center;gap:22px;flex-wrap:wrap"><span>已选 <b>'+sel.length+'</b> 张，合计 <b style="color:var(--primary);font-size:18px">'+money(sel.reduce((s,x)=>s+x.amount,0))+'</b></span><span style="display:flex;align-items:center;gap:8px;margin-left:auto"><button class="btn primary" '+(sel.length?'':'disabled')+' onclick="submitApp(\'常规\')">提交常规结算</button><span class="help" data-tip="按讲师特殊账期或角色默认账期（最后执行日 + N 天）提交，审批在合同系统 / 钉钉：部门负责人 → VP → 财务；通过后进入账期中，到期即显示可提现（提现仍限每月 1~10 日）。加入清单前须已确认付款合同号（助教、出题费豁免付款合同）；未关联执行单可提交，提交时会二次确认。">?</span></span><span style="display:flex;align-items:center;gap:8px"><button class="btn warn" '+(sel.length?'':'disabled')+' onclick="openEmergencySubmit()">提交紧急结算</button><span class="help" data-tip="用于早于默认账期到账的申请，紧急原因必填；审批链与常规一致；通过后账单直接可提现。账期优先级：紧急 > 讲师特殊 > 角色默认。">?</span></span></div></section>'
+  :'<section class="card"><div class="empty">'+icon('empty')+'<div>待结算清单是空的，请先到课酬账单页添加账单</div><div style="margin-top:12px"><button class="btn primary" onclick="go(\'/bills\')">去添加账单</button></div></div></section>');
+}
+function toggleCart(id,v){v?state.selectedCart.add(id):state.selectedCart.delete(id);render()}
+function toggleAllCart(v){state.cart.forEach(id=>v?state.selectedCart.add(id):state.selectedCart.delete(id));render()}
+function openEmergencySubmit(){
+  modal('提交紧急结算','<p class="modal-note">紧急账期审批通过后直接进入可提现，讲师可随时发起紧急提现，无需等待账期和提现窗口。</p><div class="field"><label><em>*</em> 紧急原因</label><select class="select" id="emReason"><option value="">请选择</option><option>客户付款周期要求</option><option>项目提前验收</option><option>其他业务紧急情况</option></select></div><div class="field"><label><em>*</em> 补充说明</label><textarea id="emNote" placeholder="请说明紧急背景与期望时间"></textarea></div>','确认提交',()=>{
+    const r=document.getElementById('emReason').value,n=document.getElementById('emNote').value.trim();
+    if(!r||!n){toast('请完善信息','紧急原因和补充说明均为必填','error');return}
+    closeModal();submitApp('紧急',r+'：'+n);
+  });
+}
+function submitApp(type,reason='',okNoExec=false){
+  const list=state.bills.filter(b=>state.selectedCart.has(b.id)&&state.cart.has(b.id));
+  if(!list.length){toast('无法提交','请先在待结算清单勾选账单','error');return}
+  const miss=list.filter(b=>!payOk(b));
+  if(miss.length){toast('提交前校验未通过','付款合同号未确认：'+miss.map(b=>b.id).join('、')+'（仅助教、出题费豁免付款合同），请处理后再提交','error');return}
+  const noEx=list.filter(b=>!b.exec);
+  if(noEx.length&&!okNoExec){
+    modal('有账单未关联执行单','<div class="notice-bar" style="margin-bottom:12px">以下 <b>'+noEx.length+'</b> 张账单尚未关联执行单。<b>不影响本次申请和后续付款</b>，但最终必须关联执行单；提交后在合同系统 / 钉钉的审批单中会标注「未关联执行单」。</div><div class="table-wrap"><table><thead><tr><th>课酬账单号</th><th>师资</th><th>项目</th><th style="text-align:right">金额</th></tr></thead><tbody>'+noEx.map(b=>'<tr><td>'+b.id+'</td><td>'+b.name+'</td><td>'+b.project+'</td><td class="num">'+money(b.amount)+'</td></tr>').join('')+'</tbody></table></div>','仍然提交',()=>{closeModal();submitApp(type,reason,true)});
+    return;
+  }
+  const id='JS202611-'+String(state.applications.length+9).padStart(4,'0');
+  state.applications.unshift({id,version:1,type,status:'审批中',node:0,owner:'纪超',created:'2026-11-03 19:20',reason,rejectReason:'',history:[]});
+  list.forEach(b=>{b.appId=id;b.status='审批中';state.cart.delete(b.id);state.selectedCart.delete(b.id)});
+  toast('提交成功',id+' 共 '+list.length+' 张账单，已同步至合同系统审批流'+(noEx.length?'（其中 '+noEx.length+' 张未关联执行单，已在审批单中标注）':''));go('/applications/detail?id='+id);
+}
+
+function applyAppFilter(){
+  const g=id=>{const e=document.getElementById(id);return e?e.value.trim():''};
+  Object.assign(state.appView,{q:g('aQ'),project:g('aProject'),pact:g('aPact'),type:g('aType'),status:g('aStatus'),pm:state.role==='pm'?'':g('aPm')});
+  if(state.pg.apps)state.pg.apps.page=1;render();
+}
+function resetAppFilter(){Object.assign(state.appView,{q:'',project:'',pact:'',type:'',status:'',pm:''});if(state.pg.apps)state.pg.apps.page=1;render()}
+function appList(){
+  const v=state.appView,has=(t,q)=>!q||String(t||'').toLowerCase().includes(q.toLowerCase());
+  return state.applications.filter(a=>(state.role!=='pm'||a.owner===PM_NAME)&&has(a.id,v.q)&&has(appProject(a),v.project)&&has(appPacts(a),v.pact)&&(!v.type||a.type===v.type)&&(!v.status||a.status===v.status)&&has(a.owner,v.pm));
+}
+function exportApps(){
+  exportCsv('结算申请单',['申请单号','通道','项目','合同号','合同数量','账单数','申请金额','项目经理','提交时间','状态'],appList().map(a=>[a.id,a.type+'账期',appProject(a).replace(/、/g,'；'),appPacts(a).replace(/、/g,'；'),appContracts(a).length,appBills(a).length,appAmount(a),a.owner,a.created,a.status]));
+}
+function applications(){
+  const v=state.appView,rows=appList(),sel=(id,val,opts)=>'<select class="select" id="'+id+'">'+opts.map(o=>'<option value="'+o[0]+'"'+(val===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
+  return '<div class="filters"><label class="fl"><span>申请单号</span><input class="input" id="aQ" value="'+v.q+'" placeholder="请输入"></label><label class="fl"><span>项目名称</span><input class="input" id="aProject" value="'+v.project+'" placeholder="请输入"></label><label class="fl"><span>合同号</span><input class="input" id="aPact" value="'+v.pact+'" placeholder="请输入"></label>'+(state.role==='pm'?'':'<label class="fl"><span>项目经理</span><input class="input" id="aPm" value="'+v.pm+'" placeholder="请输入"></label>')+'<label class="fl"><span>账期类型</span>'+sel('aType',v.type,[['','全部通道'],['常规','常规账期'],['紧急','紧急账期']])+'</label><label class="fl"><span>审批状态</span>'+sel('aStatus',v.status,[['','全部状态'],['审批中','审批中'],['已通过','已通过'],['已驳回','已驳回']])+'</label><span class="filter-actions"><button class="fbtn query" onclick="applyAppFilter()">查询</button><button class="fbtn reset" onclick="resetAppFilter()">重置</button><button class="fbtn export" onclick="exportApps()">导出</button></span></div>'+title('结算申请单','','')+
+  '<section class="card"><div class="table-wrap"><table><thead><tr><th>申请单号</th><th>通道</th><th>项目</th><th>合同号</th><th>账单数</th><th>申请金额</th><th>项目经理</th><th>提交时间</th><th>状态</th><th>操作</th></tr></thead><tbody>'+slicePg('apps',rows).map(a=>'<tr><td><b>'+a.id+'</b></td><td>'+tag(a.type+'账期',a.type==='紧急'?'orange':'blue')+'</td><td>'+appMulti(a,'project')+'</td><td>'+appMulti(a,'pact')+'</td><td>'+appBills(a).length+' 张</td><td class="num">'+money(appAmount(a))+'</td><td>'+a.owner+'</td><td>'+a.created+'</td><td>'+tag(a.status,appStatusColor(a.status))+'</td><td><button class="link" onclick="go(\'/applications/detail?id='+a.id+'\')">'+(a.status==='已驳回'&&state.role==='pm'?'修改':'查看')+'</button></td></tr>').join('')+'</tbody></table></div>'+pager('apps',rows.length)+'</section>';
+}
+const APPROVERS=[['部门负责人','纪超'],['VP','邵燕'],['财务','胡世超']];
+function approvalBar(a,canEdit){
+  const st=a.status;let cur=st==='审批中'?(a.node||0):st==='已驳回'?(a.rejectNode==null?1:a.rejectNode):-1;
+  const steps=APPROVERS.map(([r,n],i)=>{
+    let c='wait',t='待审批';
+    if(st==='已通过'){c='done';t='已通过'}
+    else if(i<cur){c='done';t='已通过'}
+    else if(i===cur){c=st==='已驳回'?'rej':'cur';t=st==='已驳回'?'已驳回':'审批中'}
+    const tip=r==='财务'?' title="财务节点内部两级审批，审批时可参考该讲师历史单价"':'';
+    return '<div class="ap-step '+c+'"'+tip+'><span class="ap-dot">'+(c==='done'?'✓':c==='rej'?'✕':i+1)+'</span><span class="ap-txt"><b>'+r+' · '+n+'</b><em>'+t+'</em></span></div>'+(i<APPROVERS.length-1?'<span class="ap-line '+(c==='done'?'done':'')+'"></span>':'');
+  }).join('');
+  const starter='<div class="ap-step done"><span class="ap-dot">✓</span><span class="ap-txt"><b>发起人 · '+a.owner+'</b><em>已提交</em></span></div><span class="ap-line done"></span>';
+  return '<div class="ap-bar'+(st==='已驳回'?' rej':'')+'"><div class="ap-steps">'+starter+steps+'</div>'+(st==='已驳回'?'<div class="ap-rej"><b>驳回原因：</b>'+a.rejectReason+(canEdit?'　请在下方移出、添加或编辑账单后重新提交，将在合同系统从首节点重新审批。':'')+'</div>':'')+'</div>';
+}
+function applicationDetail(){
+  const a=state.applications.find(x=>x.id===qs().get('id'))||state.applications[0];
+  const list=appBills(a).slice().sort((x,y)=>(x.pact||'').localeCompare(y.pact||'')),canEdit=a.status==='已驳回'&&state.role==='pm',cons=appContracts(a);
+  const actions='<button class="btn" onclick="go(\'/applications\')">返回列表</button>'+(canEdit?'<button class="btn" onclick="openAddBills(\''+a.id+'\')">添加账单</button><button class="btn primary" onclick="resubmitApp(\''+a.id+'\')">重新提交</button>':'');
+  return title('结算申请单详情','',actions)+
+  approvalBar(a,canEdit)+
+  '<section class="card"><div class="card-head"><h3>申请信息</h3><span>'+tag(a.type+'账期',a.type==='紧急'?'orange':'blue')+'</span></div><div class="info-grid slim"><div class="info-item"><div class="k">申请单号</div><div class="v">'+a.id+'</div></div>'+(state.role==='pm'?'':'<div class="info-item"><div class="k">项目经理（发起人）</div><div class="v">'+a.owner+'</div></div>')+'<div class="info-item"><div class="k">涉及合同</div><div class="v">'+cons.length+' 个'+(cons.length>1?'（见下方合同汇总）':'')+'</div></div><div class="info-item"><div class="k">提交时间</div><div class="v">'+a.created+'</div></div><div class="info-item"><div class="k">账单数量</div><div class="v">'+list.length+' 张</div></div><div class="info-item"><div class="k">申请金额</div><div class="v num">'+money(appAmount(a))+'</div></div></div></section>'+
+  '<section class="card"><div class="card-head"><h3>合同汇总</h3><span class="muted">按合同号汇总本申请单的账单；剩余额度为付款合同当前实时剩余可付款金额</span></div><div class="table-wrap"><table><thead><tr><th>合同号</th><th>项目</th><th>账单数</th><th>本次课酬金额</th><th>付款合同号</th><th>付款合同剩余额度</th></tr></thead><tbody>'+cons.map(g=>'<tr><td><b>'+g.pact+'</b></td><td>'+g.project+'</td><td>'+g.count+' 张</td><td class="num">'+money(g.amount)+'</td><td>'+(g.pays.length?g.pays.join('<br>'):'<span class="muted">—（助教 / 出题费豁免）</span>')+'</td><td>'+(g.pays.length?g.pays.map(no=>{const c=payC(no);return c?'<b>'+money(c.total-payUsedAmt(no))+'</b> <span class="muted">/ 总额 '+money(c.total)+'</span>':'—'}).join('<br>'):'<span class="muted">—</span>')+'</td></tr>').join('')+(cons.length>1?'<tr><td colspan="2"><b>合计</b></td><td><b>'+list.length+' 张</b></td><td class="num"><b>'+money(appAmount(a))+'</b></td><td></td><td></td></tr>':'')+'</tbody></table></div></section>'+(['finance','admin'].includes(state.role)?contractFileCard(list):'')+
+  '<section class="card"><div class="card-head"><h3>课酬账单明细</h3></div><div class="table-wrap"><table><thead><tr><th>账单号</th><th>师资</th><th>角色</th><th>项目</th><th>合同号</th><th>执行日期</th><th>费用类别</th><th>单价</th><th>数量</th><th>单位</th><th>该讲师历史单价（去重）</th><th>金额</th><th>付款合同号</th><th>执行单</th><th>附件</th><th>状态</th>'+(canEdit?'<th>操作</th>':'')+'</tr></thead><tbody>'+
+  (list.length?slicePg('appbills',list).map(b=>'<tr><td><button class="link" onclick="go(\'/bills/detail?id='+b.id+'\')">'+b.id+'</button></td><td>'+b.name+'</td><td>'+tag(b.role,b.role==='讲师'?'blue':'purple')+'</td><td>'+b.project+'</td><td>'+(b.pact||'—')+'</td><td>'+b.date+'</td><td>'+b.category+'</td><td class="num">'+money(b.price)+'</td><td>'+b.qty+'</td><td>'+b.unit+'</td><td>'+histPrice(b)+'</td><td class="num">'+money(b.amount)+'</td><td>'+contractCell(b)+'</td><td>'+execTag(b)+'</td><td>'+filesCell(b)+'</td><td>'+billTag(b)+'</td>'+(canEdit?'<td><button class="link" onclick="go(\'/bills/detail?id='+b.id+'\')">编辑</button> '+(list.length>1?'<button class="link" style="color:var(--red)" onclick="removeFromApp(\''+a.id+'\',\''+b.id+'\')">移出</button>':'<span class="muted">至少保留 1 张</span>')+'</td>':'')+'</tr>').join(''):'<tr><td colspan="18" class="muted">暂无账单</td></tr>')+'</tbody></table></div>'+pager('appbills',list.length)+'</section>'+
+  (a.history.length?'<section class="card"><div class="card-head"><h3>历史驳回记录</h3><span class="muted">驳回前的账单快照</span></div><div class="table-wrap"><table><thead><tr><th>驳回原因</th><th>账单号</th><th>师资</th><th>金额</th></tr></thead><tbody>'+slicePg('hist',a.history.flatMap(h=>h.bills.map(x=>({h,x})))).map(({h,x})=>'<tr><td>'+h.rejectReason+'</td><td>'+x.id+'</td><td>'+x.name+'</td><td class="num">'+money(x.amount)+'</td></tr>').join('')+'</tbody></table></div>'+pager('hist',a.history.reduce((n,h)=>n+h.bills.length,0))+'</section>':'');
+}
+function removeFromApp(appId,billId){
+  const b=state.bills.find(x=>x.id===billId);
+  modal('移出账单','<p class="modal-note">账单 <b>'+billId+'</b> 将从申请单移出，回到「待提交」状态；如需再次提交，请重新加入结算申请单。</p>','确认移出',()=>{
+    b.appId='';b.status='待提交';closeModal();toast('已移出',billId+' 已回到待提交');render();
+  });
+}
+function openAddBills(appId){
+  const pool=state.bills.filter(b=>b.status==='待提交'&&!bIssue(b));
+  modal('添加账单到申请单','<p class="modal-note">仅显示「待提交」且校验通过的账单；在待结算清单中的账单添加后会从待结算清单移除。</p>'+(pool.length?'<div style="max-height:300px;overflow:auto">'+pool.map(b=>'<label style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><input type="checkbox" class="check addpick" value="'+b.id+'"><span><b>'+b.id+'</b> · '+b.name+' · '+b.project+' · '+(b.pact||'—')+'</span><span style="margin-left:auto">'+money(b.amount)+'</span></label>').join('')+'</div>':'<div class="empty">暂无可添加的账单</div>'),'确认添加',()=>{
+    const ids=[...document.querySelectorAll('.addpick:checked')].map(x=>x.value);
+    if(!ids.length){toast('请选择账单','至少勾选 1 张账单','error');return}
+    ids.forEach(id=>{const b=state.bills.find(x=>x.id===id);b.appId=appId;b.status='驳回待修改';state.cart.delete(id);state.selectedCart.delete(id)});
+    closeModal();toast('已添加','共 '+ids.length+' 张账单');render();
+  });
+}
+function resubmitApp(id){
+  const a=state.applications.find(x=>x.id===id),list=appBills(a);
+  if(!list.length){toast('无法提交','申请单内至少需要 1 张账单','error');return}
+  a.history.unshift({version:a.version,rejectReason:a.rejectReason,bills:list.map(b=>({id:b.id,name:b.name,amount:b.amount}))});
+  a.version++;a.status='审批中';a.node=0;a.rejectReason='';a.created='2026-11-03 19:28';list.forEach(b=>b.status='审批中');
+  toast('重新提交成功',a.id+' 已升级为 V'+a.version+'，在合同系统从首节点重新审批');render();
+}
+
+const termDefault=a=>a.roles==='助教'?state.cfg.assistant:state.cfg.teacher;
+const termText=a=>a.termDays?a.termDays+' 天 '+tag('特殊','orange'):termDefault(a)+' 天';
+const orgName=id=>(state.orgs.find(o=>o.id===id)||{}).orgName||'—';
+function exportAccounts(kind){
+  const word=kind==='teacher'?'讲师':'助教';
+  exportCsv(word+'账户',[word+'姓名','手机号','角色','合作主体','账期（天）','微信绑定','收款账户','可提现','提现中'],state.accounts.filter(a=>a.roles.includes(word)).map(a=>[a.name,a.phone,a.roles,a.orgId?'机构 · '+orgName(a.orgId):(a.entity||''),a.orgId?'随机构账户':(a.termDays||termDefault(a)),a.orgId?'由机构账户登录':a.wechat,a.orgId?'归属机构':a.bank,a.orgId?'':a.available,a.orgId?'':a.frozen]));
+}
+function accounts(kind){
+  const isT=kind==='teacher', word=isT?'讲师':'助教';
+  const rows=state.accounts.filter(a=>a.roles.includes(word));
+  return '<div class="filters"><label class="fl"><span>姓名</span><input class="input" placeholder="请输入"></label><label class="fl"><span>手机号</span><input class="input" placeholder="请输入"></label><label class="fl"><span>微信绑定</span><select class="select"><option>全部绑定状态</option><option>已绑定</option><option>未绑定</option></select></label><span class="filter-actions"><button class="fbtn query">查询</button><button class="fbtn reset">重置</button><button class="fbtn export" onclick="exportAccounts(\''+kind+'\')">导出</button></span></div>'+title(word+'账户','',(canOp()?'<button class="btn primary" onclick="go(\'/accounts/new?from='+kind+'\')">添加'+word+'</button>':''))+
+  '<section class="card"><div class="table-wrap"><table><thead><tr><th>'+word+'姓名</th><th>手机号</th><th>角色</th><th>合作主体</th><th>账期（天）</th><th>微信绑定</th><th>收款账户</th><th>可提现</th><th>提现中</th><th>操作</th></tr></thead><tbody>'+slicePg('acc_'+kind,rows).map(a=>'<tr><td><b>'+a.name+'</b></td><td>'+(a.phone||'—')+'</td><td>'+a.roles+'</td><td>'+(a.orgId?tag('机构','blue')+' '+orgName(a.orgId):(a.entity||(a.roles==='讲师'?'个人':'—')))+'</td><td>'+(a.orgId?'<span class="muted">随机构账户</span>':termText(a))+'</td><td>'+(a.orgId?'<span class="muted">由机构账户登录</span>':tag(a.wechat,a.wechat==='已绑定'?'green':'orange'))+'</td><td>'+(a.orgId?'<span class="muted">归属机构</span>':tag(a.bank,a.bank==='已完善'?'green':''))+'</td><td class="num">'+(a.orgId?'—':money(a.available))+'</td><td class="num">'+(a.orgId?'—':money(a.frozen))+'</td><td><button class="link" onclick="go(\'/accounts/detail?id='+a.id+'&from='+kind+'\')">查看详情</button></td></tr>').join('')+'</tbody></table></div>'+pager('acc_'+kind,rows.length)+'</section>';
+}
+function orgTeachers(id){return state.accounts.filter(a=>a.orgId===id)}
+function orgList(){
+  const rows=state.orgs;
+  return '<div class="filters"><label class="fl"><span>机构名称</span><input class="input" placeholder="请输入"></label><label class="fl"><span>机构收款人</span><input class="input" placeholder="请输入"></label><label class="fl"><span>微信绑定</span><select class="select"><option>全部绑定状态</option><option>已绑定</option><option>未绑定</option></select></label><span class="filter-actions"><button class="fbtn query">查询</button><button class="fbtn reset">重置</button><button class="fbtn export" onclick="exportOrgs()">导出</button></span></div>'+
+  title('机构账户','一个机构只对应一个小程序账号，机构下的多位授课讲师不单独生成账号；机构仅可开具发票，不代扣个税',(canOp()?'<button class="btn primary" onclick="go(\'/accounts/org/new\')">添加机构账户</button>':''))+
+  '<section class="card"><div class="table-wrap"><table><thead><tr><th>机构名称</th><th>统一社会信用代码</th><th>机构收款人</th><th>收款人手机号</th><th>授课讲师</th><th>账期（天）</th><th>微信绑定</th><th>对公账户</th><th>可提现</th><th>提现中</th><th>操作</th></tr></thead><tbody>'+slicePg('acc_org',rows).map(o=>'<tr><td><b>'+o.orgName+'</b></td><td>'+o.code+'</td><td>'+o.rep+'</td><td>'+o.phone+'</td><td>'+orgTeachers(o.id).length+' 位</td><td>'+termText(o)+'</td><td>'+tag(o.wechat,o.wechat==='已绑定'?'green':'orange')+'</td><td>'+tag(o.bank,o.bank==='已完善'?'green':'')+'</td><td class="num">'+money(o.available)+'</td><td class="num">'+money(o.frozen)+'</td><td><button class="link" onclick="go(\'/accounts/org/detail?id='+o.id+'\')">查看详情</button></td></tr>').join('')+'</tbody></table></div>'+pager('acc_org',rows.length)+'</section>';
+}
+function exportOrgs(){exportCsv('机构账户',['机构名称','统一社会信用代码','机构收款人','收款人手机号','授课讲师数','账期（天）','微信绑定','对公账户','可提现','提现中'],state.orgs.map(o=>[o.orgName,o.code,o.rep,o.phone,orgTeachers(o.id).length,o.termDays||termDefault(o),o.wechat,o.bank,o.available,o.frozen]))}
+function orgNew(){
+  const st=state.orgNew,f=(label,body,req)=>'<div class="field"><label>'+label+(req?' <em>*</em>':'')+'</label>'+body+'</div>',inp=(k,ph,ml)=>'<input class="input" '+(ml?'maxlength="'+ml+'" ':'')+'value="'+st[k]+'" placeholder="'+ph+'" oninput="state.orgNew.'+k+'=this.value">';
+  return title('添加机构账户','','<button class="btn" onclick="go(\'/accounts/org\')">返回列表</button><button class="btn primary" onclick="createOrg()">创建机构账户</button>')+
+  '<section class="card"><div class="card-head"><h3>机构信息</h3><span class="muted">机构提供资料后由运营在后台录入；一个机构只生成一个小程序账号，对公收款账户由机构收款人首次登录后自行填写</span></div><div class="card-body"><div class="form-3">'+
+  f('机构名称（全称）',inp('name','请输入机构全称'),1)+f('统一社会信用代码',inp('code','请输入18位统一社会信用代码',18),1)+f('机构收款人姓名',inp('rep','机构指定的小程序登录人'),1)+f('机构收款人手机号',inp('phone','请输入11位手机号',11),1)+
+  '</div><div class="muted" style="margin-top:14px;line-height:1.9">账户规则：课酬统一归属本机构账户；机构收款人登录小程序后查看机构下全部授课讲师的课酬明细并发起提现；提现方式仅支持<b>开发票</b>（机构自行上传等额发票），收款仅支持对公账户，不代扣个税。</div></div></section>';
+}
+function createOrg(){
+  const st=state.orgNew,name=st.name.trim(),code=st.code.trim().toUpperCase(),rep=st.rep.trim(),ph=st.phone.trim();
+  if(!name){toast('请填写机构名称','机构名称为必填项','error');return}
+  if(state.orgs.some(o=>o.orgName===name)){toast('无法创建','该机构账户已存在，请勿重复创建','error');return}
+  if(!/^[0-9A-Z]{18}$/.test(code)){toast('信用代码格式不正确','请填写18位统一社会信用代码','error');return}
+  if(state.orgs.some(o=>o.code===code)){toast('无法创建','该统一社会信用代码已存在','error');return}
+  if(!rep){toast('请填写机构收款人姓名','机构收款人为必填项','error');return}
+  if(!/^1\d{10}$/.test(ph)){toast('手机号格式不正确','请填写完整的11位手机号','error');return}
+  if(state.accounts.concat(state.orgs).some(a=>a.phone===maskPhone(ph))){toast('无法创建','该手机号已被其他账户占用','error');return}
+  const id='SU'+(200001+state.orgs.length);
+  state.orgs.push({id,orgName:name,code,rep,phone:maskPhone(ph),wechat:'未绑定',bank:'未填写',bankInfo:'',available:0,pending:0,frozen:0,paid:0,invite:'尚未发送'});
+  let n=0;state.bills.forEach(b=>{if(b.issue==='机构账户未创建'){const x=OPS_POOL.find(o=>o.personId===b.personId);if(x&&x.company.split(' / ')[0]===name){b.issue='';n++}}});
+  Object.assign(st,{name:'',code:'',rep:'',phone:''});
+  toast('机构账户已创建',name+' 已创建'+(n?'，'+n+' 张待提交账单可加入结算申请单':'')+'，首次有课酬入账时向机构收款人发送登录邀请');go('/accounts/org/detail?id='+id);
+}
+function orgDetail(){
+  const o=state.orgs.find(x=>x.id===qs().get('id'))||state.orgs[0],ts=orgTeachers(o.id);
+  const oi=(k,v)=>'<div class="info-item"><div class="k">'+k+'</div><div class="v">'+(v||'—')+'</div></div>';
+  return title('机构账户详情',o.orgName,'<button class="btn" onclick="go(\'/accounts/org\')">返回列表</button>'+(canOp()&&o.wechat==='未绑定'?'<button class="btn primary" onclick="resendInvite(\''+o.id+'\')">重新发送邀请</button>':''))+
+  '<div class="grid-2"><div><section class="card"><div class="card-head"><h3>机构信息</h3>'+tag(o.wechat,o.wechat==='已绑定'?'green':'orange')+'</div><div class="info-grid">'+oi('机构名称',o.orgName)+oi('统一社会信用代码',o.code)+oi('机构收款人',o.rep)+oi('收款人手机号',o.phone)+oi('微信状态',o.wechat)+oi('最近邀请','<span id="inviteTime">'+o.invite+'</span>')+oi('对公收款账户',o.bankInfo||'机构收款人尚未填写')+oi('提现方式','仅开发票（机构自行上传等额发票）')+oi('个税','不代扣，由机构自行处理')+'</div></section>'+
+  '<section class="card"><div class="card-head"><h3>授课讲师（'+ts.length+' 位）</h3><span class="muted">讲师不单独生成小程序账号，课酬统一归属本机构账户</span></div><div class="table-wrap"><table><thead><tr><th>讲师姓名</th><th>讲师类型</th><th>讲师价格</th><th>最近项目</th><th>操作</th></tr></thead><tbody>'+(ts.map(t=>'<tr><td><b>'+t.name+'</b></td><td>'+(t.type||'—')+'</td><td>'+(t.price||'—')+'</td><td>'+(t.project||'—')+'</td><td><button class="link" onclick="go(\'/accounts/detail?id='+t.id+'&from=teacher\')">查看</button></td></tr>').join('')||'<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">暂无授课讲师，可在「讲师账户」添加讲师时选择本机构</td></tr>')+'</tbody></table></div></section></div>'+
+  '<aside><div class="money-box"><div class="label">账户累计金额</div><div class="amount">'+money(o.available+o.pending+o.frozen+o.paid)+'</div><div class="money-row"><span><small>账期中</small><b>'+money(o.pending)+'</b></span><span><small>可提现</small><b>'+money(o.available)+'</b></span><span><small>提现中</small><b>'+money(o.frozen)+'</b></span></div></div><section class="card" style="margin-top:16px"><div class="card-head"><h3>账期设置</h3>'+(o.termDays?tag('特殊账期','orange'):tag('讲师默认','blue'))+'</div><div class="card-body" style="line-height:1.9"><div class="muted">账期按「最后执行日 + N 天」计算，到期即显示可提现；提现仍限每月 1~10 日（紧急提现除外）。</div><div style="margin-top:10px">当前生效：<b>'+(o.termDays||termDefault(o))+' 天</b>（讲师默认 '+termDefault(o)+' 天）</div>'+(canTerm()?'<div style="display:flex;gap:8px;margin-top:10px;align-items:center"><input class="input" id="termInput" type="number" min="0" style="width:120px" value="'+(o.termDays||'')+'" placeholder="留空=用默认"><button class="btn sm primary" onclick="saveTerm(\''+o.id+'\')">保存特殊账期</button></div>':'<div class="muted" style="margin-top:8px">特殊账期仅财务可维护</div>')+'</div></section>'+
+  '<section class="card" style="margin-top:16px"><div class="card-head"><h3>账户规则</h3></div><div class="card-body muted" style="line-height:1.9">机构收款人由机构提供、运营在后台录入；更换机构收款人需运营修改手机号，旧微信绑定随之失效，余额与历史流水不变。机构账户提现须上传等额发票，已提交提现单保留登录手机号及对公账户快照。</div></section></aside></div>';
+}
+function opsStatus(x){
+  if(state.accounts.some(a=>a.personId===x.personId)) return '已添加';
+  return '可添加';
+}
+function opsFuzzy(name,q){
+  if(!q) return true; name=name.toLowerCase(); q=q.toLowerCase();
+  let i=0; for(const c of name){ if(c===q[i]) i++; if(i===q.length) return true }
+  return name.includes(q);
+}
+function opsOptions(q){
+  const rows=OPS_POOL.filter(x=>x.role==='讲师'&&(opsFuzzy(x.name,q)||x.personId.toLowerCase().includes((q||'').toLowerCase())||x.phone.includes(q||'')));
+  if(!rows.length) return '<div class="sel-empty">讲师运营系统中未找到匹配的讲师</div>';
+  return rows.map(x=>{const added=opsStatus(x)==='已添加';return '<div class="sel-opt'+(added?' disabled':'')+'" '+(added?'':'onmousedown="selectOps(\''+x.personId+'\')"')+'><b>'+x.name+'</b><span class="muted">'+x.company+'</span>'+(added?'<span class="tag">已添加</span>':'')+'</div>'}).join('');
+}
+function opsInput(v){state.accNew.name=v;state.accNew.sel=null;const l=document.getElementById('opsList');if(l){l.innerHTML=opsOptions(v);l.style.display='block'}}
+function opsOpen(){const l=document.getElementById('opsList');if(l){l.innerHTML=opsOptions(state.accNew.sel?'':state.accNew.name);l.style.display='block'}}
+function opsClose(){setTimeout(()=>{const l=document.getElementById('opsList');if(l)l.style.display='none'},150)}
+function accountNew(){
+  const kind=qs().get('from')==='assistant'?'assistant':'teacher',word=kind==='assistant'?'助教':'讲师',st=state.accNew;
+  if(st.kind!==kind){Object.assign(st,{kind,sel:null,name:'',gender:'男',idNo:'',phone:'',type:'个人讲师',price:'',entity:'个人',orgId:''})}
+  const sel=OPS_POOL.find(x=>x.personId===st.sel);
+  const f=(label,body,req)=>'<div class="field"><label>'+label+(req?' <em>*</em>':'')+'</label>'+body+'</div>';
+  const dis=sel?'':'disabled',ph='选择讲师后可修改';
+  let body;
+  if(kind==='teacher'){
+    body=f('讲师姓名','<div class="sel-wrap"><input class="input" id="opsName" autocomplete="off" value="'+st.name+'" placeholder="输入姓名搜索，从讲师运营系统中选择" oninput="opsInput(this.value)" onfocus="opsOpen()" onblur="opsClose()"><div class="sel-list" id="opsList" style="display:none"></div></div>',1)+
+    f('性别','<select class="select" '+dis+' onchange="state.accNew.gender=this.value"><option '+(st.gender==='男'?'selected':'')+'>男</option><option '+(st.gender==='女'?'selected':'')+'>女</option></select>')+
+    f('身份证号','<input class="input" '+dis+' maxlength="18" value="'+st.idNo+'" placeholder="'+ph+'" oninput="state.accNew.idNo=this.value">')+
+    f('手机号','<input class="input" '+dis+' maxlength="11" value="'+st.phone+'" placeholder="'+(st.entity==='机构'?'机构讲师不登录小程序，可不填':ph)+'" oninput="state.accNew.phone=this.value">',st.entity==='机构'?0:1)+
+    f('讲师类型','<select class="select" '+dis+' onchange="state.accNew.type=this.value"><option '+(st.type==='个人讲师'?'selected':'')+'>个人讲师</option><option '+(st.type==='机构讲师'?'selected':'')+'>机构讲师</option></select>')+
+    f('讲师价格（元/天）','<input class="input" type="number" '+dis+' value="'+st.price+'" placeholder="'+ph+'" oninput="state.accNew.price=this.value">')+
+    f('合作主体','<select class="select" '+dis+' onchange="state.accNew.entity=this.value;state.accNew.orgId=\'\';render()"><option '+(st.entity==='个人'?'selected':'')+'>个人</option><option '+(st.entity==='机构'?'selected':'')+'>机构</option></select>')+
+    (st.entity==='机构'?f('所属机构','<select class="select" '+dis+' onchange="state.accNew.orgId=this.value;render()"><option value="">请选择机构账户</option>'+state.orgs.map(o=>'<option value="'+o.id+'" '+(st.orgId===o.id?'selected':'')+'>'+o.orgName+'</option>').join('')+'</select><div class="muted" style="margin-top:6px;font-size:12px">'+(st.orgId?'该讲师不单独生成小程序账号，课酬归属 <b>'+orgName(st.orgId)+'</b>，由机构机构收款人登录并提现':'找不到机构？<a class="link" href="#/accounts/org/new">去创建机构账户</a>')+'</div>',1):'');
+  }else{
+    body=f('助教姓名','<input class="input" id="astName" value="'+st.name+'" placeholder="请输入姓名" oninput="state.accNew.name=this.value">',1)+
+    f('性别','<select class="select" id="astGender" onchange="state.accNew.gender=this.value"><option '+(st.gender==='男'?'selected':'')+'>男</option><option '+(st.gender==='女'?'selected':'')+'>女</option></select>')+
+    f('身份证号','<input class="input" id="astId" maxlength="18" value="'+st.idNo+'" placeholder="请输入18位身份证号" oninput="state.accNew.idNo=this.value">')+
+    f('手机号','<input class="input" id="astPhone" maxlength="11" value="'+st.phone+'" placeholder="请输入11位手机号" oninput="state.accNew.phone=this.value">',1);
+  }
+  return title('添加'+word,'','<button class="btn" onclick="go(\'/accounts/'+kind+'\')">返回列表</button><button class="btn primary" onclick="createAccount()">创建账户</button>')+
+  '<section class="card"><div class="card-head"><h3>'+word+'信息</h3><span class="muted">'+(kind==='teacher'?'讲师姓名只能从讲师运营系统选择，选中后其他信息自动带出，可按需修改':'助教需手动录入')+'</span></div><div class="card-body"><div class="form-3">'+body+'</div></div></section>';
+}
+function selectOps(id){state.accNew.sel=id;const x=OPS_POOL.find(o=>o.personId===id);state.accNew.name=x.name;const isOrg=x.type==='机构讲师',org=isOrg?state.orgs.find(o=>x.company.split(' / ')[0]===o.orgName):null;
+  Object.assign(state.accNew,{gender:x.gender,idNo:x.idNo,phone:x.phone,type:x.type,price:String(parseInt(x.price)||''),entity:isOrg?'机构':'个人',orgId:org?org.id:''});render()}
+function createAccount(){
+  const st=state.accNew,kind=st.kind,id='SU'+(100700+state.accounts.length*7+3);
+  let acc;
+  if(kind==='teacher'){
+    const x=OPS_POOL.find(o=>o.personId===st.sel);
+    if(!x){toast('无法创建','请从下拉列表中选择讲师运营系统中的讲师','error');return}
+    if(opsStatus(x)!=='可添加'){toast('无法创建','该讲师已存在账户','error');return}
+    const ph=st.phone.trim(),idn=st.idNo.trim(),isOrg=st.entity==='机构';
+    if(isOrg&&!st.orgId){toast('请选择所属机构','合作主体为机构时必须归属到已创建的机构账户；若尚未创建请先创建机构账户','error');return}
+    if(!isOrg&&!/^1\d{10}$/.test(ph)){toast('手机号格式不正确','请填写完整的11位手机号','error');return}
+    if(isOrg&&ph&&!/^1\d{10}$/.test(ph)){toast('手机号格式不正确','请填写完整的11位手机号，或留空','error');return}
+    if(idn&&!/^\d{17}[\dXx]$/.test(idn)){toast('身份证号格式不正确','请填写18位身份证号','error');return}
+    if(!isOrg&&state.accounts.some(a=>a.phone===maskPhone(ph))){toast('无法创建','该手机号已被其他账户占用','error');return}
+    acc={id:isOrg?'JS-'+x.personId:id,personId:x.personId,name:x.name,phone:maskPhone(ph),roles:'讲师',gender:st.gender,idNo:idn,type:st.type,price:st.price?st.price+' 元/天':'',entity:st.entity||'个人'};
+    if(isOrg)acc.orgId=st.orgId;
+  }else{
+    const name=st.name.trim(),ph=st.phone.trim(),idn=st.idNo.trim();
+    if(!name){toast('请填写助教姓名','姓名为必填项','error');return}
+    if(!/^1\d{10}$/.test(ph)){toast('手机号格式不正确','请填写完整的11位手机号','error');return}
+    if(idn&&!/^\d{17}[\dXx]$/.test(idn)){toast('身份证号格式不正确','请填写18位身份证号','error');return}
+    if(state.accounts.some(a=>a.phone===maskPhone(ph))){toast('无法创建','该手机号已被其他账户占用','error');return}
+    acc={id,personId:'ZJ'+(20000+state.accounts.length),name,phone:maskPhone(ph),roles:'助教',gender:st.gender,idNo:idn};
+  }
+  state.accounts.push(Object.assign({wechat:'未绑定',bank:'未填写',available:0,pending:0,frozen:0,paid:0,project:'—',invite:'尚未发送'},acc.orgId?{wechat:'—',bank:'—'}:{},acc));
+  Object.assign(st,{kind:'',sel:null,name:'',gender:'男',idNo:'',phone:'',type:'个人讲师',price:'',entity:'个人',orgId:''});
+  if(acc.orgId)toast('讲师已创建','课酬将归属 '+orgName(acc.orgId)+'，不单独生成小程序账号');else toast('账户已创建',acc.name+' 的账户已创建，首次有课酬入账时将发送小程序登录邀请');go('/accounts/detail?id='+acc.id+'&from='+kind);
+}
+function accountDetail(){
+  const a=state.accounts.find(x=>x.id===qs().get('id'))||state.accounts[0];
+  if(a.orgId){
+    const og=state.orgs.find(o=>o.id===a.orgId)||{},oi2=(k,v)=>'<div class="info-item"><div class="k">'+k+'</div><div class="v">'+(v||'—')+'</div></div>';
+    return title('讲师详情',a.name,'<button class="btn" onclick="go(\'/accounts/teacher\')">返回列表</button><button class="btn primary" onclick="go(\'/accounts/org/detail?id='+og.id+'\')">查看机构账户</button>')+
+    '<div class="grid-2"><div><section class="card"><div class="card-head"><h3>讲师信息</h3>'+tag('机构合作','blue')+'</div><div class="info-grid">'+oi2('姓名',a.name)+oi2('角色',a.roles)+oi2('合作主体','机构')+oi2('所属机构',og.orgName)+oi2('性别',a.gender)+oi2('身份证号',a.idNo?a.idNo.slice(0,6)+'********'+a.idNo.slice(-4):'')+oi2('讲师类型',a.type)+oi2('讲师价格',a.price)+oi2('手机号',a.phone)+'</div></section></div>'+
+    '<aside><section class="card"><div class="card-head"><h3>结算说明</h3></div><div class="card-body" style="line-height:1.9">该讲师为机构合作，<b>不单独生成小程序账号</b>，不能自行登录和提现。<br>课酬归属机构账户 <b>'+(og.orgName||'—')+'</b>，由机构收款人 <b>'+(og.rep||'—')+'</b>（'+(og.phone||'—')+'）登录小程序，按机构身份开具发票后提现。<div class="muted">课酬账单中保留实际授课人，用于对账与追溯。</div></div></section></aside></div>';
+  }
+  const o=Object.assign({},OPS_POOL.find(x=>x.personId===a.personId)||{},a.gender?{gender:a.gender,idNo:a.idNo,type:a.type,price:a.price}:{});
+  const oi=(k,v)=>'<div class="info-item"><div class="k">'+k+'</div><div class="v">'+(v||'—')+'</div></div>';
+  return title((qs().get('from')==='assistant'?'助教':'讲师')+'账户详情',a.name,'<button class="btn" onclick="go(\'/accounts/'+(qs().get('from')||'teacher')+'\')">返回列表</button>'+(canOp()&&a.wechat==='未绑定'?'<button class="btn primary" onclick="resendInvite(\''+a.id+'\')">重新发送邀请</button>':''))+
+  '<div class="grid-2"><div><section class="card"><div class="card-head"><h3>账户信息</h3>'+tag(a.wechat,a.wechat==='已绑定'?'green':'orange')+'</div><div class="info-grid"><div class="info-item"><div class="k">姓名</div><div class="v">'+a.name+'</div></div><div class="info-item"><div class="k">角色</div><div class="v">'+a.roles+'</div></div><div class="info-item"><div class="k">当前手机号</div><div class="v">'+a.phone+'</div></div><div class="info-item"><div class="k">微信状态</div><div class="v">'+a.wechat+'</div></div><div class="info-item"><div class="k">收款账户</div><div class="v">'+a.bank+'</div></div><div class="info-item"><div class="k">最近邀请</div><div class="v" id="inviteTime">'+a.invite+'</div></div>'+oi('性别',o.gender)+oi('身份证号',o.idNo?o.idNo.slice(0,6)+'********'+o.idNo.slice(-4):'')+(a.roles==='讲师'?oi('讲师类型',o.type)+oi('讲师价格',o.price):'')+'</div></section>'+
+  '<section class="card"><div class="card-head"><h3>最近课酬入账</h3></div><div class="table-wrap"><table><thead><tr><th>课酬账单</th><th>项目</th><th>合同号</th><th>角色</th><th>状态</th><th>金额</th></tr></thead><tbody><tr><td>KB202610-0188</td><td>'+a.project+'</td><td>'+pactOf(a.project)+'</td><td>'+tag(a.roles,a.roles==='讲师'?'blue':'purple')+'</td><td>'+tag('可提现','green')+'</td><td class="num">'+money(Math.min(a.available,9600))+'</td></tr><tr><td>KB202609-0162</td><td>金融行业大模型工作坊</td><td>'+pactOf('金融行业大模型工作坊')+'</td><td>'+tag(a.roles,a.roles==='讲师'?'blue':'purple')+'</td><td>'+tag('提现中','orange')+'</td><td class="num">'+money(Math.min(a.frozen,12000))+'</td></tr></tbody></table></div></section></div>'+
+  '<aside><div class="money-box"><div class="label">账户累计金额</div><div class="amount">'+money(a.available+a.pending+a.frozen+a.paid)+'</div><div class="money-row"><span><small>账期中</small><b>'+money(a.pending)+'</b></span><span><small>可提现</small><b>'+money(a.available)+'</b></span><span><small>提现中</small><b>'+money(a.frozen)+'</b></span></div></div><section class="card" style="margin-top:16px"><div class="card-head"><h3>账期设置</h3>'+(a.termDays?tag('讲师特殊账期','orange'):tag('角色默认','blue'))+'</div><div class="card-body" style="line-height:1.9"><div class="muted">账期按「最后执行日 + N 天」计算，到期即显示可提现；提现仍限每月 1~10 日（紧急提现除外）。优先级：紧急 &gt; 讲师特殊 &gt; 角色默认。</div><div style="margin-top:10px">当前生效：<b>'+(a.termDays||termDefault(a))+' 天</b>（角色默认 '+termDefault(a)+' 天）</div>'+(canTerm()?'<div style="display:flex;gap:8px;margin-top:10px;align-items:center"><input class="input" id="termInput" type="number" min="0" style="width:120px" value="'+(a.termDays||'')+'" placeholder="留空=用默认"><button class="btn sm primary" onclick="saveTerm(\''+a.id+'\')">保存特殊账期</button></div>':'<div class="muted" style="margin-top:8px">特殊账期仅财务可维护</div>')+'</div></section>'+(a.roles==='讲师'?'<section class="card" style="margin-top:16px"><div class="card-head"><h3>合作主体</h3></div><div class="card-body" style="line-height:1.9">合作主体：<b>个人</b><div class="muted">个人合作：授课人即收款人，本人手机号登录小程序；可选云账户 / 开发票 / 劳务费代扣</div></div></section>':'')+'<section class="card" style="margin-top:16px"><div class="card-head"><h3>账户规则</h3></div><div class="card-body muted" style="line-height:1.9">手机号修改只在讲师运营系统进行。修改后解除旧微信绑定，但账户余额与历史流水保持不变。已提交提现单保留手机号及收款账户快照。</div></section></aside></div>';
+}
+function saveTerm(id){
+  const a=state.accounts.concat(state.orgs).find(x=>x.id===id),v=document.getElementById('termInput').value.trim();
+  if(v!==''&&!(Number(v)>=0)){toast('请输入有效天数','账期天数需为不小于 0 的数字','error');return}
+  a.termDays=v===''?0:Number(v);toast('账期已保存',a.name+' 当前账期：'+(a.termDays||termDefault(a))+' 天'+(a.termDays?'（特殊）':'（角色默认）'));render();
+}
+function resendInvite(id){const a=state.accounts.concat(state.orgs).find(x=>x.id===id);a.invite='2026-11-03 19:31';toast('邀请已重新发送','登录邀请已发送至 '+a.phone+(a.orgName?'（机构收款人 '+a.rep+'）':''));render()}
+
+function exportWithdrawals(){
+  exportCsv('提现单',['提现单号','类型','讲师','角色','讲师类型','手机号','收款人','合同号','提现方式','金额','提交时间','付款单','状态'],wdRows().map(w=>[w.id,w.kind,w.name,teacherInfo(w).role,teacherInfo(w).type,teacherInfo(w).phone,w.payee||w.name,(typeof wPacts==='function'?wPacts(w):''),w.method,w.amount,w.date,w.payment,w.status]));
+}
+const WD_STATUS=['提现中','已到账','失败待审批','付款失败','暂不付款（已退回余额）'];
+function wdRows(){const f=state.wf||{},t=state.wdTab||'all';return state.withdrawals.filter(w=>(t==='all'||w.kind===t)&&wfMatch(w,f))}
+function wdRead(){if(!document.getElementById('wfQ'))return;fReadInto(state.wf||(state.wf={}),[['wfQ','q'],['wfName','name'],['wfPayee','payee'],['wfPhone','phone'],['wfPact','pact'],['wfStatus','status'],['wfRole','role'],['wfTtype','ttype'],['wfMethod','method'],['wfPay','pay'],['wfProject','project'],['wfMin','min'],['wfMax','max'],['wfFrom','from'],['wfTo','to']],'wfProxy')}
+function wdQuery(){wdRead();if(state.pg.wd)state.pg.wd.page=1;render()}
+function wdReset(){state.wf={more:(state.wf||{}).more};if(state.pg.wd)state.pg.wd.page=1;render()}
+function wdToggleMore(){wdRead();state.wf.more=!state.wf.more;render()}
+function setWdTab(t){wdRead();state.wdTab=t;if(state.pg.wd)state.pg.wd.page=1;render()}
+function wdTabs(){
+  const f=state.wf||{},t=state.wdTab||'all',n=k=>state.withdrawals.filter(w=>(k==='all'||w.kind===k)&&wfMatch(w,f)).length;
+  return '<div class="tabs">'+[['all','全部提现单'],['普通','普通提现'],['紧急','紧急提现']].map(x=>'<button class="tab '+(t===x[0]?'active':'')+'" onclick="setWdTab(\''+x[0]+'\')">'+x[1]+' <span class="cf-n">'+n(x[0])+'</span></button>').join('')+'</div>';
+}
+function wdBar(){
+  const f=state.wf||(state.wf={}),moreN=['role','ttype','method','pay','project','min','max','from','to'].filter(k=>f[k]!==''&&f[k]!=null).length+(f.proxy?1:0);
+  return '<div class="filters">'+FI('wfQ',f.q,'支持模糊','提现单号','wdQuery()')+FI('wfName',f.name,'讲师 / 助教','姓名','wdQuery()')+FI('wfPayee',f.payee,'收款人姓名','收款人','wdQuery()')+FI('wfPhone',f.phone,'支持后 4 位','手机号','wdQuery()')+FI('wfPact',f.pact,'支持模糊','合同号','wdQuery()')+FS('wfStatus','状态',f.status,[['','全部状态']].concat(WD_STATUS.map(x=>[x,x])))+
+    '<span class="filter-actions"><button class="fbtn query" onclick="wdQuery()">查询</button><button class="fbtn reset" onclick="wdReset()">重置</button><button class="fbtn export" onclick="wdToggleMore()">更多筛选'+(moreN?'（'+moreN+'）':'')+(f.more?' ▴':' ▾')+'</button><button class="fbtn export" onclick="exportWithdrawals()">导出</button></span>'+
+    '<div class="filters-more'+(f.more?' open':'')+'">'+FS('wfRole','角色',f.role,F_ROLE)+FS('wfTtype','讲师类型',f.ttype,F_TTYPE)+FS('wfMethod','提现方式',f.method,[['','全部'],['云账户','云账户'],['开发票','开发票'],['劳务费','劳务费']])+FI('wfPay',f.pay,'付款单号','付款单号','wdQuery()')+FS('wfProject','项目',f.project,fProjOpts(state.withdrawals))+FAMT('wfMin','wfMax',f,'min','max')+'<label class="fl"><span>提交时间</span><span class="date-range"><input type="date" class="input" id="wfFrom" value="'+fAttr(f.from)+'"><i>~</i><input type="date" class="input" id="wfTo" value="'+fAttr(f.to)+'"></span></label>'+FPROXY('wfProxy',f)+'</div></div>';
+}
+function withdrawals(){
+  return wdBar()+title('提现单','普通与紧急提现分开管理；后台保留分摊关系，讲师端不展示。','')+
+  wdTabs()+'<section class="card" style="border-top:0;border-radius:0 0 11px 11px"><div class="table-wrap"><table><thead><tr><th>提现单号</th><th>类型</th><th>讲师</th><th>角色</th><th>讲师类型</th><th>手机号</th><th>收款人</th><th>合同号</th><th>提现方式</th><th>金额</th><th>提交时间</th><th>付款单</th><th>状态</th><th>操作</th></tr></thead><tbody>'+slicePg('wd',wdRows()).map(w=>'<tr><td><b>'+w.id+'</b></td><td>'+tag(w.kind,w.kind==='紧急'?'orange':'blue')+'</td><td>'+w.name+'</td><td>'+tag(teacherInfo(w).role,teacherInfo(w).role==='讲师'?'blue':'purple')+'</td><td>'+teacherInfo(w).type+'</td><td>'+teacherInfo(w).phone+'</td><td>'+payeeCell(w)+'</td><td>'+wPactCell(w)+'</td><td>'+w.method+'</td><td class="num">'+money(w.amount)+'</td><td>'+w.date+'</td><td>'+w.payment+'</td><td>'+tag(w.status,w.status==='已到账'?'green':w.status.includes('失败')?'red':w.deferred?'':'orange')+'</td><td><button class="link" onclick="showAllocation(\''+w.id+'\')">查看构成</button></td></tr>').join('')+(wdRows().length?'':'<tr><td colspan="14" class="muted" style="text-align:center;height:100px">没有符合筛选条件的提现单</td></tr>')+'</tbody></table></div>'+pager('wd',wdRows().length)+'</section>';
+}
+function showAllocation(id){
+  const w=state.withdrawals.find(x=>x.id===id);
+  modal('提现单构成 · '+id,'<p class="modal-note"><b>后台可见：</b>这笔提现由以下课酬账单构成（按先进先出拆分），一张提现单可能跨多个合同，用于对账和核对合同号；收款人与讲师不一致时标「代收」，付款前请核对。讲师端只看到提现金额、方式和付款状态。</p>'+allocTable(w),'知道了',closeModal);document.querySelector('.modal').style.width='min(760px,100%)';
+}
+
+const pyKind=p=>p.kind||'月度';
+function setPyTab(t){state.pyTab=t;if(state.pg.monthly)state.pg.monthly.page=1;render()}
+function monthlyPayments(){
+  const t=state.pyTab||'all',n=k=>state.monthly.filter(p=>k==='all'||pyKind(p)===k).length,rows=state.monthly.filter(p=>t==='all'||pyKind(p)===t);
+  return title('付款单','月度付款单：系统每月 11 号按云账户、开发票、劳务费自动生成三张；紧急付款单：项目经理发起紧急提现时生成，无账期，每笔一张。','')+
+  '<div class="tabs">'+[['all','全部'],['月度','月度付款单'],['紧急','紧急付款单']].map(x=>'<button class="tab '+(t===x[0]?'active':'')+'" onclick="setPyTab(\''+x[0]+'\')">'+x[1]+' <span class="cf-n">'+n(x[0])+'</span></button>').join('')+'</div>'+
+  '<section class="card" style="border-top:0;border-radius:0 0 11px 11px"><div class="table-wrap"><table><thead><tr><th>付款单号</th><th>类型</th><th>月份</th><th>付款方式</th><th>提现单数</th><th>付款金额</th><th>易快报单</th><th>状态</th><th>操作</th></tr></thead><tbody>'+slicePg('monthly',rows).map(p=>'<tr><td><b>'+p.id+'</b></td><td>'+tag(pyKind(p)==='紧急'?'紧急':'月度',pyKind(p)==='紧急'?'orange':'blue')+'</td><td>'+p.month+'</td><td>'+tag(p.method,p.method==='云账户'?'blue':p.method==='开发票'?'purple':'orange')+'</td><td>'+p.count+' 笔</td><td class="num">'+money(p.amount)+'</td><td>'+p.eak+'</td><td>'+tag(p.status,p.locked?'green':'orange')+'</td><td><button class="link" onclick="go(\'/payments/monthly/detail?id='+p.id+'\')">查看详情</button></td></tr>').join('')+(rows.length?'':'<tr><td colspan="9" class="muted" style="text-align:center;height:100px">暂无付款单</td></tr>')+'</tbody></table></div>'+pager('monthly',rows.length)+'</section>';
+}
+function monthlyDetail(){
+  const p=state.monthly.find(x=>x.id===qs().get('id'))||state.monthly[0];
+  if(state.mdFor!==p.id){state.mdFor=p.id;state.mdTab='pay';state.mdSel.clear();state.mdF={}}
+  const urg=pyKind(p)==='紧急',all=state.withdrawals.filter(w=>w.payment===p.id&&w.kind===(urg?'紧急':'普通')),f=state.mdF||(state.mdF={}),fPay=Object.assign({},f,{reason:'',by:''}),fOn=fActive(f),allPaused=all.filter(w=>w.deferred),allList=all.filter(w=>!w.deferred),paused=allPaused.filter(w=>wfMatch(w,f)),list=allList.filter(w=>wfMatch(w,fPay));
+  const canAct=!p.locked&&state.role!=='finance'&&!urg,tab=state.mdTab,isPay=tab==='pay';
+  const pausedAmt=allPaused.reduce((n,w)=>n+w.amount,0);
+  const pickIds=list.map(w=>w.id),selN=pickIds.filter(id=>state.mdSel.has(id)),selAmt=list.filter(w=>state.mdSel.has(w.id)).reduce((n,w)=>n+w.amount,0);
+  const row=w=>'<tr>'+(canAct?'<td><input type="checkbox" class="check" '+(state.mdSel.has(w.id)?'checked':'')+' onchange="toggleMd(\''+w.id+'\',this.checked)"></td>':'')+'<td><b>'+w.id+'</b></td><td>'+w.name+'</td><td>'+tag(teacherInfo(w).role,teacherInfo(w).role==='讲师'?'blue':'purple')+'</td><td>'+teacherInfo(w).type+'</td><td>'+teacherInfo(w).phone+'</td><td>'+payeeCell(w)+'</td><td>'+w.bank.split(' ')[0]+'</td><td>'+w.bank.split(' ').slice(1).join(' ')+'</td><td>'+w.project+'</td><td>'+[...new Set(wComp(w).map(r=>r.bill))].join('<br>')+'</td><td>'+[...new Set(wComp(w).map(r=>r.exec))].join('<br>')+'</td><td>'+wPactCell(w)+'</td><td>'+(PAY_CONTRACT[w.project]||'付款合同未返回')+'</td><td>授课</td><td class="num">'+money(w.amount/2)+'</td><td>2</td><td>天</td><td class="num">'+money(w.amount)+'</td>'+(p.method==='开发票'?'<td><button class="link" onclick="toast(\'发票已下载\',\''+w.id+' 电子发票\')">下载</button></td>':'')+'<td><button class="link" onclick="showAllocation(\''+w.id+'\')">查看构成</button>'+(canAct?' <button class="link" style="color:var(--red)" onclick="removeWithdrawals(\''+p.id+'\',[\''+w.id+'\'])">暂不付款</button>':'')+'</td></tr>';
+  const prow=w=>'<tr><td><b>'+w.id+'</b></td><td>'+w.name+'</td><td>'+payeeCell(w)+'</td><td>'+w.project+'</td><td class="num">'+money(w.amount)+'</td><td>'+tag(w.pauseReason||'—','orange')+'</td><td>'+(w.pauseNote||'<span class="muted">—</span>')+'</td><td>'+(w.pauseBy||CF_OPERATOR)+'</td><td>'+(w.pauseAt||'—')+'</td><td><button class="link" onclick="showAllocation(\''+w.id+'\')">查看构成</button></td></tr>';
+  const payTable='<table class="'+(canAct?'has-check':'')+'"><thead><tr>'+(canAct?'<th><input type="checkbox" class="check" '+(list.length&&selN.length===list.length?'checked':'')+' onchange="toggleAllMd(this.checked)"></th>':'')+'<th>提现单</th><th>讲师</th><th>角色</th><th>讲师类型</th><th>手机号</th><th>收款人</th><th>开户行</th><th>收款账号</th><th>项目</th><th>课酬账单</th><th>执行单</th><th>合同号</th><th>付款合同号</th><th>费用类别</th><th>单价</th><th>数量</th><th>单位</th><th>金额</th>'+(p.method==='开发票'?'<th>发票</th>':'')+'<th>操作</th></tr></thead><tbody>'+(list.length?slicePg('mdetail',list).map(row).join(''):'<tr><td colspan="23" class="muted" style="text-align:center;height:100px">'+(fOn?'没有符合筛选条件的提现单':'本月没有需要付款的提现单')+'</td></tr>')+'</tbody></table>';
+  const pausedTable='<table><thead><tr><th>提现单</th><th>讲师</th><th>收款人</th><th>项目</th><th>金额</th><th>暂不付款原因</th><th>内部说明</th><th>操作人</th><th>操作时间</th><th>操作</th></tr></thead><tbody>'+(paused.length?slicePg('mdetail',paused).map(prow).join(''):'<tr><td colspan="10" class="muted" style="text-align:center;height:100px">'+(fOn?'没有符合筛选条件的提现单':'暂无暂不付款的提现单')+'</td></tr>')+'</tbody></table>';
+  return title('付款单详情',p.id+' · '+(urg?'紧急付款单':'月度付款单')+' · '+p.month+' · '+p.method,'<button class="btn" onclick="go(\'/payments/monthly\')">返回列表</button>'+(p.method==='开发票'?'<button class="btn" onclick="toast(\'发票一键下载\',\'已打包下载本付款单全部发票\')">一键下载发票</button>':'')+(p.locked||state.role==='finance'?'':'<button class="btn primary" onclick="markEak(\''+p.id+'\')">标记已提交易快报</button>'))+
+  '<section class="card"><div class="info-grid"><div class="info-item"><div class="k">付款方式</div><div class="v">'+p.method+'</div></div><div class="info-item"><div class="k">提现单数</div><div class="v">'+p.count+' 笔'+(allPaused.length?'　<button class="link" onclick="setMdTab(\'paused\')">暂不付款 '+allPaused.length+' 笔 · '+money(pausedAmt)+' ›</button>':'')+'</div></div><div class="info-item"><div class="k">付款金额</div><div class="v num">'+money(p.amount)+'</div></div><div class="info-item"><div class="k">状态</div><div class="v">'+tag(p.status,p.locked?'green':'orange')+'</div></div></div></section>'+
+  mdBar(f,isPay,all)+'<div class="tabs"><button class="tab '+(isPay?'active':'')+'" onclick="setMdTab(\'pay\')">'+(urg?'付款明细':'本月付款')+' ('+(fOn?list.length+' / '+allList.length:list.length)+')</button>'+(urg?'':'<button class="tab '+(!isPay?'active':'')+'" onclick="setMdTab(\'paused\')">暂不付款 ('+(fOn?paused.length+' / '+allPaused.length:paused.length)+')</button>')+'<span style="margin-left:auto;align-self:center;padding:6px 0"><button class="btn primary" onclick="exportMonthly(\''+p.id+'\')">导出明细</button></span></div>'+
+  (isPay&&canAct&&selN.length?'<div class="selectbar"><span>已选择 <b>'+selN.length+'</b> 笔，合计 '+money(selAmt)+'</span><span style="display:flex;gap:8px"><button class="btn sm" onclick="state.mdSel.clear();render()">取消选择</button><button class="btn sm warn" onclick="removeWithdrawals(\''+p.id+'\',[...state.mdSel])">批量暂不付款</button></span></div>':'')+
+  '<section class="card" style="border-top:0;border-radius:0 0 11px 11px"><div class="table-wrap">'+(isPay?payTable:pausedTable)+'</div>'+pager('mdetail',(isPay?list:paused).length)+'</section>'+
+  '<section class="card"><div class="card-head"><h3>付款单备注</h3></div><div class="card-body"><textarea id="paymentNote" '+(p.locked||state.role==='finance'?'disabled':'')+' style="width:100%;min-height:80px;border:1px solid var(--line);border-radius:7px;padding:10px">'+p.note+'</textarea>'+(p.locked||state.role==='finance'?'':'<div style="margin-top:10px;text-align:right"><button class="btn sm" onclick="saveNote(\''+p.id+'\')">保存备注</button></div>')+'</div></section>';
+}
+function mdRead(){if(!document.getElementById('mdWho'))return;fReadInto(state.mdF||(state.mdF={}),[['mdWho','who'],['mdPhone','phone'],['mdId','q'],['mdProject','project'],['mdPact','pact'],['mdRole','role'],['mdTtype','ttype'],['mdMin','min'],['mdMax','max'],['mdBill','bill'],['mdExec','exec'],['mdReason','reason'],['mdBy','by']],'mdProxy')}
+function mdQuery(){mdRead();state.mdSel.clear();if(state.pg.mdetail)state.pg.mdetail.page=1;render()}
+function mdReset(){state.mdF={more:(state.mdF||{}).more};state.mdSel.clear();if(state.pg.mdetail)state.pg.mdetail.page=1;render()}
+function mdToggleMore(){mdRead();state.mdF.more=!state.mdF.more;render()}
+function mdBar(f,isPay,rows){
+  const moreN=['role','ttype','min','max','bill','exec'].filter(k=>f[k]!==''&&f[k]!=null).length+(f.proxy?1:0);
+  return '<div class="filters">'+FI('mdWho',f.who,'讲师 / 收款人','讲师/收款人','mdQuery()')+FI('mdPhone',f.phone,'支持后 4 位','手机号','mdQuery()')+FI('mdId',f.q,'支持模糊','提现单号','mdQuery()')+FS('mdProject','项目',f.project,fProjOpts(rows))+FI('mdPact',f.pact,'支持模糊','合同号','mdQuery()')+
+    (isPay?'':FI('mdReason',f.reason,'如 银行卡状态异常','暂不付款原因','mdQuery()')+FI('mdBy',f.by,'操作人','操作人','mdQuery()'))+
+    '<span class="filter-actions"><button class="fbtn query" onclick="mdQuery()">查询</button><button class="fbtn reset" onclick="mdReset()">重置</button><button class="fbtn export" onclick="mdToggleMore()">更多筛选'+(moreN?'（'+moreN+'）':'')+(f.more?' ▴':' ▾')+'</button></span>'+
+    '<div class="filters-more'+(f.more?' open':'')+'">'+FS('mdRole','角色',f.role,F_ROLE)+FS('mdTtype','讲师类型',f.ttype,F_TTYPE)+FAMT('mdMin','mdMax',f,'min','max')+FPROXY('mdProxy',f)+FI('mdBill',f.bill,'课酬账单号','课酬账单','mdQuery()')+FI('mdExec',f.exec,'执行单号','执行单','mdQuery()')+'</div></div>';
+}
+function setMdTab(t){mdRead();if(state.mdF)Object.assign(state.mdF,{reason:'',by:''});state.mdTab=t;state.mdSel.clear();if(state.pg.mdetail)state.pg.mdetail.page=1;render()}
+function mdPickIds(){const p=state.monthly.find(x=>x.id===state.mdFor);return state.withdrawals.filter(w=>w.payment===p.id&&w.kind===(pyKind(p)==='紧急'?'紧急':'普通')&&!w.deferred&&wfMatch(w,Object.assign({},state.mdF||{},{reason:'',by:''}))).map(w=>w.id)}
+function toggleMd(id,v){v?state.mdSel.add(id):state.mdSel.delete(id);render()}
+function toggleAllMd(v){mdPickIds().forEach(id=>v?state.mdSel.add(id):state.mdSel.delete(id));render()}
+function exportMonthly(pid){
+  const p=state.monthly.find(x=>x.id===pid),list=state.withdrawals.filter(w=>w.payment===p.id&&w.kind===(pyKind(p)==='紧急'?'紧急':'普通')&&wfMatch(w,state.mdF||{}));
+  exportCsv('付款单明细_'+p.id,['付款单号','付款单类型','提现单','讲师','角色','讲师类型','手机号','收款人','开户行','收款账号','项目','课酬账单','执行单','销售合同号','付款合同号','费用类别','单价','数量','单位','金额','状态','暂不付款原因'],list.map(w=>[p.id,pyKind(p)==='紧急'?'紧急付款单':'月度付款单',w.id,w.name,teacherInfo(w).role,teacherInfo(w).type,teacherInfo(w).phone,w.payee||w.name,w.bank.split(' ')[0],w.bank.split(' ').slice(1).join(' '),w.project,[...new Set(wComp(w).map(r=>r.bill))].join('、'),[...new Set(wComp(w).map(r=>r.exec))].join('、'),pactOf(w.project),(PAY_CONTRACT[w.project]||''),'授课',w.amount/2,2,'天',w.amount,w.deferred?'暂不付款':'本月付款',w.deferred?(w.pauseReason||''):'']));
+}
+function removeWithdrawal(pid,wid){removeWithdrawals(pid,[wid])}
+function removeWithdrawals(pid,ids){
+  const p=state.monthly.find(x=>x.id===pid),ws=ids.map(id=>state.withdrawals.find(x=>x.id===id)).filter(w=>w&&!w.deferred);
+  if(!ws.length||p.locked){toast('无法操作','没有可暂不付款的提现单，或付款单已锁定','error');return}
+  const total=ws.reduce((n,w)=>n+w.amount,0);
+  modal(ws.length>1?'批量暂不付款':'本次暂不付款','<div style="background:#fff4f4;border:1px solid #f5c2c2;border-radius:8px;padding:12px 14px;margin-bottom:14px;line-height:1.8;color:#b42318"><b>请慎重操作：</b>确认后，本次 <b>'+ws.length+' 笔</b>、合计 <b>'+money(total)+'</b> 将<b>退回到讲师的提现余额</b>中，本月不再付款，且<b>不可撤销</b>；本月提现窗口已过，讲师<b>只能在下个月的提现窗口</b>重新申请提现，到账时间也会随之推迟。</div>'+(ws.length>1?'<div class="muted" style="margin-bottom:12px;line-height:1.8">提现单：'+ws.slice(0,6).map(w=>w.id).join('、')+(ws.length>6?' 等 '+ws.length+' 笔':'')+'</div>':'')+'<div class="field"><label><em>*</em> 暂不付款原因（讲师可见）'+(ws.length>1?'，将应用于所选全部提现单':'')+'</label><input class="input" id="removeReason" maxlength="50" placeholder="可点击下方常用原因快速填入，也可手动输入或修改"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">'+['发票材料待补充','收款账户信息需确认','个税材料待补充','其他付款材料问题'].map(r=>'<button type="button" class="ib-chip" onclick="document.getElementById(\'removeReason\').value=\''+r+'\';document.getElementById(\'removeReason\').focus()">'+r+'</button>').join('')+'</div></div><div class="field"><label>内部说明</label><textarea id="removeNote" placeholder="仅后台可见"></textarea></div>','确认暂不付款',()=>{
+    const r=document.getElementById('removeReason').value.trim();if(!r){toast('无法操作','请填写暂不付款原因（讲师可见）','error');return}
+    const note=document.getElementById('removeNote').value.trim();
+    ws.forEach(w=>{w.deferred=true;w.status='暂不付款（已退回余额）';w.pauseReason=r;w.pauseNote=note;w.pauseBy=CF_OPERATOR;w.pauseAt='2026-11-18 16:30';state.mdSel.delete(w.id)});
+    p.count-=ws.length;p.amount-=total;closeModal();
+    toast('已暂不付款',ws.length+' 笔因“'+r+'”本月不付款，合计 '+money(total)+' 已退回讲师提现余额，下月提现窗口可重新申请');render();
+  },'warn');
+}
+function saveNote(id){const p=state.monthly.find(x=>x.id===id);p.note=document.getElementById('paymentNote').value;toast('备注已保存','未修改付款单金额与明细')}
+function markEak(id){
+  const p=state.monthly.find(x=>x.id===id);
+  modal('标记已提交易快报','<p class="modal-note">'+(pyKind(p)==='紧急'?'确认后付款单将立即锁定，不允许再修改备注。':'确认后付款单将立即锁定，不允许再对提现单选择暂不付款或修改备注。')+'</p><div class="field"><label><em>*</em> 易快报单号</label><input class="input" id="eakNo" value="EKB-202611-00902"></div>','确认并锁定',()=>{
+    const no=document.getElementById('eakNo').value.trim();if(!no){toast('请输入单号','易快报单号不能为空','error');return}
+    p.eak=no;p.status='已提交易快报';p.locked=true;closeModal();toast('付款单已锁定','已关联 '+no+'，后续不可修改');render();
+  });
+}
+
+/* ===== 付款确认（V3 重构）：按月 / 批次 / 状态 / 筛选 / 批量 / 整单 / 详情抽屉 ===== */
+const CF_TODAY='2026-11-18',CF_NOW='2026-11-18 16:30',CF_OPERATOR='张佳';
+const CF_COLS=[['kind','类型'],['name','讲师 / 助教'],['role','角色'],['ttype','讲师类型'],['phone','手机号'],['payee','收款人'],['pact','合同号'],['method','付款方式'],['amount','金额'],['batch','付款单号'],['tail','收款账号'],['date','提交时间'],['status','状态']];
+const CF_REASONS=['银行卡状态异常','收款账户信息错误','发票不符合付款要求','讲师主动放弃本次提现'];
+const CF_TABS=[['pending','待确认'],['done','已到账'],['failed','付款失败'],['paused','暂不付款'],['all','全部']];
+const CF_FIELDS={q:'',name:'',payee:'',method:'',kind:'',min:'',max:'',proxy:false,multi:[],batch:'',pact:'',phone:'',role:'',ttype:'',project:'',reason:'',fail:'',status:''};
+const cfMonthOf=w=>w.payment.slice(2,6)+'-'+w.payment.slice(6,8);
+const cfBatchKey=w=>w.payment.startsWith('JF')?'JF-'+cfMonthOf(w)+'-'+w.method:w.payment;
+const CF_METHODS=['云账户','开发票','劳务费'];
+const cfGroup=w=>w.deferred?'paused':w.status==='已到账'?'done':(w.status==='失败待审批'||w.status==='付款失败')?'failed':'pending';
+const cfSum=a=>a.reduce((s,x)=>s+x.amount,0);
+const cfCan=()=>state.role!=='finance';
+const cfTail=w=>{const p=(w.bank||'').split(' ');return p[0]+' 尾号 '+p[p.length-1]};
+const cfIsProxy=w=>(w.payee||w.name)!==w.name;
+function cfRender(){const t=document.querySelector('.cf-wrap');const s=t?t.scrollTop:0;window.__keepScroll=true;render();const n=document.querySelector('.cf-wrap');if(n)n.scrollTop=s}
+function cfPage1(){if(state.pg.confirm)state.pg.confirm.page=1}
+function cfClearSel(r){state.selectedConfirms.clear();state.cf.all=false;if(r)cfRender()}
+function cfRead(){
+  if(!document.getElementById('cfQ'))return;
+  fReadInto(state.cf,[['cfQ','q'],['cfName','name'],['cfPayee','payee'],['cfPhone','phone'],['cfPact','pact'],['cfMethod','method'],['cfKind','kind'],['cfMin','min'],['cfMax','max'],['cfRole','role'],['cfTtype','ttype'],['cfProject','project'],['cfReason','reason'],['cfFail','fail'],['cfStatus','status']],'cfProxy');
+}
+function cfToggleMore(){cfRead();state.cf.more=!state.cf.more;render()}
+function cfFilterBar(c,fi,sel2,mrows){
+  const moreN=['payee','pact','role','ttype','project','min','max'].filter(k=>c[k]!==''&&c[k]!=null).length+(c.proxy?1:0);
+  const tabF=c.tab==='paused'?fi('cfReason',c.reason||'','如 银行卡状态异常','暂不付款原因'):c.tab==='failed'?fi('cfFail',c.fail||'','失败原因关键词','失败原因')+sel2('cfStatus','状态',c.status||'',[['','全部'],['失败待审批','失败待审批'],['付款失败','付款失败']]):'';
+  return '<div class="filters cf-f">'+fi('cfQ',c.q,'支持模糊','提现单号')+fi('cfName',c.name,'讲师 / 助教','姓名')+fi('cfPhone',c.phone||'','支持后 4 位','手机号')+tabF+
+    (c.multi.length?'<span class="chip on"><button onclick="cfMultiModal()">单号批量查询（'+c.multi.length+' 个）</button><i onclick="state.cf.multi=[];cfPage1();cfClearSel();render()" title="清除">×</i></span>':'')+
+    '<span class="filter-actions"><button class="fbtn query" onclick="cfQuery()">查询</button><button class="fbtn reset" onclick="cfReset()">重置</button><button class="fbtn export" onclick="cfToggleMore()">更多筛选'+(moreN?'（'+moreN+'）':'')+(c.more?' ▴':' ▾')+'</button>'+cfSavedMenu(c)+'</span>'+
+    '<div class="filters-more'+(c.more?' open':'')+'">'+fi('cfPayee',c.payee,'收款人姓名','收款人')+fi('cfPact',c.pact,'支持模糊','合同号')+sel2('cfRole','角色',c.role||'',F_ROLE)+sel2('cfTtype','讲师类型',c.ttype||'',F_TTYPE)+sel2('cfProject','项目',c.project||'',fProjOpts(mrows))+FAMT('cfMin','cfMax',c,'min','max')+FPROXY('cfProxy',c)+'</div></div>';
+}
+function cfQuery(){cfRead();cfClearSel();cfPage1();render()}
+function cfReset(){Object.assign(state.cf,CF_FIELDS,{multi:[]});cfClearSel();cfPage1();render()}
+function cfSetTab(t){cfRead();state.cf.tab=t;Object.assign(state.cf,{reason:'',fail:'',status:''});cfClearSel();cfPage1();render()}
+function cfSetMonth(m){cfRead();Object.assign(state.cf,{month:m,batch:'',multi:[]});cfClearSel();cfPage1();render()}
+function cfMonths(){return [...new Set(state.withdrawals.map(cfMonthOf))].sort()}
+function cfMonthStep(d){const ms=cfMonths(),i=ms.indexOf(state.cf.month)+d;if(i>=0&&i<ms.length)cfSetMonth(ms[i])}
+function cfPickBatch(k){cfRead();const c=state.cf;c.batch=c.batch===k?'':k;cfClearSel();cfPage1();render()}
+function cfApply(rows){
+  const c=state.cf,m=c.multi&&c.multi.length?new Set(c.multi):null;
+  return rows.filter(w=>{
+    if(c.batch&&cfBatchKey(w)!==c.batch)return false;
+    if(m&&!m.has(w.id))return false;
+    if(!wfMatch(w,c))return false;
+    return true;
+  });
+}
+function cfCurrent(){
+  const c=state.cf,rows=cfApply(state.withdrawals.filter(w=>cfMonthOf(w)===c.month));
+  return c.tab==='all'?rows:rows.filter(w=>cfGroup(w)===c.tab);
+}
+function cfSel(){
+  const c=state.cf,mrows=cfApply(state.withdrawals.filter(w=>cfMonthOf(w)===c.month)).filter(w=>cfGroup(w)==='pending');
+  return c.all?mrows:mrows.filter(w=>state.selectedConfirms.has(w.id));
+}
+function cfToggle(id,v){
+  const c=state.cf;
+  if(c.all&&!v){c.all=false;cfApply(state.withdrawals.filter(w=>cfMonthOf(w)===c.month)).filter(w=>cfGroup(w)==='pending').forEach(w=>state.selectedConfirms.add(w.id))}
+  v?state.selectedConfirms.add(id):state.selectedConfirms.delete(id);cfRender();
+}
+function cfTogglePage(v){
+  const c=state.cf,page=slicePg('confirm',cfCurrent()).filter(w=>cfGroup(w)==='pending');
+  if(!v&&c.all){c.all=false;state.selectedConfirms.clear()}
+  page.forEach(w=>v?state.selectedConfirms.add(w.id):state.selectedConfirms.delete(w.id));cfRender();
+}
+function cfSelAll(){state.cf.all=true;cfRender()}
+
+/* ---- 渲染 ---- */
+function cfBanner(mrows){
+  const c=state.cf,pend=mrows.filter(w=>cfGroup(w)==='pending');if(!pend.length)return '';
+  const [y,m]=c.month.split('-').map(Number),[ty,tm,td]=CF_TODAY.split('-').map(Number);
+  const left=Math.round((Date.UTC(y,m,0)-Date.UTC(ty,tm-1,td))/864e5);
+  const btn='<button class="btn sm" onclick="cfSetTab(\'pending\')">去处理</button>';
+  if(c.month<CF_TODAY.slice(0,7))return '<div class="cf-banner red"><span><b>'+c.month+' 月度付款已超过月底，仍有 '+pend.length+' 笔未确认（'+money(cfSum(pend))+'）</b>。讲师 / 助教端仍显示“提现中”，请尽快核对银行回单并确认。</span>'+btn+'</div>';
+  if(left<=c.remind)return '<div class="cf-banner"><span><b>距本月月底仅剩 '+left+' 天，仍有 '+pend.length+' 笔未确认（'+money(cfSum(pend))+'）</b>。请在月底前完成付款确认，避免讲师 / 助教到账状态延迟。</span>'+btn+'</div>';
+  return '';
+}
+function cfStat(b){
+  const g={pending:[],done:[],failed:[],paused:[]};b.rows.forEach(w=>g[cfGroup(w)].push(w));
+  const eff=b.rows.length-g.paused.length,failing=g.failed.filter(w=>w.status==='失败待审批').length,settled=!g.pending.length&&!failing,total=cfSum(b.rows);
+  const st=!g.pending.length?(settled?['已完成','green']:['待处理异常','red']):(!(g.done.length+g.failed.length)?['未开始','']:['确认中','orange']);
+  const prog='已到账 '+money(cfSum(g.done))+(g.failed.length?'，付款失败 '+money(cfSum(g.failed)):'');
+  const ok='<div class="cf-rec ok">✓ 对账一致：已到账 + 付款失败 + 暂不付款 = 批次总额</div>';
+  let rec='';
+  if(b.p){
+    const expect=cfSum(b.rows.filter(w=>!w.deferred));
+    rec=expect!==b.p.amount?'<div class="cf-rec bad">⚠ 与付款单金额不一致：付款单 '+money(b.p.amount)+'，明细 '+money(expect)+'</div>':settled?ok:'<div class="cf-rec">'+prog+' / 付款单 '+money(b.p.amount)+'</div>';
+  }else rec=settled?ok:'<div class="cf-rec">'+prog+' / 批次总额 '+money(total)+'</div>';
+  return {g,eff,failing,settled,total,st,rec,pct:n=>eff?(n/eff*100).toFixed(1):0};
+}
+const cfBar=(s)=>'<div class="cf-bar"><i class="d" style="width:'+s.pct(s.g.done.length)+'%"></i><i class="f" style="width:'+s.pct(s.g.failed.length)+'%"></i></div>';
+function cfSideItem(m,b){
+  const c=state.cf;
+  if(!b)return '<div class="cf-si empty"><div class="cf-si-h"><b>'+m+'</b><span class="cf-si-s">无</span></div><div class="cf-si-s">0 笔</div></div>';
+  const s=cfStat(b),pn=s.g.pending.length;
+  return '<div class="cf-si'+(c.batch===b.key?' on':'')+'" onclick="cfPickBatch2(\''+b.key+'\')"><div class="cf-si-h"><b>'+m+'</b>'+(pn?'<span class="cf-n warn">待确认 '+pn+'</span>':s.settled?'<span class="cf-si-ok">✓ 已完成</span>':'<span class="cf-si-bad">有异常</span>')+'</div><div class="cf-si-s">'+b.rows.length+' 笔 · '+money(s.total)+'</div>'+cfBar(s)+'</div>';
+}
+function cfSideGroup(type,bks){
+  const g=bks.filter(b=>b.type===type);
+  return '<div class="cf-side-g"><b>'+type+'付款单</b></div>'+(g.length?CF_METHODS.filter(m=>g.some(x=>x.method===m)).map(m=>cfSideItem(m,g.find(x=>x.method===m))).join(''):'<div class="cf-si-s" style="padding:0 4px">本月无</div>');
+}
+function cfMiniGroup(type,bks){
+  const c=state.cf,g=bks.filter(b=>b.type===type);
+  if(!g.length)return '';
+  return '<div class="cf-mini-g">'+type+'</div>'+CF_METHODS.filter(m=>g.some(x=>x.method===m)).map(m=>{
+    const b=g.find(x=>x.method===m),s=cfStat(b),pn=s.g.pending.length;
+    return '<div class="cf-si mini'+(c.batch===b.key?' on':'')+'" title="'+b.title+' · '+b.rows.length+' 笔 · '+money(s.total)+(pn?' · 待确认 '+pn:'')+'" onclick="cfPickBatch2(\''+b.key+'\')"><b>'+m+'</b>'+(pn?'<span class="cf-n warn">'+pn+'</span>':s.settled?'<span class="cf-si-ok">✓</span>':'<span class="cf-si-bad">!</span>')+'</div>';
+  }).join('');
+}
+function cfSide(mrows,months){
+  const c=state.cf,doneN=mrows.filter(w=>cfGroup(w)==='done').length,pendN=mrows.filter(w=>cfGroup(w)==='pending').length,cur=CF_TODAY.slice(0,7),bks=cfBatches(mrows);
+  if(c.sideMini){
+    return '<aside class="cf-side mini"><button class="btn sm" onclick="cfToggleSide()" title="展开付款单列表">展开 ›</button><div class="cf-mini-m" title="'+c.month+'">'+Number(c.month.slice(5))+' 月</div>'+cfMiniGroup('月度',bks)+cfMiniGroup('紧急',bks)+'</aside>';
+  }
+  const mt=c.month===cur?tag('本月','blue'):c.month<cur?tag('已过月',''):tag('未到月','');
+  return '<aside class="cf-side"><div class="cf-side-m"><div class="cf-side-mt"><button class="btn sm" onclick="cfMonthStep(-1)" '+(months.indexOf(c.month)<=0?'disabled':'')+'>‹</button><select class="select cf-msel" onchange="cfSetMonth(this.value)">'+months.map(x=>'<option value="'+x+'" '+(x===c.month?'selected':'')+'>'+x.replace('-',' 年 ')+' 月</option>').join('')+'</select><button class="btn sm" onclick="cfMonthStep(1)" '+(months.indexOf(c.month)>=months.length-1?'disabled':'')+'>›</button></div>'+
+    '<div class="cf-side-tag">'+mt+'<span>共 '+mrows.length+' 笔 · '+money(cfSum(mrows))+'</span></div>'+
+    '<div class="cf-side-sum"><div class="warn"><span>待确认</span><b>'+pendN+'</b></div><div><span>已到账</span><b>'+doneN+'</b></div></div></div>'+
+    '<div class="cf-side-t" style="justify-content:flex-end"><button class="link" onclick="cfToggleSide()" title="收起付款单列表，给表格更多空间">收起 ‹</button></div>'+
+    cfSideGroup('月度',bks)+cfSideGroup('紧急',bks)+'</aside>';
+}
+function cfToggleSide(){cfRead();state.cf.sideMini=!state.cf.sideMini;render()}
+function cfToggleFocus(){cfRead();state.cf.focus=!state.cf.focus;render()}
+function cfHead(b,mrows){
+  const c=state.cf,can=cfCan();
+  if(!b)return '';
+  const s=cfStat(b),pn=s.g.pending.length,rt=s.rec.replace(/<[^>]+>/g,''),bad=s.rec.includes('cf-rec bad');
+  return '<section class="card cf-ph"><div class="cf-ph-top"><div><h3>'+b.title+'</h3><div class="cf-sub" style="margin-top:3px">'+b.sub+'</div></div><span style="flex:1"></span>'+cfBar(s).replace('class="cf-bar"','class="cf-bar" title="'+fAttr(rt)+'"')+(bad?'<span class="cf-rec bad">'+rt+'</span>':'')+'<div class="cf-ph-amt">'+money(s.total)+'<span>共 '+b.rows.length+' 笔</span></div>'+(can?'<button class="btn '+(pn?'primary':'')+'" '+(pn?'':'disabled')+' onclick="cfBatchAll(\''+b.key+'\')">'+(pn?'整单确认（'+pn+' 笔）':'已全部处理')+'</button>':'')+'</div></section>';
+}
+function cfPickBatch2(k){cfRead();state.cf.batch=k;cfClearSel();cfPage1();render()}
+function cfSavedMenu(c){
+  const close="this.closest('details').open=false;";
+  return '<details class="cf-dd"><summary class="fbtn export">常用筛选 ▾</summary><div class="cf-dd-menu">'+(c.saved.length?c.saved.map((x,i)=>'<div class="cf-dd-i"><button onclick="'+close+'cfApplySaved('+i+')">'+x.name+'</button><i onclick="cfDelSaved('+i+')" title="删除">×</i></div>').join(''):'<div class="cf-dd-e">暂无常用筛选</div>')+'<div class="cf-dd-sep"></div><button class="cf-dd-a" onclick="'+close+'cfSaveCur()">＋ 保存当前筛选</button><button class="cf-dd-a" onclick="'+close+'cfMultiModal()">批量粘贴单号查询</button></div></details>';
+}
+function cfBatches(mrows){
+  const bm=new Map();mrows.forEach(w=>{const k=cfBatchKey(w);if(!bm.has(k))bm.set(k,[]);bm.get(k).push(w)});
+  const order={'云账户':0,'开发票':1,'劳务费':2};
+  return [...bm.entries()].map(([key,rows])=>{
+    const mt=rows[0].method;
+    if(key.startsWith('JF-')){
+      const ps=[...new Set(rows.map(w=>w.payment))].map(id=>state.monthly.find(x=>x.id===id)).filter(Boolean),un=ps.filter(x=>!x.locked).length;
+      return {key,rows,type:'紧急',method:mt,ord:10+(order[mt]??5),title:'紧急付款单 · '+mt,sub:'共 '+ps.length+' 张 · 无账期，随时付款'+(un?' · '+un+' 张未提交易快报':'')};
+    }
+    const p=state.monthly.find(x=>x.id===key);
+    return {key,rows,p,type:'月度',method:mt,ord:order[mt]??5,title:'月度付款单 · '+mt,sub:key+' · '+(p&&p.eak&&p.eak!=='—'?'易快报 '+p.eak:'未提交易快报')};
+  }).sort((x,y)=>x.ord-y.ord);
+}
+const cfStatusTag=w=>{const g=cfGroup(w);return g==='done'?tag('已到账','green'):g==='paused'?tag('暂不付款',''):w.status==='失败待审批'?tag('付款失败 · 待审批','orange'):w.status==='付款失败'?tag('付款失败','red'):tag('待确认','orange')};
+function paymentConfirm(){
+  const c=state.cf,can=cfCan(),months=cfMonths();
+  const mrows=state.withdrawals.filter(w=>cfMonthOf(w)===c.month);
+  const bks=cfBatches(mrows);if(bks.length&&!bks.some(x=>x.key===c.batch))c.batch=bks[0].key;
+  const filtered=cfApply(mrows);
+  const cnt=t=>t==='all'?filtered.length:filtered.filter(w=>cfGroup(w)===t).length;
+  const rows=cfCurrent(),pageRows=slicePg('confirm',rows),sel=cfSel();
+  const doneN=mrows.filter(w=>cfGroup(w)==='done').length,pendN=mrows.filter(w=>cfGroup(w)==='pending').length;
+  const [y,m]=c.month.split('-').map(Number),[ty,tm,td]=CF_TODAY.split('-').map(Number),left=Math.round((Date.UTC(y,m,0)-Date.UTC(ty,tm-1,td))/864e5);
+  const fi=(id,v,ph,label)=>'<label class="fl"><span>'+label+'</span><input class="input" style="min-width:110px;width:130px" id="'+id+'" value="'+v+'" placeholder="'+ph+'" onkeydown="if(event.key===\'Enter\')cfQuery()"></label>';
+  const sel2=(id,label,v,opts)=>'<label class="fl"><span>'+label+'</span><select class="select" style="min-width:100px" id="'+id+'">'+opts.map(o=>'<option value="'+o[0]+'" '+(v===o[0]?'selected':'')+'>'+o[1]+'</option>').join('')+'</select></label>';
+  const extra=c.tab==='failed'?['失败原因','审批进度','内部备注']:c.tab==='paused'?['暂不付款原因','操作时间']:[];
+  const cols=CF_COLS.filter(x=>c.cols.includes(x[0]));
+  const cell=(k,w)=>({kind:()=>tag(w.kind,w.kind==='紧急'?'orange':'blue'),name:()=>w.name,role:()=>{const t=teacherInfo(w);return tag(t.role,t.role==='讲师'?'blue':'purple')},ttype:()=>teacherInfo(w).type,phone:()=>teacherInfo(w).phone,payee:()=>payeeCell(w),pact:()=>wPactCell(w),method:()=>w.method,amount:()=>'<span class="num">'+money(w.amount)+'</span>',batch:()=>w.payment,tail:()=>cfTail(w),date:()=>w.date,status:()=>cfStatusTag(w)})[k]();
+  const exCell=w=>c.tab==='failed'?'<td>'+(w.failReason||'—')+'</td><td>'+(w.status==='付款失败'?tag('审批通过 · 已退回余额','green'):tag('合同系统 / 钉钉审批中','orange')+' <span class="muted">'+CF_OPERATOR+' 提交</span>')+'</td><td style="max-width:200px;white-space:normal">'+(w.internal||'—')+'</td>':c.tab==='paused'?'<td>'+(w.pauseReason||'—')+'</td><td>'+(w.pauseAt||'—')+'</td>':'';
+  const pagePend=pageRows.filter(w=>cfGroup(w)==='pending'),allPend=filtered.filter(w=>cfGroup(w)==='pending');
+  const pageAllSel=pagePend.length>0&&(c.all||pagePend.every(w=>state.selectedConfirms.has(w.id)));
+  const more=!c.all&&pageAllSel&&allPend.length>sel.length?' <button class="link" onclick="cfSelAll()">选择符合条件的全部 '+allPend.length+' 笔待确认</button>':'';
+  const bar=can&&sel.length?'<div class="selectbar sticky"><span>'+(c.all?'已选择符合条件的<b> 全部 '+sel.length+' </b>笔待确认':'已选择 <b>'+sel.length+'</b> 笔')+'，合计 <b>'+money(cfSum(sel))+'</b>'+(sel.some(cfIsProxy)?'，其中代收 <b style="color:var(--orange)">'+sel.filter(cfIsProxy).length+'</b> 笔':'')+more+'</span><span class="actions"><button class="btn sm" onclick="cfClearSel(true)">取消选择</button><button class="btn sm danger" onclick="cfBatchFail()">批量确认付款失败</button><button class="btn sm green" onclick="cfBatchOk()">批量确认成功</button></span></div>':'';
+  const th=(can?'<th style="width:40px"><input type="checkbox" class="check" '+(pageAllSel?'checked':'')+(pagePend.length?'':' disabled')+' onchange="cfTogglePage(this.checked)" title="选择本页待确认"></th>':'')+'<th>提现单号</th>'+cols.map(x=>'<th>'+x[1]+'</th>').join('')+extra.map(x=>'<th>'+x+'</th>').join('')+'<th>操作</th>';
+  const body=pageRows.map(w=>{const g=cfGroup(w);return '<tr'+(state.selectedConfirms.has(w.id)||(c.all&&g==='pending')?' class="cf-sel"':'')+'>'+(can?'<td>'+(g==='pending'?'<input type="checkbox" class="check" '+(c.all||state.selectedConfirms.has(w.id)?'checked':'')+' onchange="cfToggle(\''+w.id+'\',this.checked)">':'')+'</td>':'')+'<td><button class="link" onclick="cfOpen(\''+w.id+'\')"><b>'+w.id+'</b></button></td>'+cols.map(x=>'<td>'+cell(x[0],w)+'</td>').join('')+exCell(w)+'<td style="white-space:nowrap">'+(can&&g==='pending'?'<button class="link" onclick="confirmOne(\''+w.id+'\')">确认成功</button> <button class="link" style="color:var(--red)" onclick="openRefund(\''+w.id+'\')">确认付款失败</button> ':'')+'<button class="link" onclick="cfOpen(\''+w.id+'\')">详情</button></td></tr>'}).join('');
+  const hint=!can?'<div class="cf-banner info"><span>当前为<b>财务只读视图</b>：可查看付款确认进度和明细，确认操作由月度账单经办人执行。</span></div>':'';
+  const curB=bks.find(x=>x.key===c.batch)||null;
+  return '<div class="cf-shell">'+hint+cfBanner(mrows)+'<div class="cf-layout'+(c.sideMini?' mini':'')+'">'+cfSide(mrows,months)+'<div class="cf-main">'+cfHead(curB,mrows)+cfFilterBar(c,fi,sel2,mrows)+bar+
+  '<section class="card"><div class="tabs">'+CF_TABS.map(t=>'<button class="tab '+(c.tab===t[0]?'active':'')+'" onclick="cfSetTab(\''+t[0]+'\')">'+t[1]+' <span class="cf-n'+(t[0]==='pending'&&cnt('pending')?' warn':'')+'">'+cnt(t[0])+'</span></button>').join('')+'<span class="cf-tools"><button class="btn sm" onclick="cfExport()">导出</button><button class="btn sm" onclick="cfToggleFocus()" title="隐藏导航，仅保留筛选和表格（Esc 退出）">'+(c.focus?'退出全屏':'全屏')+'</button></span></div>'+
+  (rows.length?'<div class="table-wrap cf-wrap"><table class="'+(can?'has-check':'')+'"><thead><tr>'+th+'</tr></thead><tbody>'+body+'</tbody></table></div>'+pager('confirm',rows.length):'<div class="empty">'+icon('empty')+'<div>'+(c.tab==='pending'?'当前筛选下没有待确认的提现单':'当前筛选下没有数据')+'</div></div>')+'</section></div></div></div>';
+}
+
+/* ---- 确认 / 失败 操作 ---- */
+function cfResult(head,html){
+  modal(head,html,'知道了',()=>{closeModal();render()});
+  const cb=document.querySelector('#modalRoot .modal-foot .btn:not(#modalOk)');if(cb)cb.style.display='none';
+}
+function cfDist(list){
+  const m={};list.forEach(w=>{(m[w.method]=m[w.method]||{n:0,s:0});m[w.method].n++;m[w.method].s+=w.amount});
+  return Object.entries(m).map(([k,v])=>'<tr><td>'+k+'</td><td class="num">'+v.n+' 笔</td><td class="num">'+money(v.s)+'</td></tr>').join('');
+}
+function cfSummary(list){
+  const px=list.filter(cfIsProxy),em=list.filter(w=>w.kind==='紧急');
+  return '<div class="cf-sumbox"><div><span>笔数</span><b>'+list.length+' 笔</b></div><div><span>金额合计</span><b>'+money(cfSum(list))+'</b></div><div><span>涉及讲师 / 助教</span><b>'+new Set(list.map(w=>w.name)).size+' 位</b></div></div><table class="cf-mini"><thead><tr><th>付款方式</th><th>笔数</th><th>金额</th></tr></thead><tbody>'+cfDist(list)+'</tbody></table>'+(px.length?'<div class="cf-warn">其中 <b>代收 '+px.length+' 笔</b>（收款人与讲师 / 助教不一致，共 '+money(cfSum(px))+'），请确认已核对。</div>':'')+(em.length?'<div class="cf-tip">包含紧急提现 '+em.length+' 笔</div>':'');
+}
+function cfDoConfirm(list,ctx){
+  let ok=[],skip=[];
+  list.forEach(w=>{if(cfGroup(w)!=='pending'){skip.push(w);return}w.status='已到账';w.confirmAt=CF_NOW;ok.push(w)});
+  cfClearSel();closeModal();
+  const names=new Set(ok.map(w=>w.name)).size;
+  render();
+  cfResult('确认完成','<div class="cf-sumbox"><div><span>确认成功</span><b style="color:var(--green)">'+ok.length+' 笔</b></div><div><span>成功金额</span><b>'+money(cfSum(ok))+'</b></div><div><span>跳过</span><b>'+skip.length+' 笔</b></div></div><p class="modal-note" style="margin:0">'+ctx+'已将 <b>'+ok.length+'</b> 笔冻结金额转入“已到账”，并已通知 <b>'+names+'</b> 位讲师 / 助教。'+(skip.length?'<br>跳过原因：这 '+skip.length+' 笔在确认前已被其他人处理（状态已变更）。':'')+'</p>');
+}
+function cfBatchOk(){
+  const list=cfSel();if(!list.length)return;
+  modal('批量确认付款成功','<p class="modal-note">请确认以下提现单已<b>实际付款成功</b>（已核对银行回单 / 云账户回执）。</p>'+cfSummary(list)+cfEakWarn(list)+'<div class="cf-warn" style="background:#fff4f4;border-color:#f5c2c2;color:#b42318"><b>不可撤销：</b>确认后款项转为“已到账”并推送讲师 / 助教，已确认的记录不可再修改。</div><label class="cf-check"><input type="checkbox" class="check" id="cfAck"> 我已核对付款结果，确认这 '+list.length+' 笔均已付款成功</label>','确认成功 '+list.length+' 笔',()=>{
+    if(!document.getElementById('cfAck').checked){toast('请先勾选确认','需确认已核对付款结果','error');return}
+    cfDoConfirm(list,'');
+  });
+}
+function cfBatchAll(key){
+  const mrows=state.withdrawals.filter(w=>cfMonthOf(w)===state.cf.month&&cfBatchKey(w)===key);
+  const list=mrows.filter(w=>cfGroup(w)==='pending'),fail=mrows.filter(w=>cfGroup(w)==='failed'),pause=mrows.filter(w=>cfGroup(w)==='paused'),done=mrows.filter(w=>cfGroup(w)==='done');
+  if(!list.length)return;
+  const b=cfBatches(mrows)[0];
+  modal('整单确认 · '+b.title,'<p class="modal-note">将本批次下所有<b>待确认</b>的提现单一次性确认为付款成功。</p>'+cfSummary(list)+cfEakWarn(list)+'<div class="cf-tip">已自动排除：已到账 '+done.length+' 笔、付款失败 '+fail.length+' 笔、暂不付款 '+pause.length+' 笔（不会被整单确认覆盖）。</div><div class="cf-warn" style="background:#fff4f4;border-color:#f5c2c2;color:#b42318"><b>不可撤销：</b>确认后款项转为“已到账”并推送讲师 / 助教。若其中个别笔实际未付成功，请先“取消”并对该笔单独确认付款失败。</div><label class="cf-check"><input type="checkbox" class="check" id="cfAck"> 我已核对本批次付款结果，确认以上 '+list.length+' 笔均已付款成功</label>','整单确认 '+list.length+' 笔',()=>{
+    if(!document.getElementById('cfAck').checked){toast('请先勾选确认','需确认已核对付款结果','error');return}
+    cfDoConfirm(list,'【'+b.title+'】整单确认：');
+  });
+}
+function cfBatchFail(){
+  const list=cfSel();if(!list.length)return;
+  modal('批量确认付款失败','<p class="modal-note">这 <b>'+list.length+'</b> 笔将使用<b>同一失败原因</b>发起付款失败审批（合同系统 / 钉钉，两级）。本系统仅同步审批结果，通过后金额退回讲师提现余额；个别原因不同的请取消后逐笔处理。</p>'+cfSummary(list)+''+cfFailField('cfFailReason')+'<div class="field"><label>内部备注（讲师不可见）</label><textarea id="cfFailNote" placeholder="可记录银行返回信息、沟通过程等"></textarea></div>','提交付款失败审批（'+list.length+' 笔）',()=>{
+    const r=document.getElementById('cfFailReason').value.trim(),n=document.getElementById('cfFailNote').value.trim();
+    if(!r){toast('无法提交','请填写或选择失败原因','error');return}
+    list.forEach(w=>{if(cfGroup(w)==='pending'){w.status='失败待审批';w.failReason=r;w.internal=n;w.failAt=CF_NOW}});
+    cfClearSel();closeModal();render();
+    cfResult('已提交付款失败审批','<div class="cf-sumbox"><div><span>已提交</span><b>'+list.length+' 笔</b></div><div><span>金额合计</span><b>'+money(cfSum(list))+'</b></div><div><span>失败原因</span><b>'+r+'</b></div></div><p class="modal-note" style="margin:0">已提交合同系统 / 钉钉两级审批，本系统同步结果；讲师 / 助教仅会看到失败原因“'+r+'”，内部备注不会展示。审批进度可在「付款失败」页签或「付款失败审批」页查看。</p>');
+  },'danger');
+}
+function cfEakWarn(list){
+  const ps=[...new Set(list.map(w=>w.payment))].map(id=>state.monthly.find(x=>x.id===id)).filter(x=>x&&!x.locked);
+  if(!ps.length)return '';
+  const n=list.filter(w=>ps.some(x=>x.id===w.payment)).length;
+  return '<div class="cf-warn">提示：其中 <b>'+n+' 笔</b>所属付款单（'+ps.map(x=>x.id).join('、')+'）<b>尚未提交易快报</b>。不影响确认，请核实已按流程线下提交。</div>';
+}
+function confirmOne(id){
+  const w=state.withdrawals.find(x=>x.id===id);if(!w||cfGroup(w)!=='pending')return;
+  const kv=(k,v)=>'<div class="info-item"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';
+  modal('确认付款成功','<p class="modal-note">请确认该笔提现单已<b>实际付款成功</b>（已核对银行回单 / 云账户回执）。</p><div class="info-grid" style="grid-template-columns:repeat(2,1fr)">'+kv('提现单号',w.id)+kv('讲师 / 助教',w.name)+kv('收款人',payeeCell(w))+kv('付款方式',w.method)+kv('金额','<span class="num">'+money(w.amount)+'</span>')+kv('收款账号',cfTail(w))+'</div>'+cfEakWarn([w])+(cfIsProxy(w)?'<div class="cf-warn">该笔为<b>代收</b>：收款人（'+w.payee+'）与讲师（'+w.name+'）不一致，请再次核对回单上的收款人。</div>':'')+'<div class="cf-warn" style="background:#fff4f4;border-color:#f5c2c2;color:#b42318"><b>不可撤销：</b>确认后款项转为“已到账”并通知讲师 / 助教，已确认的记录不可再修改。</div>','确认成功',()=>{
+    closeModal();
+    if(cfGroup(w)!=='pending'){toast('该笔已被处理',id+' 当前状态为 '+w.status,'error');cfRender();return}
+    w.status='已到账';w.confirmAt=CF_NOW;state.selectedConfirms.delete(id);toast('已确认付款成功',id+' 已转为已到账，并通知 '+w.name);cfRender();
+  });
+}
+
+/* ---- 常用筛选 / 列设置 / 批量单号 / 导出 ---- */
+function cfSaveCur(){
+  cfRead();
+  modal('保存当前筛选','<p class="modal-note">保存后可在“常用筛选”中一键应用（含当前状态页签与筛选条件）。</p><div class="field"><label><em>*</em> 名称</label><input class="input" id="cfSaveName" placeholder="例如：云账户代收待确认"></div>','保存',()=>{
+    const n=document.getElementById('cfSaveName').value.trim();if(!n){toast('请输入名称','名称不能为空','error');return}
+    const c=state.cf,f={};Object.keys(CF_FIELDS).forEach(k=>{if(k!=='batch'&&k!=='multi')f[k]=c[k]});f.tab=c.tab;
+    state.cf.saved.push({name:n,f});closeModal();toast('已保存常用筛选',n);render();
+  });
+}
+function cfApplySaved(i){Object.assign(state.cf,CF_FIELDS,{multi:[]},state.cf.saved[i].f);cfClearSel();cfPage1();render()}
+function cfDelSaved(i){state.cf.saved.splice(i,1);render()}
+function cfCols(){
+  modal('列设置','<p class="modal-note">选择表格中展示的列（提现单号和操作列固定展示）。</p><div class="cf-cols">'+CF_COLS.map(x=>'<label><input type="checkbox" class="check" value="'+x[0]+'" '+(state.cf.cols.includes(x[0])?'checked':'')+'> '+x[1]+'</label>').join('')+'</div>','应用',()=>{
+    state.cf.cols=[...document.querySelectorAll('.cf-cols input:checked')].map(i=>i.value);closeModal();render();
+  });
+}
+function cfMultiModal(){
+  modal('批量粘贴单号查询','<p class="modal-note">粘贴财务回单中的提现单号，支持换行、空格、逗号分隔，最多 500 个。</p><textarea id="cfMultiTxt" style="width:100%;min-height:150px;border:1px solid var(--line);border-radius:7px;padding:10px" placeholder="TX202610-0218&#10;TX202610-0224&#10;…">'+state.cf.multi.join('\n')+'</textarea>','查询',()=>{
+    const ids=[...new Set(document.getElementById('cfMultiTxt').value.split(/[\s,，;；]+/).map(s=>s.trim()).filter(Boolean))].slice(0,500);
+    const c=state.cf,all=new Set(state.withdrawals.filter(w=>cfMonthOf(w)===c.month).map(w=>w.id)),hit=ids.filter(i=>all.has(i));
+    c.multi=ids;cfClearSel();cfPage1();closeModal();render();
+    if(ids.length)toast('批量查询完成','共 '+ids.length+' 个单号，匹配 '+hit.length+' 个'+(ids.length-hit.length?'，'+(ids.length-hit.length)+' 个未在本月找到':''),ids.length-hit.length?'error':'');
+  });
+}
+function cfExport(){
+  const rows=cfCurrent(),head=['提现单号','类型','讲师/助教','角色','讲师类型','手机号','收款人','是否代收','合同号','付款方式','金额','付款单号','收款账号','提交时间','状态'];
+  const csv=[head].concat(rows.map(w=>[w.id,w.kind,w.name,teacherInfo(w).role,teacherInfo(w).type,teacherInfo(w).phone,w.payee||w.name,cfIsProxy(w)?'是':'否',wPacts(w).join('、'),w.method,w.amount,w.payment,w.bank,w.date,w.deferred?'暂不付款':w.status])).map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='付款确认明细_'+state.cf.month+'.csv';document.body.appendChild(a);a.click();a.remove();
+  toast('已导出明细','按当前筛选条件导出 '+rows.length+' 笔（CSV，可用 Excel 打开）');
+}
+
+/* ---- 详情抽屉 ---- */
+function cfOpen(id){
+  const w=state.withdrawals.find(x=>x.id===id),g=cfGroup(w),can=cfCan(),p=state.monthly.find(x=>x.id===w.payment);
+  const kv=(k,v)=>'<div class="info-item"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';
+  const log=[[w.date,'提交提现申请','讲师 / 助教 '+w.name]];
+  log.push([w.kind==='紧急'?w.date:cfMonthOf(w)+'-11 00:00','纳入'+(w.kind==='紧急'?'紧急':'月度')+'付款单 '+w.payment,'系统']);
+  if(p&&p.eak&&p.eak!=='—')log.push(['—','付款单已提交易快报 '+p.eak,'经办人']);
+  if(g==='done')log.push([w.confirmAt||'—','确认付款成功，金额转入已到账',CF_OPERATOR]);
+  if(g==='failed')log.push([w.failAt||'—','提交付款失败（'+(w.failReason||'—')+'），提交合同系统 / 钉钉审批',CF_OPERATOR]);
+  if(w.status==='付款失败')log.push(['—','付款失败审批通过，金额退回讲师可提现余额','财务']);
+  if(g==='paused')log.push([w.pauseAt||'—','暂不付款（'+(w.pauseReason||'—')+'），款项退回讲师提现余额',CF_OPERATOR]);
+  const alloc=allocTable(w,'cf-mini');
+  document.getElementById('modalRoot').innerHTML='<div class="cf-mask" onclick="if(event.target===this)closeModal()"><aside class="cf-drawer"><div class="cf-dh"><div><h3>'+w.id+'</h3><div style="margin-top:6px">'+cfStatusTag(w)+' '+tag(w.kind,w.kind==='紧急'?'orange':'blue')+'</div></div><button class="modal-close" onclick="closeModal()">×</button></div><div class="cf-db">'+
+    '<h4>基本信息</h4><div class="info-grid">'+kv('讲师 / 助教',w.name)+kv('角色',teacherInfo(w).role)+kv('讲师类型',teacherInfo(w).type)+kv('手机号',teacherInfo(w).phone)+kv('提现金额','<span class="num">'+money(w.amount)+'</span>')+kv('所属项目',wProjects(w).join('、'))+kv('合同号',wPacts(w).join('、'))+kv('提交时间',w.date)+'</div>'+
+    '<h4>收款信息</h4><div class="info-grid">'+kv('收款人',payeeCell(w))+kv('付款方式',w.method)+kv('收款账号',w.bank)+kv('付款单号',w.payment+(p&&p.eak&&p.eak!=='—'?'<br><span class="muted">易快报 '+p.eak+'</span>':''))+'</div>'+(cfIsProxy(w)?'<div class="cf-warn">收款人（'+w.payee+'）与讲师 / 助教（'+w.name+'）不一致，请核对代收授权后再确认。</div>':'')+
+    (g==='failed'?'<h4>付款失败信息</h4><div class="info-grid">'+kv('失败原因',w.failReason||'—')+kv('审批状态',w.status==='付款失败'?'审批通过':'合同系统 / 钉钉审批中')+kv('内部备注',w.internal||'—')+'</div>':'')+
+    (g==='paused'?'<h4>暂不付款信息</h4><div class="info-grid">'+kv('原因',w.pauseReason||'—')+kv('处理结果','款项已退回讲师提现余额，下月提现窗口可重新申请')+'</div>':'')+
+    '<h4>提现单构成</h4>'+alloc+
+    '<h4>操作日志</h4><div class="cf-log">'+log.map(l=>'<div><i></i><b>'+l[1]+'</b><span>'+l[0]+' · '+l[2]+'</span></div>').join('')+'</div>'+
+    '</div>'+(can&&g==='pending'?'<div class="cf-df"><button class="btn danger" onclick="closeModal();openRefund(\''+w.id+'\')">确认付款失败</button><button class="btn primary" onclick="closeModal();confirmOne(\''+w.id+'\')">确认付款成功</button></div>':'')+'</aside></div>';
+}
+function cfFailField(id){
+  return '<div class="field"><label><em>*</em> 失败原因（讲师可见）</label><input class="input" id="'+id+'" maxlength="50" placeholder="可点击下方标准原因快速填入，也可手动输入或修改"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">'+CF_REASONS.map(r=>'<button type="button" class="ib-chip" onclick="var i=document.getElementById(\''+id+'\');i.value=\''+r+'\';i.focus()">'+r+'</button>').join('')+'</div></div>';
+}
+function openRefund(id){
+  modal('确认付款失败','<p class="modal-note">仅在确定不再支付时确认。需逐笔发起付款失败审批（合同系统 / 钉钉，两级），本系统同步结果，通过后金额退回讲师提现余额。</p>'+cfFailField('failReason')+'<div class="field"><label>内部备注（讲师不可见）</label><textarea id="internalNote" placeholder="可记录银行返回信息、沟通过程等"></textarea></div>','提交付款失败审批',()=>{
+    const r=document.getElementById('failReason').value.trim(),n=document.getElementById('internalNote').value.trim();if(!r){toast('无法提交','请填写或选择失败原因','error');return}
+    const w=state.withdrawals.find(x=>x.id===id);w.status='失败待审批';w.failReason=r;w.internal=n;w.failAt='2026-11-18 16:30';state.selectedConfirms.delete(id);closeModal();toast('付款失败已提交合同系统 / 钉钉审批','讲师仅会看到失败原因“'+r+'”，内部备注不会展示');cfRender();
+  },'danger');
+}
+
+function refunds(){
+  const rows=state.withdrawals.filter(w=>w.status==='失败待审批');
+  return title('付款失败审批（同步）','付款失败审批在合同系统 / 钉钉中进行（部门负责人 → VP → 财务两级），本系统只同步审批结果：通过后冻结金额退回讲师提现余额；驳回则恢复原提现中状态。','')+
+  '<section class="card"><div class="card-body muted" style="line-height:1.9;border-bottom:1px solid var(--line)">本页为只读同步页。经办人在付款确认页提交付款失败后，系统同步生成审批；审批在合同系统 / 钉钉完成，结果回传后自动更新提现单状态。<br>退回后：常规提现须等下一个提现窗口（每月 1~10 日）再提，紧急提现可随时再提。</div>'+(rows.length?'<div class="table-wrap"><table><thead><tr><th>提现单号</th><th>类型</th><th>讲师</th><th>收款人</th><th>合同号</th><th>金额</th><th>失败原因</th><th>内部备注</th><th>审批状态</th><th>操作</th></tr></thead><tbody>'+slicePg('refunds',rows).map(w=>'<tr><td><b>'+w.id+'</b></td><td>'+tag(w.kind,w.kind==='紧急'?'orange':'blue')+'</td><td>'+w.name+'</td><td>'+payeeCell(w)+'</td><td>'+wPactCell(w)+'</td><td class="num">'+money(w.amount)+'</td><td>'+w.failReason+'</td><td style="max-width:260px;white-space:normal">'+(w.internal||'—')+'</td><td>'+tag('合同系统 / 钉钉审批中','orange')+'</td><td><button class="link" onclick="refundDecision(\''+w.id+'\',true)">模拟同步：通过</button> <button class="link" style="color:var(--red)" onclick="refundDecision(\''+w.id+'\',false)">模拟同步：驳回</button></td></tr>').join('')+'</tbody></table></div>'+pager('refunds',rows.length)+'':'<div class="empty">'+icon('empty')+'<div>暂无审批中的付款失败</div></div>')+'</section>';
+}
+function refundDecision(id,ok){
+  const w=state.withdrawals.find(x=>x.id===id);w.status=ok?'付款失败':(w.kind==='紧急'?'提现中':'已导出');
+  toast(ok?'已同步：审批通过':'已同步：审批驳回',ok?'冻结金额已退回可提现余额（常规款下一个提现窗口可再提，紧急款可随时再提），并向讲师展示失败原因':'提现单保持提现中，由经办人继续处理');render();
+}
+
+function settings(){
+  return title('系统配置','账期、窗口、出款日与审批角色配置。修改仅影响后续新数据。','<button class="btn primary" onclick="toast(\'配置已保存\',\'新配置将应用于后续新建账单\')">保存配置</button>')+
+  '<div class="stack"><section class="card"><div class="card-head"><h3>账期与提现</h3></div><div class="card-body"><div class="form-3"><div class="field"><label>讲师默认账期（天）</label><input class="input" type="number" min="0" value="'+state.cfg.teacher+'" onchange="state.cfg.teacher=Number(this.value)||0"><div class="muted" style="margin-top:5px">最后执行日 + N 天，到期即显示可提现；可在讲师账户中配置特殊账期</div></div><div class="field"><label>助教默认账期（天）</label><input class="input" type="number" min="0" value="'+state.cfg.assistant+'" onchange="state.cfg.assistant=Number(this.value)||0"><div class="muted" style="margin-top:5px">口径同上；账期优先级：紧急 &gt; 讲师特殊 &gt; 角色默认</div></div><div class="field"><label>正常提现窗口（财务可自行配置）</label><div style="display:flex;gap:8px"><input class="input" value="每月 1 日"><span style="line-height:34px">至</span><input class="input" value="每月 10 日"></div></div><div class="field"><label>讲师端到账提示</label><input class="input" value="当月月底前到账"></div></div></div></section>'+
+  '<section class="card"><div class="card-head"><h3>月度付款</h3></div><div class="card-body"><div class="form-3"><div class="field"><label>月度付款单生成日</label><input class="input" value="每月 11 日"></div><div class="field"><label>月度账单经办人</label><select class="select"><option>张佳（月度账单经办人）</option></select></div><div class="field"><label>生成方式</label><div class="muted">自动按云账户、开发票、劳务费分别生成三张，不包含紧急提现单。</div></div><div class="field"><label>预计付款日</label><input class="input" value="当月月底前到账（对外不承诺 21 号）" disabled></div><div class="field"><label>未确认提醒（月底前 N 天）</label><input class="input" type="number" min="1" max="15" value="'+state.cf.remind+'" onchange="state.cf.remind=Number(this.value)||5"><div class="muted" style="margin-top:5px">月底前 N 天起，若月度付款单或紧急提现仍有未确认提现单，在付款确认页顶部提醒经办人；超过月底则红色告警</div></div></div></div></section></div>'+
+  '<section class="card"><div class="card-head"><h3>审批链路</h3></div><div class="table-wrap"><table><thead><tr><th>业务通道</th><th>审批位置</th><th>审批节点</th><th>说明</th></tr></thead><tbody><tr><td>'+tag('常规账期','blue')+'</td><td>合同系统</td><td>部门负责人 → VP → 财务（两级）</td><td>整单审批，合同系统 / 钉钉均可，本系统仅同步结果</td></tr><tr><td>'+tag('紧急账期','orange')+'</td><td>合同系统</td><td>部门负责人 → VP → 财务（两级）</td><td>与常规同一条链，驳回后重新提交</td></tr><tr><td>'+tag('付款失败','red')+'</td><td>合同系统 / 钉钉</td><td>部门负责人 → VP → 财务（两级）</td><td>经办人在本系统提交失败结果，审批在合同系统 / 钉钉，本系统仅同步；内部备注不对讲师展示</td></tr></tbody></table></div></section>'+
+  '<section class="card"><div class="card-head"><h3>数据与账户规则</h3></div><div class="card-body"><div class="info-grid"><div class="info-item"><div class="k">手机号约束</div><div class="v">与讲师 / 助教账户严格一对一</div></div><div class="info-item"><div class="k">首次入账</div><div class="v">发送小程序登录邀请</div></div></div></div></section>'+
+  '<section class="card"><div class="card-head"><h3>课酬账单字典与付款合同规则</h3></div><div class="card-body"><div class="info-grid"><div class="info-item"><div class="k">费用类别</div><div class="v">'+CATS.join('、')+'</div></div><div class="info-item"><div class="k">计量单位</div><div class="v">'+UNITS.join('、')+'</div></div><div class="info-item"><div class="k">付款合同豁免</div><div class="v">仅助教、出题费；其余缺付款合同号不可提交 '+tag('豁免清单待财务确认','orange')+'</div></div><div class="info-item"><div class="k">付款合同号关联</div><div class="v">归属销售合同，项目经理在课酬账单页确认，提交前可改；确认即占额度（按课酬账单金额），超过付款总金额直接拦截</div></div><div class="info-item"><div class="k">加入待结算清单前提</div><div class="v">已确认付款合同号（未关联执行单仅提醒，最终须补关联）</div></div><div class="info-item"><div class="k">账期优先级</div><div class="v">紧急 &gt; 讲师特殊 &gt; 角色默认</div></div><div class="info-item"><div class="k">到期口径</div><div class="v">整张执行单按最后执行日 + N 天整体到期，到期即显示可提现</div></div></div></div></section>';
+}
+
+const SUB_PAGES=['/bills/detail','/bills/new','/applications/detail','/accounts/detail','/accounts/new','/accounts/org/detail','/accounts/org/new','/payments/monthly/detail'];
+function render(){
+  renderShell();document.getElementById('sidebar').classList.remove('open');
+  const p=route();let html='';
+  document.body.classList.toggle('cf-page',p==='/confirm'&&hasAccess(p));document.body.classList.toggle('cf-focus',p==='/confirm'&&hasAccess(p)&&!!state.cf.focus);
+  if(!hasAccess(p)) html=forbidden();
+  else {
+    const map={
+      '/bills':bills,'/bills/detail':billDetail,'/bills/new':billNew,'/cart':cartPage,'/applications':applications,'/applications/detail':applicationDetail,
+      '/accounts/teacher':()=>accounts('teacher'),'/accounts/assistant':()=>accounts('assistant'),'/accounts/detail':accountDetail,'/accounts/new':accountNew,'/accounts/org':orgList,'/accounts/org/new':orgNew,'/accounts/org/detail':orgDetail,'/withdrawals':withdrawals,'/payments/monthly':monthlyPayments,
+      '/payments/monthly/detail':monthlyDetail,'/confirm':paymentConfirm,'/refunds':refunds,'/settings':settings
+    };
+    if(!map[p]){location.hash=landing();return}
+    html=map[p]();
+  }
+  // 二级页面（详情 / 新增）的操作按钮统一悬浮在页面底部居中
+  if(SUB_PAGES.includes(p)){
+    const m=html.match(/<div class="page-title"><div class="actions">([\s\S]*?)<\/div><\/div>/);
+    if(m) html=html.replace(m[0],'')+'<div class="page-foot-space"></div><div class="page-foot">'+m[1]+'</div>';
+  }
+  {const sy=window.scrollY;document.getElementById('app').innerHTML=html;window.scrollTo(0,window.__keepScroll?sy:0);window.__keepScroll=false}
+  let fab=document.getElementById('cartFab');if(!fab){fab=document.createElement('button');fab.id='cartFab';fab.onclick=()=>go('/cart');document.body.appendChild(fab)}
+  const showFab=['pm','admin'].includes(state.role)&&p!=='/cart'&&hasAccess(p);
+  fab.style.display=showFab?'flex':'none';fab.style.bottom=SUB_PAGES.includes(p)?'116px':'56px';
+  fab.innerHTML=icon('cart')+'<span>待结算清单</span>'+(state.cart.size?'<em>'+state.cart.size+'</em>':'');
+}
+window.addEventListener('hashchange',render);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.cf.focus&&!document.getElementById('modalRoot').innerHTML){state.cf.focus=false;render()}});
+if(!location.hash) location.hash=landing(); else render();
+</script>
+<script src="./返回目录.js" data-style="top:23px;left:50%;transform:translateX(-50%)"></script>
+</body>
+</html>

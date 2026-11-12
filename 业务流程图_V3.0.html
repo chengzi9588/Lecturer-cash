@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>讲师/助教自助提现 · 业务流程图 V3.0</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#fff; --line:#e3e6ea; --text:#1f2329; --sub:#646a73;
+    --blue:#1664ff; --blue-bg:#e8f0ff; --orange-bg:#fff3e0; --green:#00a870;
+    --green-bg:#e6f6f0; --purple:#7c4dff; --purple-bg:#f0eaff;
+    --gray-bg:#eef0f3; --red:#e34d59; --red-bg:#fde8ea;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+       background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+  :root{--navw:220px;}
+  #nav{position:fixed;left:0;top:0;bottom:0;width:var(--navw);background:#fff;
+       border-right:1px solid var(--line);padding:24px 0;overflow-y:auto;z-index:10;
+       transition:transform .22s ease;}
+  body.nav-collapsed #nav{transform:translateX(-100%);}
+  #navToggle{position:fixed;top:14px;left:calc(var(--navw) - 14px);z-index:20;width:28px;height:28px;border-radius:14px;
+             border:1px solid var(--line);background:#fff;color:var(--sub);cursor:pointer;font-size:13px;line-height:26px;
+             text-align:center;box-shadow:0 1px 4px rgba(31,35,41,.10);transition:left .22s ease,transform .22s ease;padding:0;}
+  #navToggle:hover{color:var(--blue);border-color:#bcd3ff;}
+  body.nav-collapsed #navToggle{left:12px;transform:rotate(180deg);}
+  #nav .brand{padding:0 20px 18px;margin-bottom:8px;border-bottom:1px solid var(--line);}
+  #nav .brand h1{font-size:15px;margin:0 0 6px;line-height:1.55;}
+  #nav .brand p{font-size:12px;color:var(--sub);margin:0;}
+  #nav a{display:block;padding:10px 20px;font-size:13px;color:var(--sub);text-decoration:none;
+         border-left:3px solid transparent;line-height:1.5;}
+  #nav a:hover{background:var(--blue-bg);color:var(--blue);}
+  #nav a.active{background:var(--blue-bg);color:var(--blue);border-left-color:var(--blue);font-weight:600;}
+  main{margin-left:var(--navw);padding:28px 20px 60px;transition:margin-left .22s ease;}
+  body.nav-collapsed main{margin-left:0;padding-left:52px;}
+  .page-head{margin-bottom:26px;}
+  .page-head h2{font-size:24px;margin:0 0 10px;}
+  .page-head p{font-size:13px;color:var(--sub);margin:0;line-height:1.8;}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+  .legend span{font-size:12px;padding:5px 12px;border-radius:14px;border:1px solid;}
+  .lg-blue{background:var(--blue-bg);color:var(--blue);border-color:#bcd3ff;}
+  .lg-orange{background:var(--orange-bg);color:#c06800;border-color:#ffd9a6;}
+  .lg-green{background:var(--green-bg);color:var(--green);border-color:#a8e0cb;}
+  .lg-purple{background:var(--purple-bg);color:var(--purple);border-color:#d3c2ff;}
+  .lg-gray{background:var(--gray-bg);color:var(--sub);border-color:#d8dce1;}
+  .lg-red{background:var(--red-bg);color:var(--red);border-color:#f8c2c7;}
+  section{background:var(--card);border:1px solid var(--line);border-radius:10px;
+          padding:20px 22px 22px;margin-bottom:18px;}
+  section>h3{font-size:17px;margin:0 0 14px;}
+  section>.desc{font-size:13px;color:var(--sub);line-height:1.85;margin:0 0 20px;
+                padding-bottom:16px;border-bottom:1px dashed var(--line);}
+  section>.desc b{color:var(--text);}
+  .chart{overflow-x:auto;text-align:center;padding:8px 0;}
+  .note{margin-top:18px;padding:12px 16px;background:#fbfcfd;border-left:3px solid var(--blue);
+        border-radius:0 6px 6px 0;font-size:12.5px;color:var(--sub);line-height:1.85;}
+  .note b{color:var(--text);}
+  .note code{background:var(--gray-bg);padding:1px 5px;border-radius:3px;font-size:12px;}
+  @media print{
+    #nav,#navToggle{display:none;} main{margin-left:0;padding:0;}
+    section{break-inside:avoid;border:none;padding:0 0 28px;margin:0;}
+  }
+</style>
+<style>
+/* 流程图通用样式（与图 2 泳道图同一套视觉语言） */
+.flow{position:relative;display:inline-block;text-align:left;font-size:12px;color:#1f2329;
+      -webkit-font-smoothing:antialiased;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;}
+.flow .fgrid{display:grid;position:relative;column-gap:var(--gap,28px);row-gap:0;
+             grid-template-columns:repeat(var(--cols),var(--colw,128px));
+             grid-template-rows:repeat(var(--rows),var(--rowh,132px));}
+.flow.lanes .fgrid{grid-template-columns:104px repeat(var(--cols),var(--colw,128px));}
+
+/* 泳道 */
+.flow .lane{grid-column:1/-1;z-index:0;border-top:1px solid #e3e6ea;}
+.flow .lane.last{border-bottom:1px solid #e3e6ea;}
+.flow .lane.l1{background:#fafbfe;} .flow .lane.l2{background:#fffcf7;}
+.flow .lane.l3{background:#f9fdfb;} .flow .lane.l4{background:#fbf9ff;} .flow .lane.l5{background:#fffafd;}
+.flow .lane.lr{background:#fff9f9;} .flow .lane.lg{background:#f9fdfb;} .flow .lane.ls{background:#f7f8fa;}
+.flow .lab{grid-column:1;align-self:center;z-index:2;display:flex;flex-direction:column;gap:4px;padding:0 10px 0 4px;}
+.flow .lab b{font-size:12.5px;line-height:1.35;}
+.flow .lab i{font-style:normal;font-size:10.5px;color:#8a9099;line-height:1.35;}
+.flow .lab::before{content:"";display:block;width:26px;height:3px;border-radius:2px;margin-bottom:2px;background:#8a9099;}
+.flow .lab.l1::before{background:#1664ff;} .flow .lab.l2::before{background:#ff8800;}
+.flow .lab.l3::before{background:#00a870;} .flow .lab.l4::before{background:#7c4dff;} .flow .lab.l5::before{background:#d6409f;}
+.flow .lab.lr::before{background:#e34d59;} .flow .lab.lg::before{background:#00a870;}
+
+/* 节点 */
+.flow .node{position:relative;z-index:2;align-self:center;background:#fff;border:1.5px solid #c9ced6;border-radius:7px;
+            padding:10px 10px 9px;min-height:66px;display:flex;flex-direction:column;justify-content:center;
+            box-shadow:0 1px 2px rgba(31,35,41,.06);}
+.flow .node b{display:block;font-size:12px;line-height:1.4;margin-bottom:3px;white-space:nowrap;}
+.flow .node span{display:block;font-size:10.5px;line-height:1.45;color:#646a73;}
+.flow .node .no{position:absolute;top:-9px;left:-1px;width:18px;height:18px;border-radius:9px;background:#8a9099;
+                font-size:10px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;font-style:normal;}
+.flow .node .tag{display:inline-block;margin-top:5px;padding:1px 6px;border-radius:3px;font-size:10px;
+                 background:#eef0f3;color:#646a73;align-self:flex-start;font-style:normal;}
+.flow .node.c1{border-color:#1664ff;} .flow .node.c1 .no{background:#1664ff;}
+.flow .node.c2{border-color:#ff8800;} .flow .node.c2 .no{background:#ff8800;}
+.flow .node.c3{border-color:#00a870;} .flow .node.c3 .no{background:#00a870;}
+.flow .node.c4{border-color:#7c4dff;} .flow .node.c4 .no{background:#7c4dff;}
+.flow .node.c5{border-color:#d6409f;} .flow .node.c5 .no{background:#d6409f;}
+.flow .node.sys{border-color:#b6bcc4;background:#f4f5f7;}
+.flow .node.dec{border-color:#ff8800;border-style:dashed;background:#fffdf9;}
+.flow .node.dec b::before{content:"◇ ";color:#ff8800;}
+.flow .node.cond{border-style:dashed;background:#fffdf9;}
+.flow .node.stop{border-color:#e34d59;background:#fde8ea;} .flow .node.stop .no{background:#e34d59;}
+.flow .node.stop b{color:#c0313d;}
+.flow .node.key{border-width:2.5px;box-shadow:0 0 0 3px rgba(0,168,112,.12);} .flow .node.key b{color:#00a870;}
+.flow .node.keyb{border-width:2.5px;border-color:#1664ff;box-shadow:0 0 0 3px rgba(22,100,255,.12);} .flow .node.keyb b{color:#1664ff;}
+.flow .node.pill{border-radius:22px;border-style:dashed;border-color:#b6bcc4;background:#eef0f3;min-height:46px;
+                 text-align:center;padding:8px 10px;}
+.flow .node.pill b{color:#646a73;font-weight:600;margin:0;}
+.flow .node.state{border-radius:26px;min-height:58px;text-align:center;padding:9px 12px;}
+.flow .node.state b{font-size:13px;}
+.flow .node.stage{min-height:96px;padding:14px 14px 12px;border-width:1.5px;}
+.flow .node.stage b{font-size:14px;margin-bottom:6px;}
+.flow .node.stage span{font-size:11px;line-height:1.55;}
+.flow .node.stage.c1{background:#e8f0ff;} .flow .node.stage.c3{background:#e6f6f0;} .flow .node.stage.c4{background:#f0eaff;}
+.flow .node.tag-teacher .tag{background:#fde8ea;color:#c0313d;}
+.flow .node.tag-teacher-ok .tag{background:#e6f6f0;color:#00a870;}
+.flow .node.dim{opacity:.92;}
+
+/* 连线 */
+.flow svg.edges{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:visible;}
+.flow .e-main{fill:none;stroke:#8a9099;stroke-width:1.6;}
+.flow .e-ok{fill:none;stroke:#00a870;stroke-width:1.6;}
+.flow .e-warn{fill:none;stroke:#ff8800;stroke-width:1.5;}
+.flow .e-reject{fill:none;stroke:#e34d59;stroke-width:1.4;stroke-dasharray:5 4;}
+.flow .e-sys{fill:none;stroke:#8a9099;stroke-width:1.4;stroke-dasharray:4 4;}
+.flow .e-blue{fill:none;stroke:#1664ff;stroke-width:1.6;}
+.flow .e-purple{fill:none;stroke:#7c4dff;stroke-width:1.6;}
+.flow text.el{font-size:10.5px;fill:#646a73;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;}
+.flow text.el.warn{fill:#c06800;} .flow text.el.rej{fill:#e34d59;} .flow text.el.ok{fill:#00a870;}
+.flow text.el.blue{fill:#1664ff;} .flow text.el.purple{fill:#7c4dff;}
+
+/* 图例 */
+.flow .legend{display:flex;gap:18px;margin-top:12px;font-size:11px;color:#646a73;align-items:center;flex-wrap:wrap;}
+.flow .legend i{display:inline-block;width:26px;height:0;border-top:2px solid #8a9099;vertical-align:middle;margin-right:6px;}
+.flow .legend i.o{border-color:#ff8800;} .flow .legend i.r{border-color:#e34d59;border-top-style:dashed;}
+.flow .legend i.g{border-color:#00a870;} .flow .legend i.s{border-top-style:dashed;}
+.flow .legend em{font-style:normal;display:inline-block;width:12px;height:12px;border:1.5px dashed #ff8800;border-radius:3px;
+             vertical-align:middle;margin-right:6px;background:#fffdf9;}
+.flow .legend em.stop{border:1.5px solid #e34d59;background:#fde8ea;}
+.flow .legend em.key{border:2px solid #00a870;background:#fff;}
+
+</style>
+</head>
+<body>
+<button id="navToggle" title="折叠 / 展开目录" aria-label="折叠或展开目录">‹</button>
+<nav id="nav">
+  <div class="brand">
+    <h1>讲师/助教自助提现<br>业务流程图</h1>
+    <p>V3.0</p>
+  </div>
+  <a href="#c1">图 1 · 三段流程总览</a>
+  <a href="#c2">图 2 · 端到端主流程（泳道图）</a>
+  <a href="#c3">图 3 · 结算账号生成与首次登录</a>
+  <a href="#c4">图 4 · 课酬来源与课酬账单</a>
+  <a href="#c5">图 5 · 结算申请单与审批（常规 / 紧急）</a>
+  <a href="#c6">图 6 · 紧急账期提现与付款</a>
+  <a href="#c7">图 7 · 讲师自助提现流程</a>
+  <a href="#c8">图 8 · 月度出款与线上确认</a>
+  <a href="#c9">图 9 · 账单 / 提现单 / 账户状态流转</a>
+  <a href="#c10">图 10 · 个人 / 机构 / 代收</a>
+</nav>
+<main>
+  <div class="page-head">
+    <h2>业务流程图 V3.0</h2>
+    <p>讲师 / 助教课酬从课酬确认、自助提现到月度付款的完整业务流程。图中蓝色为项目经理侧动作，橙色为审批，绿色为讲师，紫色为经办人 / 财务，灰色为系统自动。</p>
+  </div>
+
+  <!-- ===================== 图 1 ===================== -->
+  <section id="c1">
+    <h3>图 1 · 三段流程总览</h3>
+    <div class="chart">
+<div class="flow" style="--cols:6;--rows:2;">
+  <div class="fgrid" style="grid-template-columns:230px 120px 216px 120px 230px 120px;grid-template-rows:196px 64px;--gap:26px;">
+    <div class="node stage c1" data-id="s1" data-r="1" data-c="1"><b>① 课酬确认段</b><span>项目排期预填课酬（非必填）→ 执行单自动带入预填课酬（不新增必填项）→ 自动生成课酬草稿（自动带入人员，选择即视为正确）→ 项目经理确认付款合同号后加入待结算清单 → 按常规 / 紧急提交结算申请单 → 合同系统整单审批：部门负责人 → VP → 财务（常规、紧急同一条链）。</span></div>
+    <div class="node pill" data-id="r1" data-r="1" data-c="2"><b>讲师账户<br>账期中 / 可提现</b></div>
+    <div class="node stage c3" data-id="s2" data-r="1" data-c="3"><b>② 提现段</b><span>普通 / 紧急分开入口、分开成单；常规余额仅 1~10 号可提，紧急余额随时可提；选择收款账户与提现方式（开发票须上传等额发票；机构账户仅可开发票、对公收款）；系统自动拆分并冻结为「提现中」。</span></div>
+    <div class="node pill" data-id="r2" data-r="1" data-c="4"><b>提现单</b></div>
+    <div class="node stage c4" data-id="s3" data-r="1" data-c="5"><b>③ 出款段</b><span>系统 11 号按三种方式生成三张月度付款单；紧急提现无账期，不等 11 号批次、随时付款；每笔紧急提现生成一张紧急付款单，易快报同样线下发起。财务付款后，经办人批量 / 整单确认成功（转已到账）；确定不再支付时走合同系统 / 钉钉两级审批，本系统同步结果。财务、经办人对全部页面只读、可下载。</span></div>
+    <div class="node pill" data-id="r3" data-r="1" data-c="6"><b>资金到账<br>+ 线上确认</b></div>
+
+    <div class="node sys" data-id="w1" data-r="2" data-c="1" style="min-height:40px;padding:6px 10px;"><span>载体：后台「师资结算」模块 + 项目排期 / 执行单联动<br>前置：讲师运营维护讲师 / 助教 / 机构档案</span></div>
+    <div class="node sys" data-id="w2" data-r="2" data-c="3" style="min-height:40px;padding:6px 10px;"><span>载体：微信小程序 · 手机号授权登录</span></div>
+    <div class="node sys" data-id="w3" data-r="2" data-c="5" style="min-height:40px;padding:6px 10px;"><span>载体：付款单（月度付款单 + 紧急付款单）+ 易快报 + 统一付款确认</span></div>
+  </div>
+  <script type="application/json" class="fedges">[
+    {"f":"s1","t":"r1","type":"blue"},{"f":"r1","t":"s2"},
+    {"f":"s2","t":"r2","type":"ok"},{"f":"r2","t":"s3"},
+    {"f":"s3","t":"r3","type":"purple"}
+  ]</script>
+</div>
+    </div>
+  </section>
+
+  <!-- ===================== 图 2 泳道 ===================== -->
+  <section id="c2">
+    <h3>图 2 · 端到端主流程（泳道图）</h3>
+    <div class="chart">
+<div class="flow lanes" style="--cols:14;--colw:114px;--rows:6;--rowh:158px;--gap:16px;">
+  <div class="fgrid">
+    <div class="lane l5" data-r="1"></div>
+    <div class="lane l1" data-r="2"></div>
+    <div class="lane l2" data-r="3"></div>
+    <div class="lane ls" data-r="4"></div>
+    <div class="lane l3" data-r="5"></div>
+    <div class="lane l4 last" data-r="6"></div>
+    <div class="lab l5" data-r="1"><b>讲师运营</b><i>讲师 / 助教 / 机构档案</i></div>
+    <div class="lab l1" data-r="2"><b>项目经理</b><i>后台管理系统</i></div>
+    <div class="lab l2" data-r="3"><b>合同系统审批</b><i>部门 / 财务 / VP</i></div>
+    <div class="lab" data-r="4"><b>系统</b><i>自动处理</i></div>
+    <div class="lab l3" data-r="5"><b>讲师 / 助教 / 机构收款人</b><i>微信小程序</i></div>
+    <div class="lab l4" data-r="6"><b>经办人 / 财务</b><i>后台 + 易快报</i></div>
+
+    <div class="node c5" data-id="n0" data-r="1" data-c="1" data-span="2"><i class="no">0</i><b>前置：维护结算档案</b><span>讲师：从运营系统选择带入<br>助教：无上游，手工新建<br>机构：新建或抓取，录入机构收款人</span></div>
+    <div class="node c1" data-id="n1" data-r="2" data-c="1"><i class="no">1</i><b>项目排期</b><span>预填课酬（非必填）<br>重复占用仅提醒</span></div>
+    <div class="node c1" data-id="n1b" data-r="2" data-c="2"><i class="no">2</i><b>执行单</b><span>自动带入预填课酬<br>不新增必填项</span></div>
+    <div class="node sys" data-id="n2" data-r="4" data-c="2"><i class="no">3</i><b>生成课酬草稿</b><span>自动生成<br>自动带入人员</span></div>
+    <div class="node c1" data-id="n3" data-r="2" data-c="3" data-span="2"><i class="no">4</i><b>待结算清单提交结算申请</b><span>确认后加入待结算清单<br>常规 / 紧急分开成单<br>须已确认付款合同号<br>档案缺失将被拦截</span></div>
+    <div class="node c2" data-id="n4" data-r="3" data-c="4"><i class="no">5</i><b>部门负责人</b><span>整单通过 / 驳回<br>展示讲师历史单价</span></div>
+    <div class="node c3 key" data-id="n5" data-r="3" data-c="5"><i class="no">6</i><b>VP</b><span>整单通过 / 驳回<br>驳回必选原因</span></div>
+    <div class="node c2" data-id="n6" data-r="3" data-c="6"><i class="no">7</i><b>财务·常规紧急均审</b><span>核对类别 / 单价 / 数量 / 时间<br>通过即确认入账<br>财务内部两级审批</span></div>
+    <div class="node sys" data-id="n7" data-r="4" data-c="7"><i class="no">8</i>
+      <b>审批通过入账</b><span>个人入本人账户 · 机构入机构账户<br>首次入账发送登录邀请<br>常规→账期中 · 紧急→可提现</span></div>
+    <div class="node sys" data-id="n8" data-r="4" data-c="8"><i class="no">10</i><b>到期转可提现</b><span>最后执行日 + N 天整体到期<br>紧急 &gt; 讲师特殊 &gt; 角色默认<br>到期后仍须在 1~10 号提现</span></div>
+    <div class="node c3" data-id="n7a" data-r="5" data-c="7"><i class="no">9</i><b>绑定手机号</b><span>接收小程序绑定通知<br>授权登录 · 绑定微信</span></div>
+    <div class="node c3" data-id="n7b" data-r="5" data-c="8"><i class="no">11</i><b>录入收款账户</b><span>户名 · 账号 · 开户行<br>个人卡 / 支付宝<br>机构仅对公</span></div>
+    <div class="node c3 key" data-id="n9" data-r="5" data-c="9"><i class="no">12</i><b>分入口自助提现</b><span>普通 1~10 号 · 紧急随时<br>选收款账户 · 选提现方式<br>机构仅开发票 · 分别成单</span></div>
+    <div class="node sys" data-id="n10" data-r="4" data-c="10"><i class="no">13</i>
+      <b>生成对应提现单</b><span>普通 / 紧急分别生成<br>自动拆分 · 冻结为提现中</span></div>
+    <div class="node c1" data-id="n10e" data-r="2" data-c="11">
+      <b>紧急付款单付款</b><span>无账期 · 随时付款<br>每笔一张 · 走易快报</span></div>
+    <div class="node c4" data-id="n11" data-r="6" data-c="11"><i class="no">14</i>
+      <b>11号生成月度付款单</b><span>系统按三种方式生成三张<br>经办人核对并提易快报</span></div>
+    <div class="node c4" data-id="n12" data-r="6" data-c="12"><i class="no">15</i>
+      <b>审批·线下付款</b><span>时间不固定<br>预计月底到账</span></div>
+    <div class="node c4 key" data-id="n13" data-r="6" data-c="13"><i class="no">16</i>
+      <b>统一确认结果</b><span>成功可批量确认<br>异常 / 付款失败必须逐笔</span></div>
+    <div class="node sys" data-id="n14" data-r="4" data-c="14"><i class="no">17</i><b>落账·推送</b><span>成功→已到账<br>不再支付→审批通过后退回</span></div>
+  </div>
+  <script type="application/json" class="fedges">[
+    {"f":"n1","t":"n1b"},
+    {"f":"n3","t":"n0","fs":"t","ts":"r","type":"reject","label":"缺档案：补建"},
+    {"f":"n1b","t":"n2"},
+    {"f":"n2","t":"n3"},
+    {"f":"n3","t":"n4","fs":"b","ts":"t"},
+    {"f":"n4","t":"n5"},
+    {"f":"n5","t":"n6"},
+    {"f":"n6","t":"n7"},
+    {"f":"n7","t":"n8","label":"常规"},
+    {"f":"n7","t":"n7a","fs":"b","ts":"t","label":"邀请"},
+    {"f":"n7a","t":"n7b","fs":"r","ts":"l"},
+    {"f":"n7b","t":"n9","fs":"r","ts":"l"},
+    {"f":"n7","t":"n9","fs":"b","ts":"t","bend":14,"label":"紧急","type":"warn"},
+    {"f":"n8","t":"n9"},
+    {"f":"n9","t":"n10"},
+    {"f":"n10","t":"n11","label":"常规"},
+    {"f":"n10","t":"n10e","type":"warn","label":"紧急"},
+    {"f":"n10e","t":"n12","type":"warn"},
+    {"f":"n11","t":"n12"},
+    {"f":"n12","t":"n13","type":"ok"},
+    {"f":"n13","t":"n14","type":"ok"}
+  ]</script>
+  <div class="legend">
+    <span><i></i>主流程（常规账期）</span>
+    <span><i class="o"></i>紧急账期：审批链与常规相同（部门负责人 → VP → 财务），区别仅在审批通过后直接可提现，提现与付款走图 6 单独通道</span>
+    <span><em></em>条件节点</span>
+    <span><em class="key"></em>关键动作：讲师提现 / 经办人确认</span>
+    <span>任一审批节点只能整单通过 / 驳回；驳回保留原单号并从首节点重审，见图 5；只有决定不再支付时才发起付款失败审批（合同系统 / 钉钉，两级），见图 8</span>
+  </div>
+</div>
+    </div>
+    <div class="note"><b>读图方式</b>：蓝色为项目经理侧动作，橙色为审批，绿色为讲师 / 助教 / 机构收款人，粉色为讲师运营（档案维护），紫色为经办人 / 财务，灰色为系统自动。<b>常规账期</b>每月 11 号由系统生成三张月度付款单；<b>紧急账期</b>无账期，紧急提现单随时付款，不进月度付款单，单独生成紧急付款单（每笔一张，同样走易快报）。</div>
+  </section>
+
+  <!-- ===================== 图 3 ===================== -->
+  <section id="c3">
+    <h3>图 3 · 结算账号生成与首次登录</h3>
+    <p class="desc"><b>讲师、助教、机构三类档案统一由新角色“讲师运营”维护</b>：<b>讲师</b>来源于上游<b>讲师运营系统</b>（添加讲师时只能从运营系统选择并带出信息，机构讲师自动关联所属机构），<b>助教</b>没有上游来源、由讲师运营手工新建，<b>机构</b>由讲师运营新建（可从讲师系统抓取机构名称与授课讲师关联，收款信息须补录）；各类人员通过稳定的人员ID关联；手机号只用于登录与通知，不作为资金账户主键。排期、执行单和待提交课酬账单允许手机号为空，项目经理将账单加入待申请课酬单时才按明细强校验。结算申请单提交成功后创建或复用永久不变的<b>结算用户ID</b>：<b>个人</b>合作按人员ID生成本人账号；<b>机构</b>合作的授课讲师不单独生成账号，统一复用讲师运营已录入的<b>机构账户</b>（一机构一个小程序账号）。首次审批通过并入账后向登录人（个人为本人，机构为机构收款人）发送邀请，未完成微信绑定时由讲师运营在账户详情重新发送。</p>
+    <div class="chart">
+<div class="flow lanes" style="--cols:9;--colw:130px;--rows:4;--rowh:126px;--gap:20px;">
+  <div class="fgrid">
+    <div class="lane l5" data-r="1"></div>
+    <div class="lane l2" data-r="2"></div>
+    <div class="lane ls" data-r="3"></div>
+    <div class="lane l3 last" data-r="4"></div>
+    <div class="lab l5" data-r="1"><b>讲师运营</b><i>维护讲师 / 助教 / 机构档案</i></div>
+    <div class="lab l2" data-r="2"><b>项目经理</b><i>排期 / 结算后台</i></div>
+    <div class="lab" data-r="3"><b>系统</b><i>校验与账户处理</i></div>
+    <div class="lab l3" data-r="4"><b>讲师 / 助教 / 机构收款人</b><i>微信小程序</i></div>
+
+    <div class="node c5" data-id="a1" data-r="1" data-c="1"><i class="no">1</i>
+      <b>建档 · 统一人员ID</b><span>讲师：运营系统选择带入<br>助教：手工新建<br>机构：新建 / 抓取<br>一人一个ID，不兼任</span></div>
+    <div class="node c1" data-id="a2" data-r="2" data-c="2"><i class="no">2</i>
+      <b>排期→执行单→账单</b><span>均按人员ID关联<br>缺手机号不阻断<br>账单正常生成</span></div>
+    <div class="node c1" data-id="a3" data-r="2" data-c="3"><i class="no">3</i>
+      <b>加入待申请课酬单</b><span>个人：校验手机号<br>机构：校验机构账户<br>通过后才可提交结算</span></div>
+    <div class="node dec" data-id="a4" data-r="3" data-c="4"><i class="no">4</i>
+      <b>校验通过？</b><span>个人：档案已建、手机号有效<br>机构：机构账户已创建<br>（授课人不校验手机号）</span></div>
+    <div class="node stop" data-id="a5" data-r="2" data-c="5"><i class="no">✕</i>
+      <b>该账单不可加入</b><span>标记「档案未建 / 手机号待补 / 冲突」<br>其他账单可正常加入</span></div>
+    <div class="node c5" data-id="a6" data-r="1" data-c="5"><i class="no">5</i>
+      <b>补建档案 / 补充手机号</b><span>讲师：运营系统更新<br>助教：运营在本系统改<br>机构：运营补建并录入</span></div>
+    <div class="node sys keyb" data-id="a7" data-r="3" data-c="6"><i class="no">6</i>
+      <b>创建 / 复用结算用户ID</b><span>个人：按人员ID生成<br>机构：复用机构账户ID<br>用户ID永久不变</span></div>
+    <div class="node sys" data-id="a8" data-r="3" data-c="7"><i class="no">7</i>
+      <b>首次入账发送邀请</b><span>个人：发本人手机号<br>机构：发机构收款人手机号<br>未绑定可由讲师运营重发</span></div>
+    <div class="node c3" data-id="a9" data-r="4" data-c="8"><i class="no">8</i>
+      <b>授权手机号登录</b><span>与登记手机号比对<br>（个人本人 / 机构收款人）<br>绑定微信与结算用户ID</span></div>
+    <div class="node c3 key" data-id="a10" data-r="4" data-c="9"><i class="no">9</i><b>填写收款账户</b><span>户名 · 账号 · 开户行 分开填<br>个人：银行卡 / 支付宝<br>机构：仅对公账户</span></div>
+  </div>
+  <script type="application/json" class="fedges">[
+    {"f":"a1","t":"a2"},
+    {"f":"a2","t":"a3"},
+    {"f":"a3","t":"a4"},
+    {"f":"a4","t":"a7","type":"ok","label":"通过"},
+    {"f":"a4","t":"a5","fs":"t","ts":"b","type":"reject","label":"缺失 / 重复"},
+    {"f":"a5","t":"a6","type":"reject","label":"通知讲师运营补建"},
+    {"f":"a6","t":"a4","fs":"l","ts":"t","type":"sys","label":"同步后重新校验"},
+    {"f":"a7","t":"a8","type":"ok"},
+    {"f":"a8","t":"a9","type":"ok"},
+    {"f":"a9","t":"a10","type":"ok"}
+  ]</script>
+  <div class="legend">
+    <span><em></em>手机号提交校验</span>
+    <span><em class="stop"></em>只拦截问题账单明细，不阻断同批其他账单</span>
+    <span><em class="key"></em>结算用户ID是资金归属主键，手机号可修改</span>
+    <span>未登录或未填写收款账户不影响入账，但不能提现</span>
+    <span>机构授课人不单独生成账号，课酬统一入机构账户</span>
+  </div>
+</div>
+    </div>
+    <div class="note"><b>手机号修改</b>：讲师在讲师运营系统修改并同步；助教、机构收款人由讲师运营在本系统修改；旧号立即失效并解除原微信绑定，新号重新授权后绑定原结算用户ID，余额和历史流水不变。待提交账单展示最新手机号；已提交 / 已审批结算申请单保留提交时手机号快照；已提交提现单保留手机号及收款账户快照。<b>邀请重发</b>：仅未完成微信绑定时由讲师运营在账户详情操作，绑定后按钮隐藏。<br><b>补充</b>：收款账户支持多个，提现时选择；结算申请成功后<b>自动生成待激活账户</b>；提现时选择账户，只有一个时自动带出。讲师、助教、机构档案均由讲师运营维护（项目经理只读，缺档案时线下通知讲师运营补建），结算用户ID仍在结算申请单提交成功时创建或复用；机构账户由机构提供资料、讲师运营在后台录入，机构下授课讲师只建讲师档案、不生成小程序账号；个人 / 机构 / 代收的账号规则见图 10。</div>
+  </section>
+
+  <!-- ===================== 图 4 课酬来源 ===================== -->
+  <section id="c4">
+    <h3>图 4 · 课酬来源与课酬账单</h3>
+    <p class="desc">课酬账单有两个来源：<b>主线是项目排期预填课酬 → 执行单自动带入预填课酬 → 自动生成课酬草稿</b>，补充是<b>手工创建</b>（咨询、大赛、预付等无执行单场景，创建时必须选合同）。排期预填<b>非必填</b>，执行单<b>不新增必填项</b>；自动带入的人员<b>不需要再单独确认</b>，选择即视为正确，项目经理核对并确认付款合同号后即可加入<b>待结算清单</b>（原「待申请课酬单」合并），再按常规 / 紧急账期提交。<b>变更联动规则</b>：排期变更只影响执行单；执行单变更只同步待提交的课酬账单；已提交申请中的账单必须整单驳回后方可修改。</p>
+    <div class="chart">
+<div class="flow" style="--cols:6;--rows:3;--colw:150px;--gap:26px;">
+  <div class="fgrid" style="grid-template-columns:repeat(5,150px) 200px;grid-template-rows:152px 120px 120px;">
+    <div class="node c1" data-id="a1" data-r="1" data-c="1"><i class="no">1</i>
+      <b>项目排期预填课酬</b><span>讲师 / 助教 · 天数 · 单价<br>非必填 · 重复占用仅提醒</span></div>
+    <div class="node c1" data-id="a2" data-r="1" data-c="2"><i class="no">2</i><b>执行单自动带入</b><span>带入排期预填的课酬<br>挂在合同下 · 不新增必填项</span></div>
+    <div class="node sys" data-id="a3" data-r="1" data-c="3"><i class="no">3</i><b>生成课酬草稿</b><span>系统自动生成<br>自动带入人员</span></div>
+    <div class="node c1" data-id="a4" data-r="1" data-c="4"><i class="no">4</i><b>确认并加入待结算清单</b><span>填类别 · 单价 · 数量 · 单位<br>项目经理选并确认付款合同号<br>确认即占额度，超限拦截<br>可选上传附件（审批凭证）</span></div>
+    <div class="node dec" data-id="a5" data-r="1" data-c="5"><i class="no">5</i><b>录入校验</b><span>执行日期 ≤ 录入当天？<br>同人同时段无重复？</span></div>
+    <div class="node c1 keyb" data-id="a6" data-r="1" data-c="6"><i class="no">6</i><b>提交结算申请单</b><span>待结算清单勾选 · 选常规 / 紧急<br>须已确认付款合同号<br>未关联执行单：提交时二次确认<br>附件、标注一并同步合同系统 / 钉钉<br>通过后进入图 5</span></div>
+
+    <div class="node sys" data-id="chg1" data-r="2" data-c="1"><b>排期变更</b><span>只影响执行单数据</span></div>
+    <div class="node sys" data-id="chg2" data-r="2" data-c="2"><b>执行单变更</b><span>仅同步待提交的账单</span></div>
+    <div class="node stop" data-id="chg3" data-r="2" data-c="3"><i class="no">✕</i><b>已提交结算申请</b><span>账单不可直接变更<br>整单驳回后修改</span></div>
+    <div class="node stop" data-id="x1" data-r="2" data-c="5"><i class="no">✕</i>
+      <b>拦截 · 不允许保存</b><span>未执行不能录<br>同人同时段已有记录</span></div>
+
+    <div class="node stop" data-id="x2" data-r="2" data-c="6"><i class="no">✕</i><b>拦截 · 提交前校验</b><span>手机号缺失 / 机构账户未创建<br>付款合同号未关联<br>提示原因后补齐再提</span></div>
+    <div class="node c1" data-id="m1" data-r="3" data-c="4"><i class="no">M</i>
+      <b>手工创建账单</b><span>咨询 / 大赛 / 预付等<br>无执行单场景 · 须下拉选合同</span></div>
+    <div class="node sys" data-id="m2" data-r="3" data-c="5"><b>定时匹配执行单</b><span>无匹配→待关联并提醒<br>唯一→自动关联<br>多匹配→项目经理选择</span></div>
+  </div>
+  <script type="application/json" class="fedges">[
+    {"f":"a1","t":"a2"},{"f":"a2","t":"a3"},{"f":"a3","t":"a4"},
+    {"f":"a4","t":"a5"},
+    {"f":"a5","t":"a6","type":"ok","label":"通过"},
+    {"f":"a5","t":"x1","fs":"b","ts":"t","type":"reject","label":"不通过"},
+    {"f":"a1","t":"chg1","type":"sys","label":"变更联动"},
+    {"f":"chg1","t":"chg2","type":"sys"},
+    {"f":"chg2","t":"chg3","type":"sys","label":"已提交则不同步","dy":-46},
+    {"f":"m1","t":"a4","label":"补充来源"},
+    {"f":"m1","t":"m2","type":"sys"},
+    {"f":"m2","t":"a4","type":"sys","label":"关联后继续","dx":-60,"dy":48},
+    {"f":"a6","t":"x2","fs":"b","ts":"t","type":"reject","label":"校验不通过"}
+  ]</script>
+  <div class="legend">
+    <span><i></i>主流程</span>
+    <span><i class="s"></i>变更联动 / 定时同步</span>
+    <span><i class="r"></i>校验不通过 → 不允许保存</span>
+    <span><em></em>判断节点</span>
+    <span>付款合同号：归属销售合同，项目经理在<b>课酬账单页</b>从该销售合同下选择并<b>确认</b>，提交待结算清单前均可修改；<b>确认即占用额度</b>（按课酬账单金额汇总，同一付款合同号可关联多笔，合计不得超过付款总金额），超限直接拦截并列出已关联的课酬账单。未确认付款合同号不能加入待结算清单；手工创建账单可先不选执行单，<b>不阻断申请与付款，但最终必须关联</b>：系统在账单列表、详情、待结算清单、申请单详情持续提醒，提交时二次确认，同步合同系统 / 钉钉时标注「未关联执行单」，任何状态下项目经理均可补关联。<b>仅助教、出题费豁免付款合同</b>（豁免清单待财务确认）。项目经理侧不展示合同原件状态；<b>销售合同附件、付款合同附件</b>仅在财务审批时展示给财务（随申请单从合同系统同步）。</span>
+    <span><b>归属规则</b>：课酬账单归属执行单上的<b>项目经理</b>（不看录入人），一个执行单只有一位项目经理；项目经理只能看到自己名下的账单，多人共同执行时按各自执行单拆分。离职前须处理完名下待提交课酬，管理员 / 经办人 / 财务可按「项目经理」筛选核查。</span>
+  </div>
+</div>
+    </div>
+    <div class="note"><b>录入校验</b>：执行日期不得晚于录入当天；同一师资同一执行时段（精确到上午 / 下午）跨项目也不允许重复，在<b>账单阶段强拦截</b>；排期阶段的重复占用仅作提醒。同一执行单内多人课酬合计超过执行单费用总额时<b>只提醒、不拦截</b>。<b>杂费</b>口径同课酬：税前金额，仍使用三类提现方式，不新增易快报模板。<br><b>补充</b>：课酬账单新增<b>费用类别、单价、数量、单位</b>（天 / 半天 / 小时 / 场 / 题 / 个 / 套 / 打包），金额 = 单价 × 数量；审批时展示该讲师历史单价。离职前，项目经理须处理完名下待提交课酬，系统可按项目经理查询是否仍有待申请记录。</div>
+  </section>
+
+  <!-- ===================== 图 5 结算申请单与审批 ===================== -->
+  <section id="c5">
+    <h3>图 5 · 结算申请单与审批（常规 / 紧急账期分流）</h3>
+    <p class="desc">待结算清单页有两个提交按钮：<b>「常规账期」</b>与<b>「紧急账期」</b>，由项目经理自行判断，两类账单<b>分别提交、不混单</b>。账单加入待结算清单前已校验手机号和机构账户，加入前须已确认付款合同号（助教、出题费豁免付款合同）；未关联执行单的账单可提交，提交时二次确认并在审批单中标注。审批在<b>合同系统</b>完成，本系统同步审批状态与驳回原因；<b>常规、紧急使用同一条审批链：部门负责人 → VP → 财务</b>，审批人只能<b>整单通过或整单驳回</b>。财务审批通过即确认要付，金额入账。驳回后原申请单号不变，项目经理修改后从首节点重新审批。</p>
+    <div class="chart">
+<div class="flow" style="--cols:6;--rows:3;--colw:158px;--gap:26px;">
+  <div class="fgrid" style="grid-template-rows:140px 110px 140px;padding-top:6px;">
+    <div class="node c1" data-id="q1" data-r="1" data-c="1"><i class="no">A</i><b>常规账期申请</b><span>点「常规账期」按钮<br>账期 = 讲师特殊账期 / 角色默认<br>（天数，申请时不再自选）</span></div>
+    <div class="node c2" data-id="n2" data-r="1" data-c="2"><i class="no">1</i><b>部门负责人</b><span>整单通过 / 驳回<br>展示讲师历史单价</span></div>
+    <div class="node c2" data-id="n3" data-r="1" data-c="3"><i class="no">2</i><b>VP</b><span>整单通过 / 驳回<br>驳回必选原因</span></div>
+    <div class="node c2" data-id="nF" data-r="1" data-c="4"><i class="no">3</i><b>财务</b><span>常规也审 · 整单通过 / 驳回<br>通过即确认入账<br>财务内部两级审批</span></div>
+    <div class="node sys" data-id="n4" data-r="1" data-c="5"><i class="no">4</i><b>审批通过 · 账期中</b><span>账单锁定不可修改<br>金额入讲师账户<br>（机构讲师入机构账户）</span></div>
+    <div class="node c3 key" data-id="n5" data-r="1" data-c="6"><i class="no">5</i><b>到期转可提现</b><span>最后执行日 + N 天整体到期<br>紧急 &gt; 讲师特殊 &gt; 角色默认</span></div>
+
+    <div class="node stop" data-id="xR" data-r="2" data-c="2" data-span="3"><i class="no">✕</i><b>整单驳回（常规 / 紧急通用）</b><span>必选原因 · 可补充说明<br>原单号不变 · 回首节点</span></div>
+
+    <div class="node c1" data-id="q2" data-r="3" data-c="1"><i class="no">B</i><b>紧急账期申请</b><span>点「紧急账期」按钮<br>必填原因 · 单独成单</span></div>
+    <div class="node c2" data-id="e2" data-r="3" data-c="2"><i class="no">1</i><b>部门负责人</b><span>整单通过 / 驳回<br>展示讲师历史单价</span></div>
+    <div class="node c2" data-id="e3" data-r="3" data-c="3"><i class="no">2</i><b>VP</b><span>整单通过 / 驳回<br>驳回必选原因</span></div>
+    <div class="node c2" data-id="e4" data-r="3" data-c="4"><i class="no">3</i><b>财务</b><span>整单通过 / 驳回<br>与常规同一条链<br>财务内部两级审批</span></div>
+    <div class="node c3 key" data-id="e5" data-r="3" data-c="5"><i class="no">4</i><b>直接进入可提现</b><span>无账期 · 推送讲师<br>提现与付款见图 6</span></div>
+  </div>
+  <script type="application/json" class="fedges">[
+    {"f":"q1","t":"n2"},{"f":"n2","t":"n3"},{"f":"n3","t":"nF"},{"f":"nF","t":"n4"},{"f":"n4","t":"n5","type":"ok"},
+    {"f":"q2","t":"e2","type":"warn"},{"f":"e2","t":"e3","type":"warn"},{"f":"e3","t":"e4","type":"warn"},{"f":"e4","t":"e5","type":"ok"},
+    {"f":"n2","t":"xR","fs":"b","ts":"t","type":"reject","label":"驳回"},
+    {"f":"n3","t":"xR","fs":"b","ts":"t","type":"reject"},
+    {"f":"nF","t":"xR","fs":"b","ts":"t","type":"reject"},
+    {"f":"e2","t":"xR","fs":"t","ts":"b","type":"reject"},
+    {"f":"e3","t":"xR","fs":"t","ts":"b","type":"reject"},
+    {"f":"e4","t":"xR","fs":"t","ts":"b","type":"reject","label":"驳回"},
+    {"f":"xR","t":"q1","fs":"l","ts":"b","type":"reject","label":"常规：修改后从首节点重提"},
+    {"f":"xR","t":"q2","fs":"l","ts":"t","type":"reject","label":"紧急：修改后从首节点重提"}
+  ]</script>
+  <div class="legend">
+    <span><i></i>常规账期主流程</span>
+    <span><i class="o"></i>紧急账期流程：审批链与常规相同，区别仅在通过后直接可提现</span>
+    <span><i class="r"></i>任一节点整单驳回，不存在部分通过</span>
+    <span><em class="key"></em>终态：金额进入讲师账户</span>
+    <span>审批日志在合同系统保留，本系统同步审批状态与驳回原因</span>
+  </div>
+</div>
+    </div>
+    <div class="note"><b>审批通过后账单不可修改</b>。常规与紧急都经<b>部门负责人 → VP → 财务</b>，财务审批通过即确认要付。通过后，常规账期先入「账期中」，到期转「可提现」；紧急账期直接「可提现」。审批仍以整张结算申请单为单位。<br><b>规则</b>：财务内部两级审批；合同系统和钉钉两边均可；账期以<b>天数</b>配置（财务在配置页设置讲师 / 助教默认天数，初始 60 / 30 天；讲师特殊账期在讲师账户中维护），整张执行单从最后执行日起 + N 天整体到期，到期后余额即显示「可提现」，但提现操作仍限窗口期（默认每月 1~10 号，财务可配）；优先级 紧急 &gt; 讲师特殊 &gt; 角色默认。</div>
+  </section>
+
+  <!-- ===================== 图 6 紧急通道 ===================== -->
+  <section id="c6">
+    <h3>图 6 · 紧急账期提现与付款</h3>
+    <p class="desc">紧急账期审批通过后账单直接可提现，讲师从<b>紧急提现入口</b>随时提现；非 1~10 号期间只能提紧急余额，不能与正常余额混提。紧急提现单与普通提现单的区别只在<b>没有账期</b>，易快报同样线下发起；财务付款后，由<b>月度账单经办人</b>在统一付款确认页处理。紧急提现单不进入 11 号月度付款单，每笔单独生成一张紧急付款单，同样走易快报。</p>
+    <div class="chart">
+<div class="flow lanes" style="--cols:7;--colw:138px;--rows:5;--rowh:118px;--gap:22px;">
+  <div class="fgrid">
+    <div class="lane ls" data-r="1"></div>
+    <div class="lane l3" data-r="2"></div>
+    <div class="lane l1" data-r="3"></div>
+    <div class="lane l2" data-r="4"></div>
+    <div class="lane l4 last" data-r="5"></div>
+    <div class="lab" data-r="1"><b>系统</b><i>自动处理</i></div>
+    <div class="lab l3" data-r="2"><b>讲师 / 助教</b><i>微信小程序</i></div>
+    <div class="lab l1" data-r="3"><b>项目经理</b><i>线下发起易快报</i></div>
+    <div class="lab l2" data-r="4"><b>财务</b><i>易快报</i></div>
+    <div class="lab l4" data-r="5"><b>经办人</b><i>后台系统</i></div>
+
+    <div class="node sys" data-id="k1" data-r="1" data-c="1"><i class="no">1</i>
+      <b>审批通过 · 可提现</b><span>紧急账单直达可提现<br>推送讲师</span></div>
+    <div class="node c3" data-id="k2" data-r="2" data-c="2"><i class="no">2</i>
+      <b>紧急入口提现</b><span>不受 1~10 号限制<br>只提紧急余额 · 不混提</span></div>
+    <div class="node sys" data-id="k3" data-r="1" data-c="3"><i class="no">3</i>
+      <b>生成紧急提现单</b><span>无账期 · 随时提现<br>金额冻结 → 提现中</span></div>
+    <div class="node c1" data-id="k4" data-r="3" data-c="4"><i class="no">4</i><b>线下发起易快报</b><span>系统不提供发起入口<br>沿用现有逻辑</span></div>
+    <div class="node c2" data-id="k5" data-r="4" data-c="5"><i class="no">5</i>
+      <b>审批 · 付款</b><span>财务审批后付款<br>钱到账</span></div>
+    <div class="node c4 key" data-id="k6" data-r="5" data-c="6"><i class="no">6</i>
+      <b>统一确认结果</b><span>成功可批量确认<br>异常 / 付款失败逐笔处理</span></div>
+    <div class="node sys" data-id="k7" data-r="1" data-c="7"><i class="no">7</i>
+      <b>落账 · 推送</b><span>成功→已到账<br>不再支付→审批退回（图 8）</span></div>
+  </div>
+  <script type="application/json" class="fedges">[
+    {"f":"k1","t":"k2","type":"ok"},
+    {"f":"k2","t":"k3"},
+    {"f":"k3","t":"k4"},
+    {"f":"k4","t":"k5","type":"purple"},
+    {"f":"k5","t":"k6","type":"purple"},
+    {"f":"k6","t":"k7","type":"ok"}
+  ]</script>
+  <div class="legend">
+    <span><i></i>主流程</span>
+    <span><em class="key"></em>关键：经办人系统内确认付款结果</span>
+    <span>紧急提现单与普通提现单一样，易快报线下发起；结果确认统一由月度账单经办人完成</span>
+  </div>
+</div>
+    </div>
+    <div class="note"><b>要点</b>：① 紧急单收款方式同样由讲师自选，开发票类由月度账单经办人收票、核票；② 紧急单不进 11 号月度付款批次，但在统一「付款确认」页面以“紧急”标签展示；③ 付款异常默认保持提现中并在线下继续处理，只有确定不再支付时才发起财务付款失败审批。<br><b>补充</b>：紧急结算的审批链与常规一致（部门负责人 → VP → 财务）；对外不承诺 21 号。</div>
+  </section>
+
+  <!-- ===================== 图 7 提现 ===================== -->
+  <section id="c7">
+    <h3>图 7 · 讲师自助提现流程（普通 / 紧急分入口）</h3>
+    <p class="desc">普通提现与紧急提现使用<b>不同入口并分别生成提现单</b>，不能混提：普通入口仅每月 1~10 号开放；紧急入口随时开放，非 1~10 号只能提紧急余额。讲师输入金额、选择方式并确认收款信息后，系统按“可提现日期 → 执行日期”自动拆分并冻结。讲师可查看完整课酬入账详情，但提现详情不展示后台分摊关系。</p>
+    <div class="chart">
+<div class="flow" style="--cols:9;--colw:122px;--rows:2;--gap:22px;">
+  <div class="fgrid" style="grid-template-rows:140px 120px;">
+    <div class="node c3" data-id="w1" data-r="1" data-c="1"><i class="no">1</i>
+      <b>选择提现入口</b><span>普通提现 / 紧急提现<br>余额分开展示 · 不混提</span></div>
+    <div class="node dec" data-id="w2" data-r="1" data-c="2"><i class="no">2</i>
+      <b>入口与前置校验</b><span>普通是否在 1~10 号？<br>对应余额 / 收款信息完整？</span></div>
+    <div class="node c3" data-id="w3" data-r="1" data-c="3"><i class="no">3</i>
+      <b>输入提现金额</b><span>≤ 可提现余额<br>可部分提现</span></div>
+    <div class="node c3" data-id="w4" data-r="1" data-c="4"><i class="no">4</i><b>选择提现方式</b><span>个人：云账户 / 开发票 / 劳务费<br>机构：仅开发票（上传等额发票）<br>机构不代扣个税</span></div>
+    <div class="node c3" data-id="w5" data-r="1" data-c="5"><i class="no">5</i><b>选择收款账户</b><span>单账户自动带出<br>多账户自行选择<br>个人：银行卡 / 支付宝<br>机构：对公账户</span></div>
+    <div class="node c3 key" data-id="w6" data-r="1" data-c="6"><i class="no">6</i>
+      <b>提交提现</b><span>零审核 · 即时受理<br>提交后不可撤销</span></div>
+    <div class="node sys" data-id="w7" data-r="1" data-c="7"><i class="no">7</i>
+      <b>生成对应提现单</b><span>普通 / 紧急分别成单<br>后台自动拆分<br>金额冻结 → 提现中</span></div>
+    <div class="node c4" data-id="w8" data-r="1" data-c="8"><i class="no">8</i>
+      <b>进入对应付款通道</b><span>普通→11号月度付款单<br>紧急→紧急付款单·随时付款（无账期）</span></div>
+    <div class="node sys" data-id="w9" data-r="1" data-c="9"><i class="no">9</i>
+      <b>付款结果通知</b><span>预计月底到账<br>已付款 / 付款失败推送</span></div>
+
+    <div class="node stop" data-id="x1" data-r="2" data-c="2" data-span="2"><i class="no">✕</i>
+      <b>拦截 · 引导处理</b><span>非窗口期普通余额不可提<br>可改走紧急入口提紧急余额<br>收款信息不全则先补充</span></div>
+    <div class="node sys" data-id="x2" data-r="2" data-c="5" data-span="3">
+      <b>讲师端明细边界</b><span>课酬入账：项目 / 合同 / 执行日期 / 角色 / 金额 / 入账时间 / 可提现日（到期即显示可提现，窗口外不可操作）<br>提现详情：单号 / 金额 / 方式 / 提交时间 / 预计到账 / 状态，不显示构成明细</span></div>
+  </div>
+  <script type="application/json" class="fedges">[
+    {"f":"w1","t":"w2"},
+    {"f":"w2","t":"w3","type":"ok","label":"通过"},
+    {"f":"w2","t":"x1","fs":"b","ts":"t","type":"reject","label":"不通过","dx":-34},
+    {"f":"w3","t":"w4"},{"f":"w4","t":"w5"},{"f":"w5","t":"w6"},
+    {"f":"w6","t":"w7","type":"ok"},
+    {"f":"w7","t":"w8"},
+    {"f":"w8","t":"w9","type":"purple"}
+  ]</script>
+  <div class="legend">
+    <span><i></i>主流程</span>
+    <span><i class="r"></i>拦截分支</span>
+    <span><em></em>判断节点</span>
+    <span><em class="key"></em>讲师唯一需要做的事：提交提现</span>
+    <span>普通 / 紧急提现分别成单；非 1~10 号不能提普通余额</span>
+  </div>
+</div>
+    </div>
+    <div class="note"><b>零审核</b>：公司侧的金额确认已在结算申请单审批环节完成。讲师不选择具体账单；系统优先扣减可提现日期最早的账单，同日再按执行日期排序。构成关系仅供后台付款页面查看，讲师提现详情不显示。提交需具备幂等和原子冻结能力，避免重复提现。<br><b>补充</b>：<b>云账户</b>：提示实际到账可能因个税、增值税与提现金额不同，不计算明细（文案待财务提供）；<b>开发票</b>：必须上传等额电子发票并校验金额，可一键复制公司开票信息，提示不得开咨询类；<b>劳务费代扣</b>：展示预计代扣个税和预计到账金额。发票先提示加金额校验；开错发票当月重开仍算正常提现，不驳回；云账户 / 劳务费的到账差异与预估个税文案由财务提供。<b>机构账户</b>：仅可选「开发票」，提现方式不可改；收款为对公账户（户名为机构全称）；机构收款人登录后可查看机构下全部授课讲师的课酬明细，不展示个税。个人代收是否允许见图 10（待定）。</div>
+  </section>
+
+  <!-- ===================== 图 8 出款 ===================== -->
+  <section id="c8">
+    <h3>图 8 · 月度出款与线上确认（含付款失败复核）</h3>
+    <p class="desc">每月 <b>11 号系统按云账户、开发票、劳务费三种方式自动生成三张月度付款单</b>。提交易快报前，经办人可对提现单选择「暂不付款」（必填原因；款项退回讲师提现余额，讲师只能在下个月提现窗口重新申请，并收到通知）和修改付款单备注；不能新增提现单，也不能修改金额、方式、收款账户或构成。标记「已提交易快报」后付款单锁定。付款确认页按月份、付款批次、状态筛选，支持勾选批量确认成功与按批次「整单确认」；付款失败可对同一失败原因批量提交审批（合同系统 / 钉钉）；月底前仍有未确认提现单时提醒经办人。</p>
+    <div class="chart">
+<div class="flow lanes" style="--cols:11;--colw:118px;--rows:4;--rowh:122px;--gap:30px;">
+  <div class="fgrid">
+    <div class="lane l4" data-r="1"></div>
+    <div class="lane l2" data-r="2"></div>
+    <div class="lane ls" data-r="3"></div>
+    <div class="lane l3 last" data-r="4"></div>
+    <div class="lab l4" data-r="1"><b>系统 / 经办人</b><i>生成付款单并经办</i></div>
+    <div class="lab l2" data-r="2"><b>财务</b><i>易快报 + 线下付款</i></div>
+    <div class="lab" data-r="3"><b>系统</b><i>自动处理</i></div>
+    <div class="lab l3" data-r="4"><b>讲师 / 助教</b><i>微信小程序</i></div>
+
+    <div class="node sys" data-id="f1" data-r="1" data-c="1"><i class="no">1</i>
+      <b>11号生成三张付款单</b><span>系统按三种方式自动生成<br>汇总常规提现单及构成</span></div>
+    <div class="node c4" data-id="f2" data-r="1" data-c="2"><i class="no">2</i><b>出款前核对 / 调整</b><span>可选「暂不付款」（必填原因）<br>开发票类核票（含机构提现）<br>发票一键下载 · 明细穿透合同号</span></div>
+    <div class="node c4" data-id="f3" data-r="1" data-c="3"><i class="no">3</i>
+      <b>提交易快报并锁定</b><span>三张付款单各关联一张<br>标记后明细不可修改</span></div>
+    <div class="node c2" data-id="f4" data-r="2" data-c="4"><i class="no">4</i>
+      <b>易快报审批</b><span>财务在易快报内审批</span></div>
+    <div class="node c2" data-id="f5" data-r="2" data-c="5"><i class="no">5</i><b>线下安排付款</b><span>对外：当月月底前到账<br>不承诺 21 号</span></div>
+    <div class="node c4 key" data-id="f6" data-r="1" data-c="6"><i class="no">6</i>
+      <b>统一付款确认</b><span>按月 / 批次 / 状态筛选<br>勾选批量或整单确认成功<br>付款失败可同原因批量提交</span></div>
+    <div class="node sys key" data-id="ok" data-r="3" data-c="6"><i class="no">7</i><b>转已到账</b><span>冻结→已到账<br>提现单=已到账<br>推送讲师</span></div>
+    <div class="node dec" data-id="d1" data-r="1" data-c="8"><i class="no">8</i>
+      <b>付款异常处理</b><span>逐笔判断<br>是否仍会继续支付？</span></div>
+    <div class="node c2" data-id="f7" data-r="2" data-c="8"><i class="no">9</i>
+      <b>异常继续处理</b><span>不改变系统状态<br>补资料 / 修正账户 / 原单重付<br>处理后回统一付款确认</span></div>
+    <div class="node dec c2" data-id="rv" data-r="2" data-c="10"><i class="no">10</i>
+      <b>付款失败审批</b><span>合同系统 / 钉钉两级审批<br>经办人填写失败原因（可选常用原因）<br>本系统同步结果 · 通过 / 驳回</span></div>
+    <div class="node sys" data-id="rvok" data-r="3" data-c="10"><i class="no">11</i>
+      <b>退回可提现</b><span>金额退回可提现<br>提现单=付款失败<br>推送讲师</span></div>
+    <div class="node c3" data-id="t1" data-r="4" data-c="11"><i class="no">12</i>
+      <b>余额可再次提现</b><span>金额已退回<br>后续窗口可重新提现</span></div>
+  </div>
+  <script type="application/json" class="fedges">[
+    {"f":"f1","t":"f2"},{"f":"f2","t":"f3"},
+    {"f":"f3","t":"f4"},{"f":"f4","t":"f5"},
+    {"f":"f5","t":"f6","fs":"r","ts":"l","type":"purple"},
+    {"f":"f6","t":"ok","type":"ok","label":"确认成功（可批量）"},
+    {"f":"f6","t":"d1","label":"异常逐笔处理"},
+    {"f":"d1","t":"f7","type":"warn","label":"仍继续支付"},
+    {"f":"d1","t":"rv","fs":"r","ts":"t","type":"reject","label":"确定不再支付"},
+    {"f":"rv","t":"f7","fs":"l","ts":"r","type":"reject","label":"驳回 · 保持提现中"},
+    {"f":"rv","t":"rvok","type":"ok","label":"通过"},
+    {"f":"rvok","t":"t1"}
+  ]</script>
+  <div class="legend">
+    <span><i></i>主流程</span>
+    <span><i class="g"></i>成功 / 通过</span>
+    <span><i class="r"></i>失败 / 驳回</span>
+    <span><em></em>判断节点</span>
+    <span><em class="key"></em>关键：只有经办人确认成功，账户才真正扣减</span>
+  </div>
+</div>
+    </div>
+    <div class="note"><b>暂不付款</b>：本次暂不付款的提现单必须填写原因；弹框明确提示款项将退回讲师提现余额、只能下个月提现窗口重新申请，需慎重；讲师收到通知，端内展示标准原因。<b>异常 / 付款失败</b>：易快报驳回或仍会继续支付时保持「提现中」；确定不再支付时逐笔确认付款失败，讲师只看标准失败原因及“金额已退回可提现余额”，不看内部备注和审批记录。已确认后退票仍线下处理，不做系统冲正。<br><b>补充</b>：月度付款单明细可穿透到<b>销售合同号</b>，并展示费用类别、单价、数量及收款户名、开户行、收款账号（分列）；提现金额按<b>先进先出</b>拆分到课酬账单。付款单详情支持「导出明细」，供经办人提交易快报。付款失败审批在<b>合同系统 / 钉钉</b>完成，<b>至少两级</b>，本系统同步审批结果；退回可提现后讲师可再次提现，须防重复付款。<b>规则</b>：导出字段按现有页面（最终模板待财务确认）；付款失败审批至少两级；对外不承诺 21 号；银行退票不做系统冲正，沿用线下重付。</div>
+  </section>
+
+  <!-- ===================== 图 9 状态机 ===================== -->
+  <section id="c9">
+    <h3>图 9 · 账单 / 提现单 / 账户余额 状态流转</h3>
+    <p class="desc">三张表的状态联动：<b>课酬账单</b>记录资金来源，<b>提现单</b>记录提现及付款结果，<b>账户余额</b>为汇总视图。付款异常继续处理时不新增状态；只有确定不再支付并经合同系统 / 钉钉审批通过，金额才退回可提现。</p>
+    <div class="chart">
+<div class="flow lanes" style="--cols:5;--colw:158px;--rows:4;--rowh:112px;--gap:26px;">
+  <div class="fgrid" style="padding-top:76px;">
+    <div class="lane l1" data-r="1"></div>
+    <div class="lane l3" data-r="2"></div>
+    <div class="lane ls" data-r="3"></div>
+    <div class="lane l4 last" data-r="4"></div>
+    <div class="lab l1" data-r="1"><b>课酬账单</b><i>状态</i></div>
+    <div class="lab l3" data-r="2"><b>提现单</b><i>状态</i></div>
+    <div class="lab" data-r="3"><b>提现单</b><i>暂不付款 / 付款失败分支</i></div>
+    <div class="lab l4" data-r="4"><b>讲师账户</b><i>余额分类</i></div>
+
+    <div class="node state c1" data-id="b1" data-r="1" data-c="1"><b>待提交</b><span>可编辑 · 可删除<br>加入前须过校验</span></div>
+    <div class="node state c1" data-id="b2" data-r="1" data-c="5"><b>驳回待修改</b><span>仍锁定原申请单<br>修改后重新提交</span></div>
+    <div class="node state c2" data-id="b3" data-r="1" data-c="2"><b>审批中</b><span>合同系统整单审批<br>部门负责人 → VP → 财务</span></div>
+    <div class="node state sys" data-id="b4" data-r="1" data-c="3"><b>账期中</b><span>账期未到<br>按最后执行日整体到期</span></div>
+    <div class="node state c3 key" data-id="b5" data-r="1" data-c="4"><b>可提现</b><span>账期到期转 / 紧急直达<br>仅 1~10 号可提现</span></div>
+
+    <div class="node state c3" data-id="w2" data-r="2" data-c="2"><b>提现中</b><span>金额冻结 · 进入月度付款单<br>紧急单生成紧急付款单<br>暂不付款则退回提现余额</span></div>
+    <div class="node state c3 key" data-id="w3" data-r="2" data-c="3"><b>已到账</b><span>经办人确认成功</span></div>
+
+    <div class="node state sys" data-id="w6" data-r="3" data-c="1"><b>暂不付款</b><span>经办人本次不付<br>款项退回提现余额</span></div>
+    <div class="node state stop" data-id="w4n" data-r="3" data-c="3"><b>失败待审批</b><span>仅确定不再支付时进入</span></div>
+    <div class="node state sys" data-id="w5" data-r="3" data-c="4"><b>付款失败</b><span>金额已退回可提现</span></div>
+
+    <div class="node state sys" data-id="a1" data-r="4" data-c="1"><b>账期中余额</b><span>账单入账</span></div>
+    <div class="node state c3" data-id="a2" data-r="4" data-c="2"><b>可提现余额</b><span>可发起提现</span></div>
+    <div class="node state c4" data-id="a3" data-r="4" data-c="3"><b>提现中（冻结）</b><span>已提交未确认</span></div>
+    <div class="node state c3 key" data-id="a4" data-r="4" data-c="4"><b>已到账</b><span>确认成功后</span></div>
+  </div>
+  <script type="application/json" class="fedges">[
+    {"f":"b1","t":"b3","label":"提交申请单"},
+    {"f":"b3","t":"b4","type":"ok","label":"常规"},
+    {"f":"b4","t":"b5","type":"ok","label":"1 号"},
+    {"f":"b3","t":"b5","fs":"t","ts":"t","bend":-30,"type":"warn","label":"紧急账期"},
+    {"f":"b3","t":"b2","fs":"t","ts":"t","bend":-58,"type":"reject","label":"整单驳回 · 原号重提"},
+    {"f":"b2","t":"b3","fs":"b","ts":"b","bend":18,"label":"修改后重新提交"},
+    {"f":"w2","t":"w3","type":"ok","label":"确认成功"},
+    {"f":"w2","t":"w4n","fs":"b","ts":"l","type":"reject","label":"确认付款失败"},
+    {"f":"w4n","t":"w5","type":"reject","label":"审批通过"},
+    {"f":"w4n","t":"w2","fs":"t","ts":"b","bend":-24,"type":"reject","label":"审批驳回"},
+    {"f":"a1","t":"a2","label":"1号 / 紧急直达"},
+    {"f":"a2","t":"a3","label":"提交提现"},
+    {"f":"a3","t":"a4","type":"ok","label":"确认成功"},
+    {"f":"a3","t":"a2","fs":"b","ts":"b","bend":28,"type":"reject","label":"付款失败审批通过"},
+    {"f":"w2","t":"w6","fs":"b","ts":"t","type":"warn","label":"暂不付款"},
+    {"f":"w6","t":"a2","fs":"b","ts":"t","type":"warn","label":"下月窗口重新申请"}
+  ]</script>
+  <div class="legend">
+    <span><i></i>正常流转</span>
+    <span><i class="o"></i>紧急账期直达</span>
+    <span><i class="r"></i>驳回 / 失败回退</span>
+    <span><em class="key"></em>稳定状态 / 终态</span>
+  </div>
+</div>
+    </div>
+    <div class="note"><b>关键约束</b>：结算申请单整单驳回后保留原单号，从首节点重新审批并保留全量日志；不存在单条驳回或部分通过。易快报驳回、补资料、原单重付均不改变提现单状态；已确认记录不可直接编辑。付款失败审批驳回后回原「提现中」。经办人在月度付款单中选择「暂不付款」时，提现单不进入付款失败审批，款项直接退回可提现余额，讲师只能在下个月提现窗口重新申请。余额恒等式：<code>账期中 + 可提现 + 提现中 + 已到账 = 已审批通过的账单总额</code>。</div>
+  </section>
+
+  <!-- ===================== 图 10 个人 / 机构 / 代收 ===================== -->
+  <section id="c10">
+    <h3>图 10 · 实际授课人、个人 / 机构与收款主体</h3>
+    <p class="desc">必须分开的五个对象：
+       <b>实际授课人 / 合作主体 / 收益归属账户 / 小程序登录人（机构为机构收款人） / 最终收款账户</b>。会上的共识是：上线后所有数据可查，实际授课人与收款人不一致会带来税务和审计风险。合作主体只分<b>个人 / 机构</b>两类：机构下的多位授课讲师只建讲师档案、不单独生成小程序账号，统一归属一个<b>机构账户</b>，由机构指定的机构收款人登录，只能开发票提现。</p>
+    <div class="chart">
+<div class="flow" style="--cols:5;--rows:2;--colw:190px;--gap:28px;">
+  <div class="fgrid" style="grid-template-rows:118px 128px;padding-top:6px;">
+    <div class="node c1" data-id="t1" data-r="1" data-c="1"><i class="no">1</i><b>实际授课人</b><span>真正上课的人<br>项目经理在课酬里选择</span></div>
+    <div class="node c2" data-id="t2" data-r="1" data-c="2"><i class="no">2</i><b>合作主体</b><span>个人 / 机构<br>讲师新增页选择；机构须选<br>所属机构账户</span></div>
+    <div class="node c4" data-id="t3" data-r="1" data-c="3"><i class="no">3</i><b>收益归属账户</b><span>课酬入谁的系统账户<br>个人：本人账户<br>机构：机构账户（一机构一个）</span></div>
+    <div class="node c3" data-id="t4" data-r="1" data-c="4"><i class="no">4</i><b>小程序登录人 / 机构收款人</b><span>谁能登录、看金额、提现<br>个人：本人；机构：机构收款人<br>讲师运营在机构账户上录入</span></div>
+    <div class="node sys" data-id="t5" data-r="1" data-c="5"><i class="no">5</i><b>最终收款账户</b><span>个人：银行卡 / 支付宝<br>机构：仅对公账户<br>提现时选择</span></div>
+    <div class="node c3" data-id="u1" data-r="2" data-c="1"><i class="no">A</i><b>个人自收</b><span>授课人 = 归属人 = 登录人 = 收款人<br>可选云账户 / 开发票 / 劳务费</span></div>
+    <div class="node c2" data-id="u2" data-r="2" data-c="2" data-span="2"><i class="no">B</i><b>机构统一收款</b><span>多位授课讲师 → 一个机构账户 → 机构收款人提现<br>仅可开发票 · 对公收款 · 不代扣个税<br>课酬账单保留实际授课人，可看各授课人明细</span></div>
+    <div class="node stop" data-id="u3" data-r="2" data-c="4" data-span="2"><i class="no">C</i><b>个人代收</b><span>授课人 ≠ 收款人<br>有税务 / 审计风险<br><b>是否禁止：待定</b></span></div>
+  </div>
+  <script type="application/json" class="fedges">[
+    {"f":"t1","t":"t2"},{"f":"t2","t":"t3"},{"f":"t3","t":"t4"},{"f":"t4","t":"t5"},
+    {"f":"t2","t":"u1","fs":"b","ts":"t","type":"ok","label":"个人"},
+    {"f":"t2","t":"u2","fs":"b","ts":"t","type":"warn","label":"机构"},
+    {"f":"t3","t":"u3","fs":"b","ts":"t","type":"reject","label":"授课人≠收款人"}
+  ]</script>
+  <div class="legend">
+    
+    <span><em class="stop"></em>高风险：个人代收</span>
+    <span>仅「个人代收是否禁止」待定（C17）；原型：后台新增「机构账户」页（机构收款人挂在机构账户上），讲师新增页机构讲师选「所属机构」；申请单提交前机构账户未创建将被拦截；付款页「代收」标签标注待业务确认</span>
+  </div>
+</div>
+    </div>
+  </section>
+
+</main>
+<script>
+/* 流程图通用连线引擎：读取 .flow 内节点的网格坐标与 JSON 边定义，测量后绘制正交连线 */
+(function () {
+  const NS = 'http://www.w3.org/2000/svg';
+  const COLORS = { main: '#8a9099', ok: '#00a870', warn: '#ff8800', reject: '#e34d59', sys: '#8a9099', blue: '#1664ff', purple: '#7c4dff' };
+  let seq = 0;
+
+  function init(flow) {
+    const grid = flow.querySelector('.fgrid');
+    if (!grid || flow.dataset.inited) return;
+    flow.dataset.inited = '1';
+    const hasLanes = flow.classList.contains('lanes');
+    const off = hasLanes ? 1 : 0;
+
+    flow.querySelectorAll('.node').forEach(n => {
+      n.style.gridRow = n.dataset.r;
+      n.style.gridColumn = (+n.dataset.c + off) + (n.dataset.span ? ' / span ' + n.dataset.span : '');
+    });
+    flow.querySelectorAll('.lane, .lab').forEach(l => { l.style.gridRow = l.dataset.r; });
+
+    const uid = 'fl' + (++seq);
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'edges');
+    const defs = document.createElementNS(NS, 'defs');
+    Object.entries(COLORS).forEach(([k, c]) => {
+      const m = document.createElementNS(NS, 'marker');
+      m.setAttribute('id', uid + '-' + k);
+      m.setAttribute('viewBox', '0 0 10 10'); m.setAttribute('refX', '9'); m.setAttribute('refY', '5');
+      m.setAttribute('markerWidth', '8'); m.setAttribute('markerHeight', '8'); m.setAttribute('orient', 'auto-start-reverse');
+      const p = document.createElementNS(NS, 'path'); p.setAttribute('d', 'M0,0 L10,5 L0,10 z'); p.setAttribute('fill', c);
+      m.appendChild(p); defs.appendChild(m);
+    });
+    svg.appendChild(defs);
+    grid.appendChild(svg);
+
+    let edges = [];
+    const def = flow.querySelector('script.fedges');
+    if (def) { try { edges = JSON.parse(def.textContent); } catch (e) { console.error('edges JSON 解析失败', e); } }
+
+    const rect = el => {
+      const r = el.getBoundingClientRect(), g = grid.getBoundingClientRect();
+      const x = r.left - g.left, y = r.top - g.top;
+      return { x, y, w: r.width, h: r.height, r: x + r.width, b: y + r.height, cx: x + r.width / 2, cy: y + r.height / 2 };
+    };
+    const node = id => flow.querySelector('.node[data-id="' + id + '"]');
+    const pt = (bx, side) => side === 'r' ? [bx.r, bx.cy] : side === 'l' ? [bx.x, bx.cy] : side === 't' ? [bx.cx, bx.y] : [bx.cx, bx.b];
+    const isH = s => s === 'l' || s === 'r';
+
+    function route(a, b, e) {
+      let fs = e.fs, ts = e.ts;
+      const sameRow = Math.abs(a.cy - b.cy) < 4, sameCol = Math.abs(a.cx - b.cx) < 4;
+      if (!fs) fs = sameCol ? (b.cy > a.cy ? 'b' : 't') : (b.cx >= a.cx ? 'r' : 'l');
+      if (!ts) ts = sameRow ? (b.cx >= a.cx ? 'l' : 'r') : sameCol ? (b.cy > a.cy ? 't' : 'b') : (isH(fs) ? (b.cx >= a.cx ? 'l' : 'r') : (b.cy > a.cy ? 't' : 'b'));
+      const P = pt(a, fs), Q = pt(b, ts);
+      const pts = [P];
+      if (isH(fs) && isH(ts)) {
+        if (Math.abs(P[1] - Q[1]) >= 2) {
+          const xm = e.bend != null ? P[0] + e.bend : (P[0] + Q[0]) / 2;
+          pts.push([xm, P[1]], [xm, Q[1]]);
+        }
+      } else if (!isH(fs) && !isH(ts)) {
+        if (Math.abs(P[0] - Q[0]) >= 2) {
+          const ym = e.bend != null ? P[1] + e.bend : (P[1] + Q[1]) / 2;
+          pts.push([P[0], ym], [Q[0], ym]);
+        }
+      } else if (isH(fs)) {
+        pts.push([Q[0], P[1]]);
+      } else {
+        pts.push([P[0], Q[1]]);
+      }
+      pts.push(Q);
+      return pts;
+    }
+
+    function labelPos(pts, e) {
+      let best = 0, len = -1;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const l = Math.abs(pts[i + 1][0] - pts[i][0]) + Math.abs(pts[i + 1][1] - pts[i][1]);
+        if (e.seg != null ? i === e.seg : l > len) { len = l; best = i; if (e.seg != null) break; }
+      }
+      const A = pts[best], B = pts[best + 1];
+      const mx = (A[0] + B[0]) / 2, my = (A[1] + B[1]) / 2;
+      const horiz = Math.abs(A[1] - B[1]) < 2;
+      if (horiz) return { x: mx + (e.dx || 0), y: my + (e.below ? 13 : -6) + (e.dy || 0), anchor: 'middle' };
+      return { x: mx + 7 + (e.dx || 0), y: my + 4 + (e.dy || 0), anchor: 'start' };
+    }
+
+    function draw() {
+      [...svg.querySelectorAll('path, text')].forEach(n => n.remove());
+      const g = grid.getBoundingClientRect();
+      svg.setAttribute('width', g.width); svg.setAttribute('height', g.height);
+      svg.setAttribute('viewBox', '0 0 ' + g.width + ' ' + g.height);
+      edges.forEach(e => {
+        const A = node(e.f), B = node(e.t);
+        if (!A || !B) { console.warn('边引用了不存在的节点', e); return; }
+        const pts = route(rect(A), rect(B), e);
+        const type = e.type || 'main';
+        const p = document.createElementNS(NS, 'path');
+        p.setAttribute('d', 'M' + pts.map(q => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' L'));
+        p.setAttribute('class', 'e-' + type);
+        if (!e.noarrow) p.setAttribute('marker-end', 'url(#' + uid + '-' + type + ')');
+        svg.appendChild(p);
+        if (e.label) {
+          const lp = labelPos(pts, e);
+          const t = document.createElementNS(NS, 'text');
+          t.setAttribute('x', lp.x); t.setAttribute('y', lp.y); t.setAttribute('text-anchor', lp.anchor);
+          t.setAttribute('class', 'el ' + (e.lc || (type === 'warn' ? 'warn' : type === 'reject' ? 'rej' : type === 'ok' ? 'ok' : type === 'blue' ? 'blue' : type === 'purple' ? 'purple' : '')));
+          t.textContent = e.label; svg.appendChild(t);
+        }
+      });
+    }
+
+    const run = () => requestAnimationFrame(draw);
+    run();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
+    if ('ResizeObserver' in window) new ResizeObserver(run).observe(grid); else window.addEventListener('resize', run);
+  }
+
+  function boot() { document.querySelectorAll('.flow').forEach(init); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  window.addEventListener('load', boot);
+})();
+
+</script>
+<script>
+  const links=[...document.querySelectorAll('#nav a')];
+  const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+  const onScroll=()=>{let idx=0;
+    secs.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<=140)idx=i;});
+    links.forEach((a,i)=>a.classList.toggle('active',i===idx));};
+  window.addEventListener('scroll',onScroll);onScroll();
+  const KEY='flow-nav-collapsed';
+  if(localStorage.getItem(KEY)==='1')document.body.classList.add('nav-collapsed');
+  document.getElementById('navToggle').addEventListener('click',()=>{
+    const c=document.body.classList.toggle('nav-collapsed');localStorage.setItem(KEY,c?'1':'0');});
+</script>
+<script src="./返回目录.js" data-style="top:16px;right:24px"></script>
+</body>
+</html>
