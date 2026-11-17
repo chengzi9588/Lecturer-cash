@@ -27,8 +27,12 @@ button,input{font:inherit}button{border:0;cursor:pointer}a{text-decoration:none;
 .nav-action{margin-left:auto;color:var(--brand);font-size:13px;background:none;padding:8px 2px}.back{width:36px;height:36px;border-radius:18px;background:transparent;display:grid;place-items:center;color:var(--ink);margin-left:-8px}.back svg{width:22px;height:22px;stroke-width:2.2}
 .content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px calc(24px + var(--safe));scrollbar-width:none}.content::-webkit-scrollbar{display:none}
 .with-tabs{padding-bottom:calc(84px + var(--safe))}
-.bottom-tabs{position:absolute;z-index:20;left:0;right:0;bottom:0;height:calc(66px + var(--safe));padding:7px 28px var(--safe);background:rgba(255,255,255,.96);border-top:1px solid rgba(229,233,241,.95);display:flex;justify-content:space-between;backdrop-filter:blur(18px)}
-.tab{width:72px;background:none;color:#9aa2b2;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px}.tab svg{width:22px;height:22px;stroke-width:1.8}.tab.active{color:var(--brand);font-weight:650}
+.bottom-tabs{position:absolute;z-index:20;left:0;right:0;bottom:0;height:calc(66px + var(--safe));padding:7px 20px var(--safe);background:rgba(255,255,255,.96);border-top:1px solid rgba(229,233,241,.95);display:flex;justify-content:space-around;align-items:flex-start;backdrop-filter:blur(18px)}
+.tab{width:72px;background:none;color:#9aa2b2;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;padding-top:2px}.tab svg{width:22px;height:22px;stroke-width:1.8}.tab.active{color:var(--brand);font-weight:650}
+.tab.service{color:#667085}.tab.service .service-icon{width:40px;height:40px;margin-top:-14px;border-radius:20px;background:linear-gradient(145deg,#2c65dd,#7195ff);color:#fff;display:grid;place-items:center;box-shadow:0 8px 18px rgba(37,99,235,.28);border:3px solid #fff}.tab.service .service-icon svg{width:20px;height:20px;stroke-width:1.9}
+.qr-pop{width:100%;background:#fff;border-radius:24px 24px 0 0;padding:12px 20px calc(22px + var(--safe));text-align:center;animation:up .22s ease}.qr-pop h3{font-size:16px;margin:4px 0 6px}.qr-pop>p{font-size:11px;color:var(--muted);margin:0 0 16px;line-height:1.55}
+.qr-box{width:196px;height:196px;margin:0 auto 14px;padding:12px;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:0 8px 24px rgba(31,54,96,.08);display:grid;place-items:center}.qr-box svg{width:100%;height:100%}
+.qr-tip{font-size:11px;color:var(--muted);margin:0 0 14px}
 .card{background:var(--card);border-radius:18px;padding:16px;box-shadow:0 4px 20px rgba(31,54,96,.045);border:1px solid rgba(232,235,242,.72)}
 .card+.card{margin-top:12px}.hero{padding:20px;background:linear-gradient(138deg,#1d4ed8 0%,#3974ef 62%,#7196ff 100%);color:#fff;border:0;box-shadow:0 14px 30px rgba(37,99,235,.2);overflow:hidden;position:relative}
 .hero:after{content:"";position:absolute;width:190px;height:190px;border:38px solid rgba(255,255,255,.08);border-radius:50%;right:-96px;top:-95px}
@@ -46,7 +50,7 @@ button,input{font:inherit}button{border:0;cursor:pointer}a{text-decoration:none;
 .tag{display:inline-flex;align-items:center;padding:3px 7px;border-radius:8px;font-size:9px;font-weight:650;background:#eef2f7;color:#687386}.tag.blue{background:#eaf1ff;color:var(--brand)}.tag.orange{background:#fff2d9;color:#c97a00}.tag.green{background:#e6f8f1;color:#12805f}.tag.red{background:#ffebeb;color:#c43d42}.tag.purple{background:#f0ebff;color:#6b4bc2}
 .filter{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}.filter button{flex:none;background:#fff;border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:11px;padding:7px 13px}.filter button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
 .detail-hero{text-align:center;padding:20px 16px}.detail-hero .amount{font-size:32px;font-weight:750;margin:8px 0}.detail-hero .status-line{display:flex;justify-content:center;gap:6px;align-items:center}
-.kv{padding:3px 0}.kv-row{display:flex;justify-content:space-between;gap:20px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px;line-height:1.5}.kv-row:last-child{border:0}.kv-row dt{color:var(--muted);flex:none}.kv-row dd{margin:0;text-align:right;font-weight:550;word-break:break-all}
+.kv{padding:3px 0}.kv-row{display:flex;justify-content:space-between;gap:20px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px;line-height:1.5}.kv-row:last-child{border:0}.kv-row dt{color:var(--muted);flex:none}.kv-row dd{margin:0;text-align:right;font-weight:550;word-break:break-all}.kv-row dd.nowrap{white-space:nowrap;word-break:keep-all;font-size:11px;letter-spacing:-.2px}
 .form-card{padding:4px 16px}.field{padding:15px 0;border-bottom:1px solid var(--line)}.field:last-child{border:0}.field label{display:block;font-size:12px;font-weight:650;margin-bottom:9px}.field input{width:100%;border:0;outline:0;background:transparent;font-size:15px;color:var(--ink);padding:0}.field input::placeholder{color:#bac1ce}
 .amount-input{display:flex;align-items:center;gap:7px;padding:13px 0 16px}.amount-input b{font-size:27px}.amount-input input{font-size:32px;font-weight:750;letter-spacing:-.5px}.available{font-size:11px;color:var(--muted);display:flex;justify-content:space-between}.available button{background:none;color:var(--brand);padding:0}
 .sticky{flex:none;padding:12px 16px calc(12px + var(--safe));background:rgba(245,247,251,.96);border-top:1px solid rgba(229,233,241,.8);backdrop-filter:blur(16px)}
@@ -73,12 +77,71 @@ button,input{font:inherit}button{border:0;cursor:pointer}a{text-decoration:none;
 .stat b{display:block;font-size:14px;font-weight:750;margin-top:8px;letter-spacing:-.2px;white-space:nowrap}.stat em{display:block;font-style:normal;font-size:9px;color:var(--muted);margin-top:5px;white-space:nowrap}
 .stat.purple{--dot:var(--purple)}.stat.blue{--dot:var(--brand)}.stat.green{--dot:var(--green)}
 .sum-card{display:grid;grid-template-columns:1fr 1fr;background:#fff;border:1px solid var(--line);border-radius:17px;padding:14px 0;margin-bottom:12px}.sum-card div{padding:0 16px}.sum-card div+div{border-left:1px solid var(--line)}.sum-card span{display:block;font-size:11px;color:var(--muted)}.sum-card b{display:block;font-size:17px;margin-top:6px;letter-spacing:-.4px}
-.month-title{display:flex;justify-content:space-between;align-items:center;margin:14px 2px 8px;font-size:12px;font-weight:700;color:var(--muted)}.month-title span{font-weight:400;font-size:11px}
+.date-filter{display:flex;align-items:center;gap:10px;margin:0 0 12px}.date-filter .mp-btn{flex:1;min-width:0;height:40px;display:flex;align-items:center;gap:8px;padding:0 14px;background:#fff;border:1px solid var(--line);border-radius:12px;font-size:13px;font-weight:600;color:var(--ink);text-align:left}.date-filter .mp-btn svg{width:16px;height:16px;flex:none;color:var(--brand)}.date-filter .mp-btn span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.date-filter .mp-btn span.ph{color:var(--muted);font-weight:500}.date-filter .mp-btn:after{content:'';width:6px;height:6px;border-right:1.5px solid #98a2b3;border-bottom:1.5px solid #98a2b3;transform:translateY(-2px) rotate(45deg);flex:none}.date-filter .mp-btn.on{border-color:#bcd0ff;background:#f3f7ff}.date-filter .mp-clear{flex:none;background:none;color:var(--brand);font-size:12px;font-weight:600;padding:6px 2px}
+.mp-sheet{width:100%;background:#fff;border-radius:24px 24px 0 0;padding:12px 16px calc(18px + var(--safe));animation:up .22s ease}.mp-sheet h3{font-size:16px;margin:0 0 12px;text-align:center}.mp-quick{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}.mp-quick button{flex:none;height:30px;padding:0 14px;border-radius:15px;border:1px solid var(--line);background:#fff;font-size:12px;color:var(--muted)}.mp-quick button.on{background:#eaf1ff;border-color:#bcd0ff;color:var(--brand);font-weight:650}.mp-year{display:flex;align-items:center;justify-content:center;gap:22px;margin-bottom:10px}.mp-year b{font-size:15px;min-width:70px;text-align:center}.mp-year button{width:32px;height:32px;border-radius:16px;background:#f3f5f9;color:var(--ink);font-size:16px;line-height:1}.mp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 0}.mp-cell{height:42px;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ink);background:transparent;position:relative}.mp-cell.in{background:#eaf1ff;color:var(--brand)}.mp-cell.s{background:linear-gradient(100deg,var(--brand),var(--brand2));color:#fff;font-weight:700;border-radius:12px;z-index:1}.mp-cell.in.l{border-radius:12px 0 0 12px}.mp-cell.in.r{border-radius:0 12px 12px 0}.mp-cell.dis{color:#c0c7d2}.mp-tip{margin:12px 2px 0;font-size:11px;color:var(--muted);text-align:center;min-height:16px}.mp-tip b{color:var(--ink)}.mp-ops{display:flex;gap:10px;margin-top:14px}.mp-ops .btn{flex:1;margin:0}
+.rules-link{display:inline-flex;align-items:center;gap:4px;background:none;color:rgba(255,255,255,.88);font-size:11px;padding:4px 0}
+.hero-total{position:relative;z-index:1;margin:0 0 2px}.hero-total .eyebrow{display:block}
+.hero-total-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:2px}
+.hero-total-head .eyebrow{margin:0}
+.hero .money{margin:2px 0 4px}
+.balance-grid{gap:16px 14px;padding-top:16px}
+.hero-btn{margin-top:12px}
+.stat-strip.four{grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px}.stat-strip.four .stat{min-height:78px}
+.month-title{display:flex;justify-content:space-between;align-items:center;margin:14px 2px 8px;font-size:12px;font-weight:700;color:var(--muted)}.month-title span{font-weight:400;font-size:11px}.month-title .ms{font-weight:700;color:var(--ink);font-size:12px;font-variant-numeric:tabular-nums}.month-title .ms .dec,.month-title .ms small{font-size:10px}
 .section-title button{display:inline-flex;align-items:center;gap:1px}.section-title button .chev{width:14px;height:14px;color:var(--brand)}
+.inv-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;padding:0 0 10px;border-bottom:1px solid var(--line)}
+.inv-head h4{margin:0;font-size:14px;font-weight:700}
+.copy-btn{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 12px;border-radius:10px;background:linear-gradient(100deg,var(--brand),var(--brand2));color:#fff;font-size:12px;font-weight:700;box-shadow:0 6px 14px rgba(37,99,235,.22)}.copy-btn svg{width:14px;height:14px}.copy-btn:active{transform:scale(.97)}
+.inv-list{display:flex;flex-direction:column}.inv-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.inv-item:first-child{padding-top:0}.inv-item .inv-thumb{width:40px;height:48px;border-radius:8px}.inv-item .inv-thumb svg{width:18px;height:18px}.inv-item .inv-thumb:after{bottom:3px;font-size:8px}.inv-item .inv-meta p{margin-top:2px}.inv-item .ops{display:flex;gap:6px;flex:none}.inv-item .ops button{height:28px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:#fff;font-size:11px;font-weight:600}.inv-item .ops .del{color:#e5484d;border-color:#f6c9cb;background:#fff6f6}.inv-sum{display:flex;justify-content:space-between;align-items:center;padding:10px 0 2px;font-size:12px}.inv-sum b{font-size:13px}.inv-sum .gap{color:#e5484d}.inv-sum .ok{color:#12a05c}.inv-add{margin-top:10px;width:100%;height:40px;border:1.5px dashed #c5d4f5;border-radius:12px;background:#f7faff;color:var(--brand);font-size:12px;font-weight:650;display:flex;align-items:center;justify-content:center;gap:6px}.inv-add svg{width:16px;height:16px}
+.inv-upload{margin-top:12px}.inv-upload .card{padding:14px}
+.inv-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:22px 14px;border:1.5px dashed #c5d4f5;border-radius:14px;background:#f7faff;color:var(--brand);width:100%}.inv-empty:active{background:#eef4ff}.inv-empty svg{width:28px;height:28px}.inv-empty b{font-size:13px}.inv-empty span{font-size:10px;color:var(--muted);line-height:1.5;text-align:center}
+.inv-preview{display:flex;align-items:center;gap:12px}.inv-thumb{width:56px;height:68px;flex:none;border-radius:10px;background:linear-gradient(160deg,#eef3ff,#dce7ff);border:1px solid #d5e0f5;display:grid;place-items:center;color:var(--brand);position:relative;overflow:hidden}.inv-thumb svg{width:24px;height:24px}.inv-thumb:after{content:"PDF";position:absolute;bottom:6px;font-size:9px;font-weight:700;letter-spacing:.3px;color:#5b7fd6}.inv-meta{flex:1;min-width:0}.inv-meta b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.inv-meta p{margin:4px 0 0;font-size:10px;color:var(--muted);line-height:1.5}.inv-actions{display:flex;gap:8px;margin-top:12px}.inv-actions button{flex:1;height:36px;border-radius:11px;font-size:12px;font-weight:650;display:inline-flex;align-items:center;justify-content:center;gap:5px}.inv-actions button svg{width:14px;height:14px}.inv-actions .ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}.inv-actions .primary{background:linear-gradient(100deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 6px 14px rgba(37,99,235,.18)}
+.inv-preview-sheet{width:100%;background:#fff;border-radius:24px 24px 0 0;padding:12px 16px calc(20px + var(--safe));animation:up .22s ease}.inv-preview-sheet h3{font-size:16px;margin:0 0 4px}.inv-preview-sheet>p{font-size:11px;color:var(--muted);margin:0 0 14px}.inv-paper{border-radius:14px;border:1px solid var(--line);background:#f8fafc;padding:18px 16px;min-height:220px}.inv-paper .ph{height:14px;border-radius:6px;background:#e4e9f2;margin-bottom:10px}.inv-paper .ph.s{width:42%}.inv-paper .ph.m{width:68%}.inv-paper .stamp{margin:18px auto 0;width:72px;height:72px;border:2px solid rgba(229,72,77,.55);border-radius:50%;color:rgba(229,72,77,.7);display:grid;place-items:center;font-size:11px;font-weight:700;transform:rotate(-12deg)}
 .dec{font-style:normal;font-size:.6em;font-weight:600;opacity:.7;margin-left:1px;letter-spacing:0}.sep{font-style:normal;margin:0 -.07em 0 -.05em}
 .money small{font-size:.5em}.money{white-space:nowrap}.balance-grid .num{white-space:nowrap}
 .eye{width:30px;height:30px;border-radius:15px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.2);color:#fff;display:grid;place-items:center;position:relative;z-index:1}.eye svg{width:17px;height:17px}
 .row-sub.eta{margin-top:3px;color:#5f6b80}.row-sub.eta.later{color:var(--purple)}
+.pin-wrap{padding:28px 8px 8px;text-align:center}.pin-wrap h2{font-size:20px;margin:0 0 8px}.pin-wrap p{font-size:12px;color:var(--muted);line-height:1.65;margin:0 0 22px}
+.pin-field{position:relative;display:inline-block;margin:0 auto 8px}.pin-boxes{display:flex;justify-content:center;gap:10px;pointer-events:none}.pin-box{width:42px;height:48px;border-radius:12px;border:1.5px solid var(--line);background:#fff;display:grid;place-items:center;font-size:22px;font-weight:700;color:var(--ink);box-shadow:0 2px 8px rgba(31,54,96,.04)}.pin-box.filled{border-color:var(--brand);background:#f5f8ff}.pin-box.dot:after{content:"";width:10px;height:10px;border-radius:50%;background:var(--ink)}
+.pin-input{position:absolute;inset:0;opacity:0;width:100%;height:100%;border:0;font-size:16px;letter-spacing:24px;caret-color:transparent}
+.pin-hint{font-size:11px;color:var(--muted);margin-top:14px}.pin-hint a,.pin-hint button{color:var(--brand);background:none;padding:0;font-size:11px}
+
+.ai-page{display:flex;flex-direction:column;flex:1;min-height:0;background:var(--bg)}
+.ai-body{flex:1;min-height:0;overflow-y:auto;padding:12px 14px 16px;scrollbar-width:none}.ai-body::-webkit-scrollbar{display:none}
+.ai-hi{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.ai-hi b{display:block;font-size:14px;margin-bottom:6px}.ai-hi p{margin:0;font-size:11px;line-height:1.65;color:var(--muted)}
+.ai-hi .ai-hi-actions{display:flex;gap:8px;margin-top:12px}
+.ai-hi .ai-hi-actions button{flex:1;height:36px;border-radius:11px;font-size:12px;font-weight:700}
+.ai-chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+.ai-chips button{border:1px solid #d7e3ff;background:#f5f8ff;color:#2f5ec4;border-radius:16px;padding:7px 11px;font-size:11px;font-weight:650;line-height:1.35;text-align:left}
+.ai-chips button:active{background:#e8f0ff}
+.ai-msg{display:flex;gap:8px;margin:10px 0;align-items:flex-end}
+.ai-msg.user{flex-direction:row-reverse}
+.ai-avatar{width:30px;height:30px;border-radius:10px;flex:none;display:grid;place-items:center;background:linear-gradient(145deg,#2c65dd,#7195ff);color:#fff;font-size:11px;font-weight:700}
+.ai-msg.user .ai-avatar{background:#eef1f6;color:#667085}
+.ai-bubble{max-width:78%;padding:10px 12px;border-radius:14px;font-size:12px;line-height:1.65;background:#fff;border:1px solid var(--line);box-shadow:0 2px 10px rgba(31,54,96,.04);white-space:pre-wrap;word-break:break-word}
+.ai-msg.user .ai-bubble{background:linear-gradient(100deg,var(--brand),var(--brand2));color:#fff;border:0;border-bottom-right-radius:5px}
+.ai-msg.bot .ai-bubble{border-bottom-left-radius:5px}
+.ai-bubble .ai-actions{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.ai-bubble .ai-actions button{height:34px;border-radius:10px;font-size:12px;font-weight:700}
+.ai-bubble .ai-qw,.ai-hi .ai-qw{background:linear-gradient(100deg,var(--brand),var(--brand2));color:#fff}
+.ai-bubble .ai-soft,.ai-hi .ai-soft{background:#f3f6fb;color:#44506a;border:1px solid var(--line)}
+.ai-note{font-size:10px;color:#8b93a5;margin-top:8px;line-height:1.5}
+.ai-composer{flex:none;z-index:25;padding:8px 12px 10px;background:rgba(255,255,255,.98);border-top:1px solid rgba(229,233,241,.9);box-shadow:0 -6px 18px rgba(31,54,96,.04)}
+.ai-composer-bar{display:flex;gap:8px;align-items:flex-end}
+.ai-composer textarea{flex:1;min-height:40px;max-height:96px;resize:none;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.45;outline:0;background:#f7f9fc}
+.ai-send{width:64px;height:40px;border-radius:12px;background:linear-gradient(100deg,var(--brand),var(--brand2));color:#fff;font-size:13px;font-weight:700;flex:none;box-shadow:0 6px 14px rgba(37,99,235,.2)}
+.ai-send:disabled{background:#ccd2dc;box-shadow:none}
+.screen.ai-screen .bottom-tabs{position:relative;flex:none;height:calc(58px + var(--safe));box-shadow:none}
+.acc-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:0 16px 14px}
+.acc-actions button{height:30px;padding:0 12px;border-radius:15px;font-size:11px;font-weight:650;border:1px solid var(--line);background:#fff;color:var(--ink)}
+.acc-actions .danger{color:var(--red);border-color:#ffd4d6;background:#fff8f8}
+.acc-actions .primary{color:var(--brand);border-color:#c9daff;background:#f3f7ff}
+.acc-empty{text-align:center;padding:28px 16px}
+.acc-empty p{font-size:12px;color:var(--muted);line-height:1.65;margin:8px 0 16px}
+.sticky.dual{display:flex;align-items:center;gap:10px}.sticky.dual .btn{flex:1;height:48px;margin-top:0}.sticky.dual .btn+.btn{margin-top:0}.sticky.dual .btn.secondary{margin-top:0}
+.phone.hide-scenario .scenario-btn{display:none}
+.tab.service.active{color:var(--brand)}.tab.service.active .service-icon{box-shadow:0 8px 18px rgba(37,99,235,.38)}
 @keyframes up{from{transform:translateY(100%)}to{transform:none}}@keyframes toast{from{opacity:0;transform:translate(-50%,-45%)}to{opacity:1;transform:translate(-50%,-50%)}}
 @media(max-width:520px){body{background:var(--bg)}.desktop{display:block;padding:0}.phone{width:100%;height:100dvh;min-height:0;border:0;border-radius:0;box-shadow:none}.phone:before{display:none}.statusbar{height:28px;padding-bottom:3px}.scenario-btn{top:38px}}
 </style>
@@ -110,38 +173,79 @@ const icons={
   edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14 5 5 5M4 20l3.5-.7L19 7.8a2.1 2.1 0 0 0-3-3L4.7 16.5 4 20Z" stroke-linejoin="round"/></svg>',
   file:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3h8l4 4v14H6V3Z" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>',
   shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3 4 6v5c0 5.2 3.4 8.8 8 10 4.6-1.2 8-4.8 8-10V6l-8-3Z" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke-linecap="round"/></svg>',
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17" stroke-linecap="round"/></svg>',
   chevron:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6" stroke-linecap="round"/></svg>',
   eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z" stroke-linejoin="round"/><circle cx="12" cy="12" r="3"/></svg>',
   eyeoff:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l18 18M10.6 5.7A10 10 0 0 1 12 5.5c6.4 0 10 6.5 10 6.5a17 17 0 0 1-3.2 3.9M6.6 6.9A16.6 16.6 0 0 0 2 12s3.6 6.5 10 6.5a9.6 9.6 0 0 0 4-.9M9.9 9.9a3 3 0 0 0 4.2 4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  empty:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 4h14v16H5zM8 9h8M8 13h5" stroke-linecap="round"/></svg>'
+  empty:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 4h14v16H5zM8 9h8M8 13h5" stroke-linecap="round"/></svg>',
+  service:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 14v-2a8 8 0 0 1 16 0v2" stroke-linecap="round"/><path d="M4 14v2a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2Zm16 0v2a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2Z" stroke-linejoin="round"/><path d="M12 19v1a2.5 2.5 0 0 0 2.5 2.5" stroke-linecap="round"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke-linecap="round"/></svg>',
+  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 16V5M8 8l4-4 4 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 16v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3" stroke-linecap="round"/></svg>',
+  eye2:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z" stroke-linejoin="round"/><circle cx="12" cy="12" r="3"/></svg>'
 };
+const qwQrSvg=(()=>{
+  const cells=[
+    [1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,1,0,0,1,0,1,0,0,1,0,0,0,0,0,1],
+    [1,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1],
+    [1,0,1,1,1,0,1,0,0,1,1,1,0,0,1,0,1,1,1,0,1],
+    [1,0,1,1,1,0,1,0,1,0,0,0,1,0,1,0,1,1,1,0,1],
+    [1,0,0,0,0,0,1,0,0,1,0,1,0,0,1,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1],
+    [0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0],
+    [1,0,1,1,0,1,1,1,0,1,1,0,1,1,0,1,0,1,1,0,1],
+    [0,1,0,0,1,0,0,0,1,0,1,1,0,0,1,0,1,0,0,1,0],
+    [1,0,1,1,0,1,1,0,0,1,0,1,1,0,1,1,0,1,1,0,1],
+    [0,1,0,1,1,0,0,1,1,0,1,0,0,1,0,0,1,0,1,1,0],
+    [1,0,1,0,0,1,1,0,1,1,0,1,1,0,1,1,0,1,0,0,1],
+    [0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,1,0,1,0,0],
+    [1,1,1,1,1,1,1,0,0,1,0,1,1,0,1,0,1,0,1,1,1],
+    [1,0,0,0,0,0,1,0,1,0,1,0,0,1,1,0,0,1,0,0,1],
+    [1,0,1,1,1,0,1,0,1,1,0,1,1,0,1,1,1,0,1,0,1],
+    [1,0,1,1,1,0,1,0,0,0,1,0,1,1,0,0,1,1,0,1,0],
+    [1,0,1,1,1,0,1,0,1,1,0,1,0,0,1,1,0,1,1,0,1],
+    [1,0,0,0,0,0,1,0,0,1,1,0,1,1,0,1,0,0,1,0,0],
+    [1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,1]
+  ];
+  const s=6,n=21,pad=12,size=pad*2+n*s;
+  let rects='';
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(cells[y][x])rects+=`<rect x="${pad+x*s}" y="${pad+y*s}" width="${s}" height="${s}" rx="0.6"/>`;
+  return `<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg"><rect width="${size}" height="${size}" fill="#fff"/><g fill="#172033">${rects}</g></svg>`;
+})();
 document.querySelector('.scenario-btn').innerHTML=icons.settings;
 
 const WIN=[1,10];
+const DEMO_PWD='123456';
 const initial={
   bound:true, accountFilled:true, inWindow:true, oldPhoneInvalid:false, showScenario:false,
+  pwdSet:true, pwd:DEMO_PWD, pwdFail:0,
   balances:{pending:9200,normal:12800,urgent:3600,processing:8400,paid:38600},
-  draft:{type:'normal',amount:'',method:'',accountId:'',invoice:false,invoiceAmt:0},
-  ui:{incomeFilter:'全部',recordFilter:'全部'},
+  draft:{type:'normal',amount:'',method:'',accountId:'a1',invoices:[]},
+  pwdDraft:{mode:'',step:'',old:'',code:'',value:'',confirm:''},
+  ui:{incomeFilter:'全部',recordFilter:'全部',incomeFrom:'',incomeTo:'',recordFrom:'',recordTo:''},
+  showRules:false, showServiceQr:false, showInvoicePreview:false, invPreviewIdx:0, showInvUpload:false, mp:null, showAccDelete:false, accDeleteId:'',
+  accUI:{mode:'list',id:'',kind:'银行卡',name:'',number:'',bank:''},
+  defaultAccountId:'a1',
   accounts:[{id:'a1',kind:'银行卡',name:'陈老师',number:'6222 0210 8898 6321',bank:'招商银行北京中关村支行'},{id:'a2',kind:'支付宝',name:'陈老师',number:'chen***@example.com',bank:''}],
   incomes:[
-    {id:'I240901',project:'企业数字化转型训练营',contract:'A-BC-QP1026-1201',date:'2026-08-20',role:'讲师',amount:6800,credited:'2026-10-02 16:32',available:'2026-10-19',type:'normal',status:'可提现',teacher:'贺敏'},
-    {id:'I240902',project:'AI 应用开发实战营',contract:'A-BC-QP0826-0822',date:'2026-08-30',role:'讲师',amount:2400,credited:'2026-10-03 10:08',available:'2026-10-29',type:'normal',status:'可提现',teacher:'吴启明'},
-    {id:'I240903',project:'金融行业大模型内训',contract:'A-BC-QP0926-0931',date:'2026-10-24',role:'讲师',amount:3600,credited:'2026-10-28 14:20',available:'审批通过即刻',type:'urgent',status:'紧急可提现',teacher:'贺敏'},
-    {id:'I240904',project:'云原生架构师认证班',contract:'A-BC-QP1026-1004',date:'2026-10-16',role:'讲师',amount:9200,credited:'2026-11-02 09:15',available:'2026-12-15',type:'normal',status:'账期中',teacher:'吴启明'}
+    {id:'I240901',customer:'某能源集团',course:'数字化转型工作坊',dateStart:'2026-08-18',dateEnd:'2026-08-20',days:3,unitPrice:2266.67,role:'讲师',amount:6800,credited:'2026-10-02 16:32',available:'2026-10-19',type:'normal',status:'可提现',teacher:'贺敏'},
+    {id:'I240902',customer:'某互联网公司',course:'AI 应用开发实战',dateStart:'2026-08-30',dateEnd:'2026-08-30',days:1,unitPrice:2400,role:'讲师',amount:2400,credited:'2026-10-03 10:08',available:'2026-10-29',type:'normal',status:'可提现',teacher:'吴启明'},
+    {id:'I240903',customer:'某银行总行',course:'大模型业务落地内训',dateStart:'2026-10-24',dateEnd:'2026-10-24',days:1,unitPrice:3600,role:'讲师',amount:3600,credited:'2026-10-28 14:20',available:'审批通过即刻',type:'urgent',status:'紧急可提现',teacher:'贺敏'},
+    {id:'I240904',customer:'某云厂商',course:'云原生架构师认证班',dateStart:'2026-10-14',dateEnd:'2026-10-16',days:3,unitPrice:3066.67,role:'讲师',amount:9200,credited:'2026-11-02 09:15',available:'2026-12-15',type:'normal',status:'未到可提现日',teacher:'吴启明'}
   ],
   records:[
-    {id:'TX202610080023',type:'normal',amount:6800,method:'云账户',submit:'2026-10-08 14:26',eta:'当月月底前到账',status:'暂不付款',note:'因付款资料需补充，本次暂不付款',kind:'delay'},
-    {id:'TX202609050118',type:'normal',amount:3200,method:'劳务费代扣个税',submit:'2026-09-05 09:41',eta:'已于 2026-09-28 到账',status:'已到账',note:'',kind:'paid'},
-    {id:'JTX202610260007',type:'urgent',amount:1600,method:'开发票',submit:'2026-10-26 18:08',eta:'—',status:'付款失败',note:'收款账户信息有误；金额已退回可提现余额',kind:'failed'}
+    {id:'TX202610080023',type:'normal',amount:6800,method:'云账户',submit:'2026-10-08 14:26',eta:'当月月底前到账',status:'暂不付款',note:'因付款资料需补充，本次暂不付款',kind:'delay',account:{kind:'银行卡',name:'陈老师',number:'6222 **** 6321',bank:'招商银行北京中关村支行'}},
+    {id:'TX202609050118',type:'normal',amount:3200,method:'劳务费代扣个税',submit:'2026-09-05 09:41',eta:'已于 2026-09-28 提现成功',status:'已提现',note:'',kind:'paid',account:{kind:'支付宝',name:'陈老师',number:'chen***@example.com',bank:''}},
+    {id:'JTX202610260007',type:'urgent',amount:1600,method:'开发票',submit:'2026-10-26 18:08',eta:'—',status:'付款失败',note:'收款账户信息有误；金额已退回可提现余额',kind:'failed',account:{kind:'银行卡',name:'陈老师',number:'6222 **** 6321',bank:'招商银行北京中关村支行'}}
   ]
 };
 const initialOrg=(()=>{const o=JSON.parse(JSON.stringify(initial));
   Object.assign(o,{orgMode:true,orgName:'某咨询公司',orgRep:'李明',orgTeachers:['贺敏','吴启明'],balances:{pending:11200,normal:22400,urgent:3600,processing:9200,paid:63800},
+    defaultAccountId:'o1',draft:Object.assign(o.draft,{accountId:'o1',method:'invoice'}),accUI:{mode:'list',id:'',kind:'对公账户',name:'',number:'',bank:''},
     accounts:[{id:'o1',kind:'对公账户',name:'某咨询公司',number:'7559 **** 2208',bank:'招商银行深圳南山支行'}],
     records:[
-      {id:'TX202610120031',type:'normal',amount:9200,method:'开发票',submit:'2026-10-12 10:05',eta:'当月月底前到账',status:'提现中',note:'',kind:'processing'},
-      {id:'TX202609080066',type:'normal',amount:18600,method:'开发票',submit:'2026-09-08 09:30',eta:'已于 2026-09-27 到账',status:'已到账',note:'',kind:'paid'}
+      {id:'TX202610120031',type:'normal',amount:9200,method:'开发票',submit:'2026-10-12 10:05',eta:'当月月底前到账',status:'提现中',note:'',kind:'processing',account:{kind:'对公账户',name:'某咨询公司',number:'7559 **** 2208',bank:'招商银行深圳南山支行'}},
+      {id:'TX202609080066',type:'normal',amount:18600,method:'开发票',submit:'2026-09-08 09:30',eta:'已于 2026-09-27 提现成功',status:'已提现',note:'',kind:'paid',account:{kind:'对公账户',name:'某咨询公司',number:'7559 **** 2208',bank:'招商银行深圳南山支行'}}
     ]});
   return o})();
 let state=JSON.parse(JSON.stringify(initial));state.hideMoney=false;
@@ -158,7 +262,8 @@ const go=p=>{location.hash='#'+p};
 const statusbar=()=>`<div class="statusbar"><span>9:41</span><div class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="battery"></span></div></div>`;
 const nav=(title,back=true,action='')=>`${statusbar()}<div class="nav">${back?`<button class="back" data-action="back">${icons.back}</button>`:''}<div class="nav-title">${title}</div>${action}</div>`;
 const tabs=active=>`<div class="bottom-tabs">
-  <button class="tab ${active==='wallet'?'active':''}" data-go="/wallet">${icons.home}<span>钱包</span></button>
+  <button class="tab ${active==='wallet'?'active':''}" data-go="/wallet">${icons.home}<span>首页</span></button>
+  <button class="tab service ${active==='service'?'active':''}" data-action="open-service" aria-label="AI客服"><span class="service-icon">${icons.service}</span><span>客服</span></button>
   <button class="tab ${active==='profile'?'active':''}" data-go="/profile">${icons.user}<span>我的</span></button>
 </div>`;
 const tag=(text,cls='blue')=>`<span class="tag ${cls}">${text}</span>`;
@@ -171,17 +276,36 @@ function toast(msg){
   const el=document.createElement('div');el.className='toast';el.textContent=msg;document.querySelector('.phone').appendChild(el);
   toastTimer=setTimeout(()=>el.remove(),2200);
 }
+const periodText=x=>{
+  if(!x.dateStart)return x.date||'—';
+  if(x.dateStart===x.dateEnd)return ymText(x.dateStart);
+  return ymText(x.dateStart)+' 至 '+ymText(x.dateEnd);
+};
+const inDateRange=(day,from,to)=>{
+  if(!day)return true;
+  const d=String(day).slice(0,7);
+  if(from&&d<from)return false;
+  if(to&&d>to)return false;
+  return true;
+};
+const accText=a=>!a?'—':`${a.kind} · ${a.name} · ${a.number}${a.bank?' · '+a.bank:''}`;
 function wallet(){
-  const b=state.balances,ui=state.ui;
+  const b=state.balances;
   const main=b.normal+b.urgent;
-  const heroFs=fs(Math.max(b.normal,b.urgent),[16,16,15,13,12,11]);
-  const statFs=fs(Math.max(b.pending,b.processing,b.paid),[14,14,13,12,11,10]);
+  const yearTotal=state.incomes.reduce((t,x)=>t+x.amount,0)+b.paid;
+  const heroFs=fs(Math.max(b.normal,b.urgent),[15,15,14,12,11,10]);
+  const statFs=fs(Math.max(main,b.pending,b.processing,b.paid),[13,13,12,11,10,9]);
   const lastRec=state.records[0];
   const lastInc=[...state.incomes].sort((x,y)=>y.credited.localeCompare(x.credited))[0];
   return shell(`
     <div class="card hero">
-      <div class="hero-head"><span class="eyebrow">可提现余额</span><button class="eye" data-action="toggle-money" aria-label="显示或隐藏金额">${state.hideMoney?icons.eyeoff:icons.eye}</button></div>
-      <div class="money" style="font-size:${fs(main,[35,35,31,27,23,20])}px"><small>¥</small>${state.hideMoney?'****':intHtml(main)+decHtml(main)}</div>
+      <div class="hero-total">
+        <div class="hero-total-head">
+          <span class="eyebrow">本年课酬合计</span>
+          <button class="eye" data-action="toggle-money" aria-label="显示或隐藏金额">${state.hideMoney?icons.eyeoff:icons.eye}</button>
+        </div>
+        <div class="money" style="font-size:${fs(yearTotal,[32,32,28,24,21,18])}px"><small>¥</small>${state.hideMoney?'****':intHtml(yearTotal)+decHtml(yearTotal)}</div>
+      </div>
       <div class="balance-grid">
         <div><div class="label">普通可提现</div><div class="num" style="font-size:${heroFs}px">${mh(b.normal)}</div>
           <button class="hero-btn" data-action="start-withdraw" data-type="normal" ${state.inWindow?'':'disabled'}>${state.inWindow?'去提现':'下月 1 日开放'}</button></div>
@@ -190,74 +314,95 @@ function wallet(){
       </div>
       ${state.inWindow?`<div class="hero-foot">${icons.info}本月普通提现窗口开放中，${WIN[1]} 日 24:00 截止</div>`:''}
     </div>
-    ${state.orgMode?`<div class="notice">${icons.info}<div>当前为<b>机构账户</b>（${state.orgName}）。课酬统一归属机构，提现须<b>开具发票</b>并上传等额电子发票，收款为对公账户，不代扣个税。</div></div>`:''}
-    ${state.inWindow?'':`<div class="notice warn">${icons.info}<div>普通提现仅限每月 ${WIN[0]}~${WIN[1]} 日（由财务配置），你的普通余额会保留到下月开放。</div></div>`}
-    <div class="stat-strip">
-      <button class="stat purple" data-action="wallet-jump" data-tab="income" data-filter="账期中"><div class="stat-top"><span><i></i>账期中</span>${icons.chevron}</div><b style="font-size:${statFs}px">${mh(b.pending)}</b><em>到期后转为可提现</em></button>
+    ${state.orgMode?`<div class="notice warn">${icons.info}<div><b>机构账户说明</b><br>当前登录人为机构收款人（${state.orgRep}）。课酬归属<b>${state.orgName}</b>，授课老师无个人提现入口；提现仅支持<b>开发票 + 对公收款</b>，不代扣个税。请确认对公账户户名为机构全称。</div></div>`:''}
+    ${state.inWindow?'':`<div class="notice warn">${icons.info}<div>普通提现仅限每月 ${WIN[0]}~${WIN[1]} 日，未提余额会保留到下月窗口。</div></div>`}
+    <div class="stat-strip four">
+      <button class="stat blue" data-action="wallet-jump" data-tab="income" data-filter="可提现"><div class="stat-top"><span><i></i>可提现</span>${icons.chevron}</div><b style="font-size:${statFs}px">${mh(main)}</b><em>普通 ${fmt(b.normal).replace('¥','')} · 紧急 ${fmt(b.urgent).replace('¥','')}</em></button>
+      <button class="stat purple" data-action="wallet-jump" data-tab="income" data-filter="未到可提现日"><div class="stat-top"><span><i></i>未到可提现日</span>${icons.chevron}</div><b style="font-size:${statFs}px">${mh(b.pending)}</b><em>到期后可申请提现</em></button>
       <button class="stat blue" data-action="wallet-jump" data-tab="records" data-filter="提现中"><div class="stat-top"><span><i></i>提现中</span>${icons.chevron}</div><b style="font-size:${statFs}px">${mh(b.processing)}</b><em>当月月底前到账</em></button>
-      <button class="stat green" data-action="wallet-jump" data-tab="records" data-filter="已到账"><div class="stat-top"><span><i></i>已到账</span>${icons.chevron}</div><b style="font-size:${statFs}px">${mh(b.paid)}</b><em>累计已到账</em></button>
+      <button class="stat green" data-action="wallet-jump" data-tab="records" data-filter="已提现"><div class="stat-top"><span><i></i>已提现</span>${icons.chevron}</div><b style="font-size:${statFs}px">${mh(b.paid)}</b><em>累计已提现成功</em></button>
     </div>
     <div class="section-title"><h3>最近提现</h3><button data-go="/records">全部 ${icons.chevron}</button></div>
     <div class="card list-card">${lastRec?recordRow(lastRec):`<div class="empty">${icons.empty}<div>暂无提现记录</div></div>`}</div>
-    <div class="section-title"><h3>最近入账</h3><button data-go="/income">全部 ${icons.chevron}</button></div>
-    <div class="card list-card">${lastInc?incomeRow(lastInc):`<div class="empty">${icons.empty}<div>暂无入账记录</div></div>`}</div>
-  `,{title:'51CTO钱包',back:false,tabs:'wallet'});
+    <div class="section-title"><h3>最近订单</h3><button data-go="/income">全部 ${icons.chevron}</button></div>
+    <div class="card list-card">${lastInc?incomeRow(lastInc):`<div class="empty">${icons.empty}<div>暂无订单</div></div>`}</div>
+  `,{title:'51CTO结算中心',back:false,tabs:'wallet'});
 }
-const ymText=d=>{const m=String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);return m?m[1]+' 年 '+Number(m[2])+' 月 '+Number(m[3])+' 日':''};
-const etaValue=x=>x.type==='urgent'?'随时可提现':x.status==='账期中'?ymText(x.available)+' 到期；到期后每月 1~10 日可提现':'当前可提现';
-const etaLine=x=>x.type==='urgent'?'随时可提现':x.status==='账期中'?ymText(x.available)+' 到期可提现':'当前可提现';
+const ymText=d=>{const m=String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);return m?m[1]+' 年 '+Number(m[2])+' 月 '+Number(m[3])+' 日':String(d||'')};
+const etaValue=x=>x.type==='urgent'?'随时可提现':x.status==='未到可提现日'?ymText(x.available)+' 起可提；之后每月 1~10 日开放':'当前可提现';
+const etaLine=x=>x.type==='urgent'?'随时可提现':x.status==='未到可提现日'?ymText(x.available)+' 起可提现':'当前可提现';
 function incomeRow(x){
-  const cls=x.type==='urgent'?'orange':x.status==='账期中'?'purple':'blue';
+  const cls=x.type==='urgent'?'orange':x.status==='未到可提现日'?'purple':'blue';
   return `<button class="list-row" style="width:100%;background:none;text-align:left" data-go="/income/${x.id}">
     <div class="row-icon ${x.type==='urgent'?'orange':''}">${x.type==='urgent'?icons.bolt:icons.receipt}</div>
-    <div class="row-main"><div class="row-title">${x.project}</div><div class="row-sub">${x.date} · ${state.orgMode?'授课：'+x.teacher:x.role} · ${x.contract}</div><div class="row-sub eta ${x.status==='账期中'?'later':''}">${etaLine(x)}</div></div>
+    <div class="row-main"><div class="row-title">${x.course||'课酬订单'}</div><div class="row-sub">${x.customer||'—'} · ${periodText(x)} · ${x.days||'—'} 天${state.orgMode?' · 授课：'+x.teacher:''}</div><div class="row-sub eta ${x.status==='未到可提现日'?'later':''}">${etaLine(x)}</div></div>
     <div class="row-side"><div class="row-amount">${mh(x.amount,'+')}</div><div class="row-status">${tag(x.status,cls)}</div></div>
   </button>`;
 }
 const monthKey=t=>t.slice(0,4)+' 年 '+Number(t.slice(5,7))+' 月';
-function groupByMonth(list,timeOf,rowFn){
+function groupByMonth(list,timeOf,rowFn,sumLabel,amtOf){
   const sorted=[...list].sort((x,y)=>timeOf(y).localeCompare(timeOf(x)));
   const groups=[];sorted.forEach(x=>{const k=monthKey(timeOf(x));let g=groups.find(i=>i.k===k);if(!g){g={k,items:[]};groups.push(g)}g.items.push(x)});
-  return groups.map(g=>`<div class="month-title">${g.k}<span>${g.items.length} 笔</span></div><div class="card list-card">${g.items.map(rowFn).join('')}</div>`).join('');
+  return groups.map(g=>`<div class="month-title">${g.k}<span>${g.items.length} 笔${sumLabel?` · ${sumLabel} <b class="ms">${mh(g.items.reduce((s,x)=>s+(amtOf?amtOf(x):x.amount),0))}</b>`:''}</span></div><div class="card list-card">${g.items.map(rowFn).join('')}</div>`).join('');
 }
 function filterBar(kind,list,active){
   return `<div class="filter">${list.map(f=>`<button class="${active===f?'active':''}" data-action="wallet-filter" data-kind="${kind}" data-value="${f}">${f}</button>`).join('')}</div>`;
 }
+const CUR_MONTH='2026-10'; /* 演示数据的"本月" */
+const fmtYM=v=>v?v.slice(0,4)+'.'+v.slice(5,7):'';
+function monthLabel(from,to){
+  if(!from&&!to)return '';
+  if(from&&(!to||from===to))return from.slice(0,4)+' 年 '+Number(from.slice(5,7))+' 月';
+  return fmtYM(from)+' – '+fmtYM(to);
+}
+function dateFilterBar(kind){
+  const k=kind==='income'?'income':'record';
+  const from=state.ui[k+'From'],to=state.ui[k+'To'];
+  const lb=monthLabel(from,to);
+  return `<div class="date-filter"><button class="mp-btn ${lb?'on':''}" data-action="open-mp" data-kind="${kind}">${icons.cal}<span class="${lb?'':'ph'}">${lb||'全部月份'}</span></button>${lb?`<button class="mp-clear" data-action="clear-date" data-kind="${kind}">清除</button>`:''}</div>`;
+}
 function income(){
   const f=state.ui.incomeFilter,b=state.balances;
-  const list=state.incomes.filter(x=>f==='全部'||(f==='可提现'&&(x.status==='可提现'||x.status==='紧急可提现'))||(f==='账期中'&&x.status==='账期中')||(f==='紧急'&&x.type==='urgent'));
-  const monthSum=state.incomes.filter(x=>x.credited.startsWith('2026-11')).reduce((t,x)=>t+x.amount,0);
+  const list=state.incomes.filter(x=>{
+    const ok=f==='全部'||(f==='可提现'&&(x.status==='可提现'||x.status==='紧急可提现'))||(f==='未到可提现日'&&x.status==='未到可提现日');
+    return ok&&inDateRange(x.dateStart||x.credited,state.ui.incomeFrom,state.ui.incomeTo);
+  });
   return shell(`
-    <div class="sum-card"><div><span>本月入账</span><b>${mh(monthSum)}</b></div><div><span>账期中</span><b>${mh(b.pending)}</b></div></div>
-    ${filterBar('income',['全部','可提现','账期中','紧急'],f)}
-    ${list.length?groupByMonth(list,x=>x.credited,incomeRow):`<div class="card"><div class="empty">${icons.empty}<div>暂无入账记录</div></div></div>`}
-  `,{title:'入账明细'});
+    ${dateFilterBar('income')}
+    ${filterBar('income',['全部','可提现','未到可提现日'],f)}
+    ${list.length?groupByMonth(list,x=>x.dateStart||x.credited,incomeRow,'收入'):`<div class="card"><div class="empty">${icons.empty}<div>暂无订单</div></div></div>`}
+  `,{title:'订单明细'});
 }
 function records(){
   const f=state.ui.recordFilter,b=state.balances;
-  const list=state.records.filter(x=>f==='全部'||x.status===f);
+  const list=state.records.filter(x=>{
+    const ok=f==='全部'||x.status===f||(f==='提现中'&&(x.status==='提现中'||x.status==='已提交'));
+    return ok&&inDateRange(x.submit,state.ui.recordFrom,state.ui.recordTo);
+  });
   return shell(`
-    <div class="sum-card"><div><span>累计已到账</span><b>${mh(b.paid)}</b></div><div><span>提现中</span><b>${mh(b.processing)}</b></div></div>
-    ${filterBar('records',['全部','提现中','已到账','付款失败','暂不付款'],f)}
-    ${list.length?groupByMonth(list,x=>x.submit,recordRow):`<div class="card"><div class="empty">${icons.empty}<div>暂无提现记录</div></div></div>`}
+    ${dateFilterBar('records')}
+    ${filterBar('records',['全部','提现中','已提现','付款失败','暂不付款'],f)}
+    ${list.length?groupByMonth(list,x=>x.submit,recordRow,'提现',x=>(x.kind==='failed'||x.kind==='delay')?0:x.amount):`<div class="card"><div class="empty">${icons.empty}<div>暂无提现记录</div></div></div>`}
   `,{title:'提现记录'});
 }
 function incomeDetail(id){
   const x=state.incomes.find(i=>i.id===id)||state.incomes[0];
+  const stCls=x.type==='urgent'?'orange':x.status==='未到可提现日'?'purple':'blue';
   return shell(`
-    <div class="card detail-hero"><div class="eyebrow">课酬入账金额</div><div class="amount">+${fmt(x.amount)}</div><div class="status-line">${tag(x.status,x.type==='urgent'?'orange':'blue')} ${tag(x.role,'purple')}</div></div>
-    <div class="section-title"><h3>入账信息</h3></div>
+    <div class="card detail-hero"><div class="eyebrow">订单金额</div><div class="amount">+${fmt(x.amount)}</div><div class="status-line">${tag(x.status,stCls)}</div></div>
+    <div class="section-title"><h3>订单信息</h3></div>
     <div class="card"><dl class="kv">
-      <div class="kv-row"><dt>项目</dt><dd>${x.project}</dd></div>
-      <div class="kv-row"><dt>合同</dt><dd>${x.contract}</dd></div>
-      <div class="kv-row"><dt>执行日期</dt><dd>${x.date}</dd></div>
+      <div class="kv-row"><dt>客户名称</dt><dd>${x.customer||'—'}</dd></div>
+      <div class="kv-row"><dt>课程名称</dt><dd>${x.course||'—'}</dd></div>
+      <div class="kv-row"><dt>日期</dt><dd>${periodText(x)}</dd></div>
+      <div class="kv-row"><dt>天数</dt><dd>${x.days||'—'} 天</dd></div>
+      <div class="kv-row"><dt>单价</dt><dd>${fmt(x.unitPrice)}</dd></div>
+      <div class="kv-row"><dt>金额</dt><dd>${fmt(x.amount)}</dd></div>
       ${state.orgMode?`<div class="kv-row"><dt>实际授课人</dt><dd>${x.teacher}</dd></div>`:''}
-      <div class="kv-row"><dt>师资角色</dt><dd>${x.role}</dd></div>
-      <div class="kv-row"><dt>课酬金额</dt><dd>${fmt(x.amount)}</dd></div>
-      <div class="kv-row"><dt>入账时间</dt><dd>${x.credited}</dd></div>
-      <div class="kv-row"><dt>预计提现时间</dt><dd>${etaValue(x)}</dd></div>
+      <div class="kv-row"><dt>订单生成时间</dt><dd>${x.credited}</dd></div>
+      <div class="kv-row"><dt>预计可提时间</dt><dd>${etaValue(x)}</dd></div>
     </dl></div>
-  `,{title:'入账详情'});
+  `,{title:'订单详情'});
 }
 function withdraw(type){
   const urgent=type==='urgent',available=urgent?state.balances.urgent:state.balances.normal;
@@ -269,109 +414,341 @@ function withdraw(type){
   }
   const methods=[
     ['cloud','云账户','到账便捷，以云账户实际处理规则为准',icons.wallet],
-    ['invoice','开发票','需按经办人通知提供等额电子发票',icons.file],
+    ['invoice','开发票','需按经办人通知提供电子发票（可多张，合计等于提现金额）',icons.file],
     ['tax','劳务费代扣个税','公司依法代扣代缴个人所得税',icons.shield]
   ];
-  if(state.orgMode)methods.splice(0,methods.length,['invoice','开发票','机构账户仅支持开发票：上传与提现金额相等的电子发票',icons.file]);
+  if(state.orgMode)methods.splice(0,methods.length,['invoice','开发票','机构账户仅支持开发票：上传电子发票（可多张，合计等于提现金额），对公收款',icons.file]);
   return `<section class="screen">${nav(urgent?'紧急提现':'普通提现')}<div class="content">
-    <div class="stepper"><div class="step active"><i>1</i>提现信息</div><div class="step-line"></div><div class="step"><i>2</i>确认</div></div>
+    <div class="stepper"><div class="step active"><i>1</i>提现信息</div><div class="step-line"></div><div class="step"><i>2</i>确认</div><div class="step-line"></div><div class="step"><i>3</i>密码</div></div>
     <div class="card form-card"><div class="field"><label>提现金额</label><div class="amount-input"><b>¥</b><input id="amount" inputmode="decimal" autocomplete="off" value="${state.draft.type===type?state.draft.amount:''}" placeholder="0.00"></div><div class="available"><span>${urgent?'紧急':'普通'}可提现 ${fmt(available)}</span><button data-action="all-amount" data-type="${type}">全部提现</button></div></div></div>
     <div class="section-title" style="margin-top:18px"><h3>提现方式</h3></div>
     ${methods.map(m=>`<button class="method ${state.draft.method===m[0]&&state.draft.type===type?'selected':''}" data-action="choose-method" data-type="${type}" data-method="${m[0]}"><span class="method-icon">${m[3]}</span><span class="method-text"><b>${m[1]}</b><p>${m[2]}</p></span><span class="radio"></span></button>`).join('')}
     ${methodPanel(type)}
-    <div class="notice ${urgent?'warn':''}">${urgent?icons.bolt:icons.info}<div>${urgent?'紧急提现随时可提；':'可部分提现；'}提交后金额将进入“提现中”，且不可撤销。提现方式提交后不可修改。</div></div>
     ${!state.accountFilled?`<div class="notice danger">${icons.info}<div>收款账户尚未填写，需先补全后才能提交提现。</div></div>`:''}
   </div><div class="sticky"><button class="btn" data-action="amount-next" data-type="${type}">下一步</button><div class="fineprint">提现金额不能超过当前可提现余额</div></div></section>`;
 }
+const invSum=(l)=>Math.round((l||[]).reduce((s,x)=>s+x.amt,0)*100)/100;
 const curAcc=()=>{const L=state.accounts,d=state.draft;return L.find(a=>a.id===d.accountId)||L[0]||{name:'',number:'',bank:'',kind:''}};
+const INVOICE_COPY=`公司名称：北京无忧创想信息技术有限公司
+纳税人识别号：91110108779523488N
+企业地址：北京市海淀区中关村南一条甲一号2号楼602A
+联系电话：010-68476606
+开户行：中国建设银行北京苏州桥支行`;
+/** 劳务费个税预估（财务公式）：=MAX((劳务费-IF(劳务费<4000,800,劳务费*0.2))*10%*{2,3,4}-1000*{0,2,7},0)
+ *  即取 20% / 30% / 40% 三档（速算扣除 0 / 2000 / 7000）中的最大值，且不小于 0。
+ *  单月多笔劳务费：计税基础累加，本笔个税 = 累计应缴 − 此前已计应缴。 */
+function laborTaxRaw(base){
+  const taxable=base-(base<4000?800:base*0.2);
+  return Math.max(taxable*0.2,taxable*0.3-2000,taxable*0.4-7000,0);
+}
+function estimateLaborTax(amt,prior){
+  if(prior==null)prior=(state.records||[]).filter(r=>r.method==='劳务费代扣个税'&&String(r.submit).startsWith(CUR_MONTH)&&r.kind!=='failed'&&r.kind!=='delay').reduce((s,r)=>s+r.amount,0);
+  const a=Number(amt||0),pr=Number(prior||0);
+  return Math.round((laborTaxRaw(a+pr)-(pr>0?laborTaxRaw(pr):0))*100)/100;
+}
 function methodPanel(type){
-  const d=state.draft;if(d.type!==type||!d.method)return '';const amt=Number(d.amount)||0;
-  if(d.method==='cloud')return `<div class="notice warn">${icons.info}<div>云账户实际到账金额可能与提现金额不同（如个税、增值税等原因），以云账户处理结果为准。</div></div>`;
-  if(d.method==='invoice')return `<div class="card"><dl class="kv"><div class="kv-row"><dt>应开发票金额</dt><dd>${fmt(amt)}</dd></div><div class="kv-row"><dt>开票名称</dt><dd>北京某某教育科技有限公司</dd></div><div class="kv-row"><dt>纳税人识别号</dt><dd>91110000XXXXXXXXXX</dd></div></dl><div style="padding:0 16px 14px;display:flex;gap:10px"><button class="btn secondary" style="flex:1" data-action="copy-invoice">复制开票信息</button><button class="btn secondary" style="flex:1" data-action="upload-invoice">${d.invoice?'重新上传发票':'上传电子发票'}</button></div>${d.invoice?`<div class="notice" style="margin:0 16px 14px">${icons.check}<div>已上传发票，金额 ${fmt(d.invoiceAmt)}，与提现金额一致。</div></div>`:''}</div><div class="notice warn">${icons.info}<div>须上传与提现金额相等的电子发票，发票类目不得开具咨询类；若发票开错，当月重新开具即可，仍按正常提现处理。${state.orgMode?'机构账户不代扣个税，税务由机构自行处理。':''}</div></div>`;
-  const tax=Math.round(amt*0.2*100)/100;
-  return `<div class="card"><dl class="kv"><div class="kv-row"><dt>预计个税</dt><dd>${fmt(tax)}</dd></div><div class="kv-row"><dt>预计到账</dt><dd>${fmt(amt-tax)}</dd></div></dl></div><div class="notice warn">${icons.info}<div>个税与到账金额仅为预估，以公司实际代扣结果为准。</div></div>`;
+  const d=state.draft;if(d.type!==type||!d.method)return '';const amt=Number(d.amount)||0;const invs=d.invoices||[],invTotal=invSum(invs);
+  if(d.method==='cloud')return `<div class="notice warn">${icons.info}<div>温馨提示：提现申请金额非实际到账金额，结算时会预扣除个人所得税、增值税及附加税，增附税个人月度总劳务金额不超过十万元，T+2月返还，具体请以实际到账金额为准。</div></div>`;
+  if(d.method==='invoice')return `<div class="card" style="padding:14px 16px 12px">
+    <div class="inv-head"><h4>开票信息</h4><button class="copy-btn" data-action="copy-invoice">${icons.copy}复制开票信息</button></div>
+    <dl class="kv">
+      <div class="kv-row"><dt>应开发票金额</dt><dd>${fmt(amt)}</dd></div>
+      <div class="kv-row"><dt>公司名称</dt><dd>北京无忧创想信息技术有限公司</dd></div>
+      <div class="kv-row"><dt>纳税人识别号</dt><dd>91110108779523488N</dd></div>
+      <div class="kv-row"><dt>企业地址</dt><dd class="nowrap">北京市海淀区中关村南一条甲一号2号楼602A</dd></div>
+      <div class="kv-row"><dt>联系电话</dt><dd>010-68476606</dd></div>
+      <div class="kv-row"><dt>开户行</dt><dd>中国建设银行北京苏州桥支行</dd></div>
+    </dl>
+  </div>
+  <div class="inv-upload">
+    <div class="section-title" style="margin:4px 2px 8px"><h3>电子发票</h3><span style="font-size:11px;color:var(--muted)">${invs.length?'已上传 '+invs.length+' 张':'待上传'}</span></div>
+    <div class="card">${invs.length?`
+      <div class="inv-list">${invs.map((x,i)=>`<div class="inv-item">
+        <div class="inv-thumb">${icons.file}</div>
+        <div class="inv-meta"><b>${x.name}</b><p>发票金额 ${fmt(x.amt)}</p></div>
+        <div class="ops"><button data-action="preview-invoice" data-idx="${i}">预览</button><button class="del" data-action="remove-invoice" data-idx="${i}">删除</button></div>
+      </div>`).join('')}</div>
+      <div class="inv-sum"><span>发票合计 <b>${fmt(invTotal)}</b></span>${Math.abs(invTotal-amt)<0.005?'<span class="ok">与提现金额一致</span>':`<span class="gap">${invTotal<amt?'还差 '+fmt(amt-invTotal):'超出 '+fmt(invTotal-amt)}</span>`}</div>
+      <button class="inv-add" data-action="upload-invoice">${icons.upload} 继续上传</button>`:`
+      <button class="inv-empty" data-action="upload-invoice">
+        ${icons.upload}
+        <b>上传电子发票</b>
+        <span>支持上传多张，发票金额合计须与提现金额一致<br>支持 PDF / 图片，上传后可预览</span>
+      </button>`}</div>
+  </div>
+  <div class="notice warn">${icons.info}<div>常规结算不允许开具税收编码、发票类目为咨询类的发票；如业务场景确须开具咨询类目，须提前和业务侧沟通确认。税率为6%必须开具专票，小规模纳税人按沟通开具。${state.orgMode?'机构账户仅对公收款、不代扣个税。':''}</div></div>`;
+
+  const tax=estimateLaborTax(amt),net=Math.max(amt-tax,0);
+  return `<div class="card"><dl class="kv"><div class="kv-row"><dt>预计个税</dt><dd>${fmt(tax)}</dd></div><div class="kv-row"><dt>预计到账</dt><dd>${fmt(net)}</dd></div></dl></div><div class="notice warn">${icons.info}<div>温馨提示：本平台显示个税金额仅根据企培事业部的劳务费计算，如果您在本公司同时为其他业务部提供服务，当月个税金额会合并计算，具体请以实际到账金额为准。</div></div>`;
 }
 function methodName(m){return {cloud:'云账户',invoice:'开发票',tax:'劳务费代扣个税'}[m]||'未选择'}
 function confirmPage(){
-  const urgent=state.draft.type==='urgent';
+  const urgent=state.draft.type==='urgent',a=curAcc();
   return `<section class="screen">${nav('确认提现')}<div class="content">
-    <div class="stepper"><div class="step active"><i>1</i>提现信息</div><div class="step-line"></div><div class="step active"><i>2</i>确认</div></div>
+    <div class="stepper"><div class="step active"><i>1</i>提现信息</div><div class="step-line"></div><div class="step active"><i>2</i>确认</div><div class="step-line"></div><div class="step"><i>3</i>密码</div></div>
     <div class="card detail-hero"><div class="eyebrow">本次提现金额</div><div class="amount">${fmt(state.draft.amount)}</div><div>${tag(urgent?'紧急提现':'普通提现',urgent?'orange':'blue')}</div></div>
-    ${state.accounts.length>1?`<div class="section-title"><h3>选择收款账户</h3><button data-go="/account">管理账户</button></div>${state.accounts.map(a=>`<button class="method ${curAcc().id===a.id?'selected':''}" data-action="choose-account" data-id="${a.id}"><span class="method-icon">${icons.card}</span><span class="method-text"><b>${a.kind} · ${a.name}</b><p>${a.number}${a.bank?' · '+a.bank:''}</p></span><span class="radio"></span></button>`).join('')}`:''}
-    <div class="section-title"><h3>提现信息</h3>${state.accounts.length>1?'':'<button data-go="/account">管理账户</button>'}</div>
+    ${state.accounts.length>1?`<div class="section-title"><h3>选择收款账户</h3><button data-go="/account">管理账户</button></div>${state.accounts.map(acc=>`<button class="method ${a.id===acc.id?'selected':''}" data-action="choose-account" data-id="${acc.id}"><span class="method-icon">${icons.card}</span><span class="method-text"><b>${acc.kind} · ${acc.name}</b><p>${acc.number}${acc.bank?' · '+acc.bank:''}</p></span><span class="radio"></span></button>`).join('')}`:''}
+    ${!state.orgMode&&(state.draft.method==='cloud'||state.draft.method==='tax')?`<div class="notice">${icons.info}<div>云账户 / 劳务费代扣个税可使用银行卡或支付宝收款；不可使用对公账户。</div></div>`:''}
+    <div class="section-title"><h3>提现账户</h3>${state.accounts.length>1?'':'<button data-go="/account">管理账户</button>'}</div>
+    <div class="card"><dl class="kv">
+      <div class="kv-row"><dt>账户类型</dt><dd>${a.kind}</dd></div>
+      <div class="kv-row"><dt>收款户名</dt><dd>${a.name}</dd></div>
+      <div class="kv-row"><dt>收款账号</dt><dd>${a.number}</dd></div>
+      ${a.bank?`<div class="kv-row"><dt>开户行</dt><dd>${a.bank}</dd></div>`:''}
+    </dl></div>
+    <div class="section-title"><h3>提现明细</h3></div>
     <div class="card"><dl class="kv">
       <div class="kv-row"><dt>提现方式</dt><dd>${methodName(state.draft.method)}</dd></div>
-      <div class="kv-row"><dt>账户类型</dt><dd>${curAcc().kind}</dd></div>
-      <div class="kv-row"><dt>收款户名</dt><dd>${curAcc().name}</dd></div>
-      <div class="kv-row"><dt>收款账号</dt><dd>${curAcc().number}</dd></div>
-      ${curAcc().bank?`<div class="kv-row"><dt>开户行</dt><dd>${curAcc().bank}</dd></div>`:''}
-      ${state.draft.method==='invoice'?`<div class="kv-row"><dt>发票</dt><dd>已上传（${fmt(state.draft.invoiceAmt)}）</dd></div>`:''}
-      ${state.draft.method==='tax'?`<div class="kv-row"><dt>预计个税 / 到账</dt><dd>${fmt(Math.round(Number(state.draft.amount)*0.2*100)/100)} / ${fmt(Number(state.draft.amount)-Math.round(Number(state.draft.amount)*0.2*100)/100)}</dd></div>`:''}
+      ${state.draft.method==='invoice'?`<div class="kv-row"><dt>发票</dt><dd>已上传 ${(state.draft.invoices||[]).length} 张（合计 ${fmt(invSum(state.draft.invoices))}）</dd></div>`:''}
+      ${state.draft.method==='tax'?`<div class="kv-row"><dt>预计个税 / 到账</dt><dd>${fmt(estimateLaborTax(Number(state.draft.amount)))} / ${fmt(Math.max(Number(state.draft.amount)-estimateLaborTax(Number(state.draft.amount)),0))}</dd></div>`:''}
       <div class="kv-row"><dt>预计到账</dt><dd>${urgent?'以紧急付款进度为准':'当月月底前到账'}</dd></div>
     </dl></div>
-    <div class="notice warn">${icons.info}<div>提交后不可撤销，请仔细核对金额、方式和收款信息。</div></div>
-  </div><div class="sticky"><button class="btn" data-action="submit-withdraw">确认提交</button><div class="fineprint">点击即表示已核对金额、方式及收款信息</div></div></section>`;
+    <div class="notice warn">${icons.info}<div>请确认提现账户。提交后不可撤销。</div></div>
+  </div><div class="sticky"><button class="btn" data-action="go-verify-pwd">确认提现账户</button><div class="fineprint">下一步将校验提现密码；提交后不可撤销</div></div></section>`;
+}
+function pinBoxes(val,mask=true){
+  const s=String(val||'');
+  return `<div class="pin-field"><div class="pin-boxes">${[0,1,2,3,4,5].map(i=>{
+    const filled=i<s.length;
+    return `<div class="pin-box ${filled?'filled':''} ${filled&&mask?'dot':''}">${filled&&!mask?s[i]:''}</div>`;
+  }).join('')}</div><input class="pin-input" id="pin" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" maxlength="6" value="${s}"></div>`;
+}
+function resetPwdDraft(mode,step=''){state.pwdDraft={mode,step,old:'',code:'',value:'',confirm:''}}
+function afterPwdSetup(){
+  if(state.draft.type){
+    go(state.draft.amount?'/withdraw/confirm':(state.draft.type==='urgent'?'/withdraw/emergency':'/withdraw/normal'));
+  }else go('/wallet');
+}
+function passwordSetup(){
+  const d=state.pwdDraft;if(d.mode!=='setup')resetPwdDraft('setup','enter');
+  const step=state.pwdDraft.step||'enter';
+  const first=step==='enter';
+  return `<section class="screen">${nav('设置提现密码')}<div class="content">
+    <div class="pin-wrap">
+      <div class="error-icon" style="background:#eef4ff;color:var(--brand);margin-bottom:16px">${icons.shield}</div>
+      <h2>${first?'设置 6 位提现密码':'再次输入以确认'}</h2>
+      <p>${first?'用于提现确认，保护账户资金安全。首次提现前必须完成设置。':'请再次输入相同的 6 位数字密码。'}</p>
+      ${pinBoxes(first?state.pwdDraft.value:state.pwdDraft.confirm)}
+      <div class="pin-hint">演示密码可设为任意 6 位数字</div>
+    </div>
+    <div class="notice">${icons.info}<div>提现密码与微信登录无关；忘记密码可通过绑定手机号短信验证后重置。</div></div>
+  </div></section>`;
+}
+function passwordVerify(){
+  if(state.pwdDraft.mode!=='verify'){resetPwdDraft('verify','');state.pwdDraft.value=''}
+  const urgent=state.draft.type==='urgent';
+  return `<section class="screen">${nav('输入提现密码')}<div class="content">
+    <div class="stepper"><div class="step active"><i>1</i>提现信息</div><div class="step-line"></div><div class="step active"><i>2</i>确认</div><div class="step-line"></div><div class="step active"><i>3</i>密码</div></div>
+    <div class="pin-wrap">
+      <h2>请输入提现密码</h2>
+      <p>本次提现 ${fmt(state.draft.amount)}（${urgent?'紧急':'普通'}），提现账户：${accText(curAcc())}</p>
+      ${pinBoxes(state.pwdDraft.value||'')}
+      <div class="pin-hint"><button data-go="/password/forgot">忘记密码？</button>${state.pwdFail?` · 已输错 ${state.pwdFail} 次`:''}</div>
+    </div>
+    <div class="notice warn">${icons.info}<div>演示密码为 <b>123456</b>。校验通过即确认上述提现账户，不可撤销。</div></div>
+  </div></section>`;
+}
+function passwordManage(){
+  return shell(`
+    <div class="error-state" style="padding-top:24px"><div class="error-icon" style="background:#eef4ff;color:var(--brand)">${icons.shield}</div>
+      <h2>提现密码</h2><p>${state.pwdSet?'已设置提现密码，提现提交前需校验。':'尚未设置，首次提现前必须完成设置。'}</p></div>
+    <div class="card menu">
+      ${state.pwdSet?`
+        <button class="menu-row" style="width:100%;background:none;text-align:left" data-action="start-change-pwd">${icons.edit}<span>修改提现密码</span>${icons.chevron}</button>
+        <button class="menu-row" style="width:100%;background:none;text-align:left" data-go="/password/forgot">${icons.phone}<span>忘记密码</span><small>短信验证后重置</small>${icons.chevron}</button>
+      `:`
+        <button class="menu-row" style="width:100%;background:none;text-align:left" data-action="start-setup-pwd">${icons.shield}<span>立即设置</span>${icons.chevron}</button>
+      `}
+    </div>
+    <div class="notice">${icons.info}<div>修改或重置密码不影响已提交的提现单；仅对新提现生效。</div></div>
+  `,{title:'提现密码'});
+}
+function passwordChange(){
+  const d=state.pwdDraft;if(d.mode!=='change')resetPwdDraft('change','old');
+  const step=state.pwdDraft.step||'old';
+  const map={old:['验证原密码','请输入当前 6 位提现密码'],enter:['设置新密码','请输入新的 6 位提现密码'],confirm:['确认新密码','请再次输入新密码']};
+  const [title,desc]=map[step]||map.old;
+  const val=step==='old'?state.pwdDraft.old:step==='enter'?state.pwdDraft.value:state.pwdDraft.confirm;
+  return `<section class="screen">${nav('修改提现密码')}<div class="content">
+    <div class="pin-wrap"><h2>${title}</h2><p>${desc}</p>${pinBoxes(val)}
+      <div class="pin-hint">${step==='old'?'<button data-go="/password/forgot">忘记原密码？</button>':'请勿使用简单连续数字'}</div>
+    </div>
+  </div></section>`;
+}
+function passwordForgot(){
+  const d=state.pwdDraft;if(d.mode!=='forgot')resetPwdDraft('forgot','sms');
+  const step=state.pwdDraft.step||'sms';
+  if(step==='sms'){
+    return `<section class="screen">${nav('忘记提现密码')}<div class="content">
+      <div class="pin-wrap"><h2>短信验证</h2><p>验证码将发送至绑定手机号 138 **** 6612（演示任意 6 位即可，推荐 000000）。</p>
+        ${pinBoxes(state.pwdDraft.code,false)}
+        <div class="pin-hint"><button data-action="send-sms-code">获取验证码</button></div>
+      </div>
+      <div class="notice">${icons.info}<div>验证通过后可设置新的提现密码。</div></div>
+    </div></section>`;
+  }
+  const first=step==='enter';
+  return `<section class="screen">${nav('重置提现密码')}<div class="content">
+    <div class="pin-wrap"><h2>${first?'设置新密码':'确认新密码'}</h2><p>${first?'请输入新的 6 位提现密码':'请再次输入新密码'}</p>
+      ${pinBoxes(first?state.pwdDraft.value:state.pwdDraft.confirm)}
+    </div>
+  </div></section>`;
+}
+function resetAccUI(mode='list',acc=null){
+  const kind=state.orgMode?'对公账户':(acc?acc.kind:'银行卡');
+  state.accUI={mode,id:acc?acc.id:'',kind,name:acc?acc.name:'',number:acc?acc.number:'',bank:acc?acc.bank:''};
+}
+function syncAccountFilled(){
+  state.accountFilled=state.accounts.length>0;
+  if(!state.accounts.length){state.defaultAccountId='';state.draft.accountId='';return}
+  if(!state.accounts.some(a=>a.id===state.defaultAccountId))state.defaultAccountId=state.accounts[0].id;
+  if(!state.accounts.some(a=>a.id===state.draft.accountId))state.draft.accountId=state.defaultAccountId;
+}
+function readAccForm(){
+  if(!state.accUI)resetAccUI('list');
+  const f=state.accUI;
+  const kindEl=document.getElementById('acc-kind'),nameEl=document.getElementById('acc-name'),numEl=document.getElementById('acc-number'),bankEl=document.getElementById('acc-bank');
+  if(kindEl)f.kind=kindEl.value;
+  if(nameEl)f.name=nameEl.value;
+  if(numEl)f.number=numEl.value;
+  if(bankEl)f.bank=bankEl.value;
+}
+function validateAccForm(){
+  const f=state.accUI,kind=f.kind,name=f.name.trim(),number=f.number.trim(),bank=f.bank.trim();
+  const needBank=kind==='银行卡'||kind==='对公账户';
+  if(!name)return '请填写收款户名全称';
+  if(!number)return '请填写收款账号';
+  if(needBank&&!bank)return '请填写开户行全称';
+  if(kind==='银行卡'){
+    const digits=number.replace(/\s/g,'');
+    if(!/^\d{12,22}$/.test(digits))return '银行卡号一般为 12~22 位数字，请核对';
+  }
+  if(kind==='支付宝'){
+    const ok=/^1\d{10}$/.test(number)||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(number);
+    if(!ok)return '支付宝账号请填写手机号或邮箱';
+  }
+  if(kind==='对公账户'){
+    if(state.orgName&&name!==state.orgName)return '对公户名须与机构全称一致：'+state.orgName;
+    const digits=number.replace(/\s|\*/g,'');
+    if(digits.length<8)return '请填写完整对公账号';
+  }
+  const dup=state.accounts.some(a=>a.id!==f.id&&a.number.replace(/\s/g,'')===number.replace(/\s/g,''));
+  if(dup)return '该收款账号已存在，请勿重复添加';
+  return '';
+}
+function accountListView(){
+  const def=state.defaultAccountId;
+  const list=state.accounts.length?state.accounts.map(a=>{
+    const isDef=a.id===def;
+    return `<div class="card" style="padding-bottom:4px">
+      <dl class="kv">
+        <div class="kv-row"><dt>账户类型</dt><dd>${a.kind}${isDef?' '+tag('默认','blue'):''}</dd></div>
+        <div class="kv-row"><dt>收款户名</dt><dd>${a.name}</dd></div>
+        <div class="kv-row"><dt>收款账号</dt><dd>${a.number}</dd></div>
+        ${a.bank?`<div class="kv-row"><dt>开户行</dt><dd>${a.bank}</dd></div>`:''}
+      </dl>
+      <div class="acc-actions">
+        ${isDef?'':`<button class="primary" data-action="set-default-account" data-id="${a.id}">设为默认</button>`}
+        <button data-action="edit-account" data-id="${a.id}">编辑</button>
+        <button class="danger" data-action="ask-delete-account" data-id="${a.id}">删除</button>
+      </div>
+    </div>`;
+  }).join(''):`<div class="card acc-empty">${icons.card}<p>暂无收款账户，请先新增后才能提现</p><button class="btn" style="width:auto;min-width:160px;margin:0 auto" data-action="start-add-account">新增账户</button></div>`;
+  return `
+    <div class="section-title"><h3>我的收款账户</h3></div>
+    ${list}
+    ${state.accounts.length===1?`<div class="notice warn">${icons.info}<div>至少保留 1 个收款账户。删除前请确认无进行中的提现依赖该账户。</div></div>`:''}
+  `;
+}
+function accountFormView(){
+  const f=state.accUI,edit=f.mode==='edit',kind=f.kind;
+  const needBank=kind==='银行卡'||kind==='对公账户';
+  const kindOpts=state.orgMode
+    ?`<option ${kind==='对公账户'?'selected':''}>对公账户</option>`
+    :`<option ${kind==='银行卡'?'selected':''}>银行卡</option><option ${kind==='支付宝'?'selected':''}>支付宝</option>`;
+  const modeAttr=kind==='支付宝'?'email':'numeric';
+  const numPh=kind==='支付宝'?'手机号或邮箱':(kind==='对公账户'?'请输入对公账号':'请输入银行卡号');
+  return `
+    <div class="card form-card">
+      <div class="field"><label>账户类型</label><select id="acc-kind" style="width:100%;height:44px;border:0;background:transparent;font-size:15px">${kindOpts}</select></div>
+      <div class="field"><label>${state.orgMode?'收款户名（机构全称）':'收款户名（全称）'}</label><input id="acc-name" value="${escAttr(f.name)}" placeholder="${state.orgMode?'须与机构全称一致':'请输入收款户名全称'}"></div>
+      <div class="field"><label>收款账号</label><input id="acc-number" inputmode="${modeAttr}" value="${escAttr(f.number)}" placeholder="${numPh}"></div>
+      ${needBank?`<div class="field"><label>开户行（必填）</label><input id="acc-bank" value="${escAttr(f.bank)}" placeholder="请输入开户行全称"></div>`:`<input id="acc-bank" type="hidden" value="">`}
+    </div>
+    <div class="notice warn">${icons.info}<div>${state.orgMode
+      ?'对公户名须为机构全称；系统做格式与完整性校验，请仔细核对账号。'
+      : (kind==='支付宝'
+        ?'支付宝账号请填手机号或邮箱；云账户 / 劳务费可使用支付宝，不可用对公账户。'
+        :'银行卡号请仔细核对；户名、开户行、账号分开填写。')}</div></div>
+  `;
 }
 function accountPage(){
-  return `<section class="screen">${nav('收款账户管理')}<div class="content">
-    <div class="notice">${icons.info}<div>${state.orgMode?'机构账户仅支持对公收款账户，户名须为机构全称；可维护多个，提现时选择。修改仅影响新提现，历史提现保留账户快照。':'可维护多个收款账户（银行卡 / 支付宝），提现时选择；只有一个账户时自动带出。修改仅影响新提现，历史提现保留账户快照。'}</div></div>
-    <div class="section-title"><h3>我的收款账户</h3></div>
-    ${state.accounts.map(a=>`<div class="card"><dl class="kv"><div class="kv-row"><dt>${a.kind}</dt><dd>${a.name}</dd></div><div class="kv-row"><dt>账号</dt><dd>${a.number}</dd></div>${a.bank?`<div class="kv-row"><dt>开户行</dt><dd>${a.bank}</dd></div>`:''}</dl>${state.accounts.length>1?`<div style="padding:0 16px 12px;text-align:right"><button class="link" data-action="delete-account" data-id="${a.id}">删除</button></div>`:''}</div>`).join('')||'<div class="card"><div class="notice">暂无账户，请先新增</div></div>'}
-    <div class="section-title" style="margin-top:18px"><h3>新增收款账户</h3></div>
-    <div class="card form-card">
-      <div class="field"><label>账户类型</label><select id="acc-kind" style="width:100%;height:44px;border:0;background:transparent;font-size:15px">${state.orgMode?'<option>对公账户</option>':'<option>银行卡</option><option>支付宝</option>'}</select></div>
-      <div class="field"><label>${state.orgMode?'收款户名（机构全称）':'收款户名（全称）'}</label><input id="acc-name" placeholder="请输入收款户名全称"></div>
-      <div class="field"><label>收款账号</label><input id="acc-number" inputmode="numeric" placeholder="请输入银行卡号或支付宝账号"></div>
-      <div class="field"><label>${state.orgMode?'开户行（必填）':'开户行（银行卡必填）'}</label><input id="acc-bank" placeholder="请输入开户行全称"></div>
-    </div>
-    <div class="notice warn">${icons.info}<div>户名、开户行、账号分开填写，系统仅校验完整性，不验证实名或有效性，请仔细核对。</div></div>
-  </div><div class="sticky"><button class="btn" data-action="save-account">保存账户</button></div></section>`;
+  const form=state.accUI&&state.accUI.mode!=='list';
+  const title=form?(state.accUI.mode==='edit'?'编辑收款账户':'新增收款账户'):'收款账户管理';
+  const sticky=form?`<div class="sticky dual"><button class="btn secondary" data-action="cancel-acc-form">取消</button><button class="btn" data-action="save-account">${state.accUI.mode==='edit'?'保存修改':'保存新账户'}</button></div>`
+    :(state.accounts.length?`<div class="sticky"><button class="btn" data-action="start-add-account">新增账户</button></div>`:'');
+  return `<section class="screen">${nav(title)}<div class="content">${form?accountFormView():accountListView()}</div>${sticky}</section>`;
 }
 function successPage(){
   const urgent=state.draft.type==='urgent',last=state.records[0];
   return `<section class="screen">${nav('提交成功',false)}<div class="content">
-    <div class="success-wrap"><div class="success-icon">${icons.check}</div><h2>提现申请已提交</h2><p>${urgent?'紧急提现单已生成，将单独进入紧急付款流程。':'金额已冻结为“提现中”，当月月底前到账。'}</p></div>
-    <div class="card"><dl class="kv"><div class="kv-row"><dt>提现单号</dt><dd>${last.id}</dd></div><div class="kv-row"><dt>提现金额</dt><dd>${fmt(last.amount)}</dd></div><div class="kv-row"><dt>提现方式</dt><dd>${last.method}</dd></div><div class="kv-row"><dt>付款状态</dt><dd>已提交</dd></div></dl></div>
-  </div><div class="sticky"><button class="btn" data-go="/record/${last.id}">查看提现单</button><button class="btn secondary" data-go="/wallet">返回钱包</button></div></section>`;
+    <div class="success-wrap"><div class="success-icon">${icons.check}</div><h2>提现申请已提交</h2><p>${urgent?'紧急提现单已生成，将单独进入紧急付款流程。':'金额已进入“提现中”，当月月底前到账。'}</p></div>
+    <div class="card"><dl class="kv">
+      <div class="kv-row"><dt>提现单号</dt><dd>${last.id}</dd></div>
+      <div class="kv-row"><dt>提现金额</dt><dd>${fmt(last.amount)}</dd></div>
+      <div class="kv-row"><dt>提现方式</dt><dd>${last.method}</dd></div>
+      <div class="kv-row"><dt>提现账户</dt><dd>${accText(last.account)}</dd></div>
+      <div class="kv-row"><dt>状态</dt><dd>提现中</dd></div>
+    </dl></div>
+  </div><div class="sticky"><button class="btn" data-go="/record/${last.id}">查看提现单</button><button class="btn secondary" data-go="/wallet">返回首页</button></div></section>`;
 }
 function recordRow(x){
   const cls=x.kind==='failed'?'red':x.kind==='paid'?'green':x.type==='urgent'?'orange':'blue';
   const icon=x.kind==='failed'?icons.close:x.kind==='paid'?icons.check:x.type==='urgent'?icons.bolt:icons.wallet;
-  return `<button class="list-row" style="width:100%;background:none;text-align:left" data-go="/record/${x.id}"><div class="row-icon ${cls}">${icon}</div><div class="row-main"><div class="row-title">${x.type==='urgent'?'紧急提现':'普通提现'} · ${x.method}</div><div class="row-sub">${x.submit} · ${x.id}</div>${x.kind==='failed'?'<div class="row-sub eta">金额已退回可提现余额</div>':''}</div><div class="row-side"><div class="row-amount">${mh(x.amount)}</div><div class="row-status">${tag(x.status,cls)}</div></div></button>`;
+  return `<button class="list-row" style="width:100%;background:none;text-align:left" data-go="/record/${x.id}"><div class="row-icon ${cls}">${icon}</div><div class="row-main"><div class="row-title">${x.type==='urgent'?'紧急提现':'普通提现'} · ${x.method}</div><div class="row-sub">${x.submit}</div><div class="row-sub eta">提现账户 ${x.account?x.account.kind+' '+x.account.number:'—'}</div>${x.kind==='failed'?'<div class="row-sub eta">金额已退回可提现余额</div>':''}</div><div class="row-side"><div class="row-amount">${mh(x.amount)}</div><div class="row-status">${tag(x.status,cls)}</div></div></button>`;
 }
 function recordDetail(id){
   const x=state.records.find(r=>r.id===id)||state.records[0];
   const cls=x.kind==='failed'?'red':x.kind==='paid'?'green':x.type==='urgent'?'orange':'blue';
+  const a=x.account||{};
   return shell(`
     <div class="card detail-hero"><div class="eyebrow">${x.type==='urgent'?'紧急提现':'普通提现'}</div><div class="amount">${fmt(x.amount)}</div><div class="status-line">${tag(x.status,cls)}</div></div>
     ${x.kind==='delay'?`<div class="notice warn">${icons.info}<div><b>本次暂不付款</b><br>${x.note}，金额已退回可提现余额。本月提现窗口已过，请在下个月提现窗口重新申请提现。</div></div>`:''}
     ${x.kind==='failed'?`<div class="notice danger">${icons.info}<div><b>付款失败</b><br>${x.note}</div></div>`:''}
+    <div class="section-title"><h3>提现账户</h3></div>
+    <div class="card"><dl class="kv">
+      <div class="kv-row"><dt>账户类型</dt><dd>${a.kind||'—'}</dd></div>
+      <div class="kv-row"><dt>收款户名</dt><dd>${a.name||'—'}</dd></div>
+      <div class="kv-row"><dt>收款账号</dt><dd>${a.number||'—'}</dd></div>
+      ${a.bank?`<div class="kv-row"><dt>开户行</dt><dd>${a.bank}</dd></div>`:''}
+    </dl></div>
+    <div class="section-title"><h3>提现明细</h3></div>
     <div class="card"><dl class="kv">
       <div class="kv-row"><dt>提现单号</dt><dd>${x.id}</dd></div>
       <div class="kv-row"><dt>提现金额</dt><dd>${fmt(x.amount)}</dd></div>
       <div class="kv-row"><dt>提现方式</dt><dd>${x.method}</dd></div>
       <div class="kv-row"><dt>提交时间</dt><dd>${x.submit}</dd></div>
       <div class="kv-row"><dt>预计到账</dt><dd>${x.eta}</dd></div>
-      <div class="kv-row"><dt>付款状态</dt><dd>${x.status}</dd></div>
+      <div class="kv-row"><dt>状态</dt><dd>${x.status}</dd></div>
     </dl></div>
-  `,{title:'提现单详情'});
+  `,{title:'提现详情'});
 }
 function profile(){
   return shell(`
     <div class="profile-head"><div class="profile-person"><div class="avatar">${state.orgMode?'咨':'陈'}</div><div><h2>${state.orgMode?state.orgName+' '+tag('机构账户','blue'):'陈老师 '+tag('讲师','purple')}</h2><p>${state.orgMode?'机构收款人：'+state.orgRep+' · ':''}手机号：${state.oldPhoneInvalid?'139 **** 8076':'138 **** 6612'}</p></div></div></div>
     ${state.oldPhoneInvalid?`<div class="notice danger">${icons.phone}<div>你的手机号已更新，原微信绑定已失效，请用新手机号重新授权。</div></div>`:''}
-    ${state.orgMode?`<div class="card"><dl class="kv"><div class="kv-row"><dt>结算主体</dt><dd>机构（仅可开发票）</dd></div><div class="kv-row"><dt>授课讲师</dt><dd>${state.orgTeachers.join('、')}</dd></div></dl></div>`:''}
+    ${state.orgMode?`<div class="notice warn">${icons.info}<div><b>机构账户</b>：课酬归属机构，由机构收款人提现；授课老师无个人提现入口。提现仅开发票、对公收款。</div></div><div class="card"><dl class="kv"><div class="kv-row"><dt>结算主体</dt><dd>机构（仅可开发票）</dd></div><div class="kv-row"><dt>机构收款人</dt><dd>${state.orgRep}</dd></div><div class="kv-row"><dt>授课讲师</dt><dd>${state.orgTeachers.join('、')}</dd></div></dl></div>`:''}
     <div class="card menu">
       <button class="menu-row" style="width:100%;background:none;text-align:left" data-go="/account">${icons.card}<span>收款账户</span><small>${state.accountFilled?state.accounts.length+' 个账户':'待填写'}</small>${icons.chevron}</button>
+      <button class="menu-row" style="width:100%;background:none;text-align:left" data-go="/password/manage">${icons.shield}<span>提现密码</span><small>${state.pwdSet?'已设置':'未设置'}</small>${icons.chevron}</button>
       <button class="menu-row" style="width:100%;background:none;text-align:left" data-go="/rebind">${icons.phone}<span>手机号与微信绑定</span><small>${state.oldPhoneInvalid?'需重新绑定':'138****6612'}</small>${icons.chevron}</button>
-      <button class="menu-row" style="width:100%;background:none;text-align:left" data-action="scenario">${icons.settings}<span>演示场景设置</span>${icons.chevron}</button>
     </div>
   `,{title:'个人中心',back:false,tabs:'profile'});
 }
 function invite(){
   return shell(`
     <div class="invite-art"><div class="wallet-illus"></div></div>
-    <div class="invite-copy"><div class="eyebrow">51CTO 师资结算中心</div><h1>课酬已入账</h1><p>你的课酬已入账，请授权手机号登录，查看余额并发起提现。</p></div>
+    <div class="invite-copy"><div class="eyebrow">51CTO 师资结算中心</div><h1>课酬订单已生成</h1><p>你有新的课酬订单，请授权手机号登录，查看余额并发起提现。</p></div>
     <div class="invite-card"><div class="mini"><span>${state.orgMode?'机构收款人手机号':'受邀手机号'}</span><b>138 **** 6612</b></div><div class="mini"><span>结算身份</span><b>${state.orgMode?'机构账户':'讲师'}</b></div><div class="mini"><span>资金账户</span><b>已创建</b></div></div>
     <button class="btn" data-action="authorize">微信授权手机号并登录</button>
     <button class="btn secondary" data-go="/login-mismatch">演示：手机号不匹配</button>
@@ -391,6 +768,75 @@ function rebind(){
     <div class="card"><dl class="kv"><div class="kv-row"><dt>当前手机号</dt><dd>${state.oldPhoneInvalid?'139 **** 8076':'138 **** 6612'}</dd></div></dl></div>
   `,{title:'手机号绑定'});
 }
+const AI_QUICK=['普通提现什么时候开放？','紧急提现和普通提现有什么区别？','三种提现方式怎么选？','暂不付款是什么意思？','机构账户怎么提现？','我的某笔提现为什么失败？'];
+const AI_FAQ=[
+  {keys:['窗口','开放','几号','1~10','1-10','每月'],q:'普通提现窗口',a:'普通提现仅在每月 1~10 日开放。窗口外可查看余额，但只能发起紧急提现（若有紧急可提现余额）。'},
+  {keys:['紧急','普通提现','区别','账期'],q:'紧急 vs 普通',a:'普通提现：每月 1~10 日窗口内，用普通可提现余额发起，预计当月月底前到账。\n紧急提现：紧急可提现余额可随时发起，到账进度以紧急付款为准，不受普通窗口限制。'},
+  {keys:['云账户','开发票','劳务','方式','个税','发票'],q:'提现方式',a:'个人账户可选：\n1）云账户：便捷到账，结算时会预扣税，以实际到账为准；\n2）开发票：按开票信息开具电子发票并上传（可分多张，金额合计须等于提现金额）；\n3）劳务费代扣个税：公司代扣代缴，页面展示预计个税/到账仅供参考。\n机构账户仅支持开发票 + 对公收款。云账户/劳务费可用银行卡或支付宝，不可用对公账户。'},
+  {keys:['暂不付款','退回','下月'],q:'暂不付款',a:'「暂不付款」表示本月该笔提现暂不付款，金额已退回你的可提现余额。本月窗口通常已过，需在下个月提现窗口重新申请。'},
+  {keys:['付款失败','失败','退回余额'],q:'付款失败',a:'付款失败后，金额会退回可提现余额。可核对收款账户信息后重新提现；若仍失败，建议转企微客服协助排查。'},
+  {keys:['到账','多久','什么时候到'],q:'到账时间',a:'普通提现预计当月月底前到账（不对外承诺固定日期）。紧急提现以紧急付款进度为准。页面展示时间为预估，最终以实际到账为准。'},
+  {keys:['机构','对公'],q:'机构账户',a:'机构账户由机构收款人登录。课酬归属机构，授课老师无个人提现入口。机构仅支持开发票，收款须为对公账户（户名为机构全称），不代扣个税。'},
+  {keys:['支付宝','银行卡','收款账户','账户'],q:'收款账户',a:'个人可维护银行卡 / 支付宝，提现时选择；云账户与劳务费支持支付宝，不支持对公。机构仅支持对公账户。修改账户只影响新提现，历史提现保留账户快照。'},
+  {keys:['密码','提现密码'],q:'提现密码',a:'提现需校验提现密码。可在「我的」中设置、修改或通过短信验证码找回。演示环境默认密码为 123456。'},
+  {keys:['人工','企微','客服','转人工','投诉','查单','账单明细','为什么失败'],q:'转人工',a:'',fail:true}
+];
+function aiWelcome(){
+  return {role:'bot',text:'你好，我是师资结算 AI 客服。可先问提现规则、提现方式、账户与常见状态问题。\n答不了或要查具体单据时，可转企微人工客服。',quick:true};
+}
+function ensureChat(){
+  if(!Array.isArray(state.chatMsgs)||!state.chatMsgs.length)state.chatMsgs=[aiWelcome()];
+}
+function aiAnswer(q){
+  const s=String(q||'').trim();
+  if(!s)return {text:'请输入你想咨询的问题。',fail:false};
+  const hit=AI_FAQ.find(x=>x.keys.some(k=>s.includes(k)));
+  if(hit&&hit.fail)return {text:'这个问题需要人工核对（如具体提现单、改账户资料、投诉等）。请添加企微客服继续咨询。',fail:true};
+  if(hit)return {text:hit.a+'\n\n以上为规则说明，仅供参考；具体以系统展示与财务处理为准。',fail:false};
+  return {text:'我暂时无法准确回答这个问题。你可以换个问法，或添加企微客服由人工协助。',fail:true};
+}
+function servicePage(){
+  ensureChat();
+  const msgs=state.chatMsgs.map(m=>{
+    if(m.role==='user')return `<div class="ai-msg user"><div class="ai-avatar">我</div><div class="ai-bubble">${esc(m.text)}</div></div>`;
+    const actions=m.fail?`<div class="ai-actions"><button class="ai-qw" data-action="open-qw">添加企微客服</button></div>`:(m.quick?`<div class="ai-actions"><button class="ai-soft" data-action="open-qw">转人工 · 企微客服</button></div>`:'');
+    const quick=m.quick?`<div class="ai-chips">${AI_QUICK.map(x=>`<button data-action="ai-quick" data-q="${escAttr(x)}">${esc(x)}</button>`).join('')}</div>`:'';
+    return `<div class="ai-msg bot"><div class="ai-avatar">AI</div><div class="ai-bubble">${esc(m.text)}${quick}${actions}<div class="ai-note">AI 回复仅供参考，以系统与财务为准</div></div></div>`;
+  }).join('');
+  return `<section class="screen ai-screen">${nav('AI 客服',true,`<button class="nav-action" data-action="open-qw">转人工</button>`)}
+    <div class="ai-page">
+      <div class="ai-body" id="aiBody">
+        <div class="ai-hi">
+          <b>课酬提现助手</b>
+          <p>可输入提问，或点下方快捷问题。查单、改资料、投诉请转企微人工。</p>
+          <div class="ai-hi-actions">
+            <button class="ai-soft" data-action="open-qw">转人工客服</button>
+            <button class="ai-qw" data-action="open-qw">企微二维码</button>
+          </div>
+        </div>
+        ${msgs}
+      </div>
+      <div class="ai-composer">
+        <div class="ai-composer-bar">
+          <textarea id="aiInput" rows="1" placeholder="输入问题，例如：普通提现何时开放"></textarea>
+          <button class="ai-send" data-action="ai-send">发送</button>
+        </div>
+      </div>
+    </div>
+    ${tabs('service')}
+  </section>`;
+}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function escAttr(s){return esc(s).replace(/'/g,'&#39;')}
+function pushAi(q){
+  const text=String(q||'').trim();if(!text){toast('请输入问题');return}
+  ensureChat();
+  state.chatMsgs.push({role:'user',text});
+  const ans=aiAnswer(text);
+  state.chatMsgs.push({role:'bot',text:ans.text,fail:!!ans.fail});
+  render();
+  const body=document.getElementById('aiBody');if(body)body.scrollTop=body.scrollHeight;
+}
 function notFound(){return shell(`<div class="empty">${icons.empty}<div>页面不存在</div></div>`,{title:'提示'});}
 function render(){
   const p=route();let html;
@@ -402,14 +848,25 @@ function render(){
   else if(p==='/withdraw/normal')html=withdraw('normal');
   else if(p==='/withdraw/emergency')html=withdraw('urgent');
   else if(p==='/withdraw/confirm')html=confirmPage();
+  else if(p==='/withdraw/password')html=passwordVerify();
   else if(p==='/withdraw/success')html=successPage();
+  else if(p==='/password/setup')html=passwordSetup();
+  else if(p==='/password/manage')html=passwordManage();
+  else if(p==='/password/change')html=passwordChange();
+  else if(p==='/password/forgot')html=passwordForgot();
   else if(p==='/account')html=accountPage();
   else if(p==='/records')html=records();
   else if(p.startsWith('/record/'))html=recordDetail(p.split('/')[2]);
   else if(p==='/profile')html=profile();
+  else if(p==='/service')html=servicePage();
   else if(p==='/rebind')html=rebind();
   else html=notFound();
   app.innerHTML=html;
+  const pin=document.getElementById('pin');
+  if(pin){pin.focus();pin.setSelectionRange(pin.value.length,pin.value.length)}
+  const aiBody=document.getElementById('aiBody');if(aiBody)aiBody.scrollTop=aiBody.scrollHeight;
+  document.querySelector('.phone')?.classList.toggle('hide-scenario', p==='/account');
+  if(p==='/account'){if(!state.accUI)resetAccUI('list');syncAccountFilled()}
   if((p==='/login-mismatch'||p==='/rebind'||(p==='/withdraw/normal'&&!state.inWindow))&&!app.querySelector('.sticky')){
     const sticky=document.createElement('div');sticky.className='sticky';
     if(p==='/login-mismatch')sticky.innerHTML='<button class="btn" data-go="/invite">重新授权</button>';
@@ -420,11 +877,106 @@ function render(){
   renderOverlay();
 }
 function renderOverlay(){
+  if(state.showAccDelete){
+    const a=state.accounts.find(x=>x.id===state.accDeleteId);
+    overlay.innerHTML=`<div class="mask" data-action="close-acc-delete"><div class="sheet" data-stop>
+      <div class="handle"></div>
+      <h3>确认删除收款账户</h3>
+      <p>删除后不可恢复；仅影响后续新提现，历史提现单保留账户快照。</p>
+      <div class="card" style="margin:0 0 12px"><dl class="kv">
+        <div class="kv-row"><dt>类型</dt><dd>${a?a.kind:'—'}</dd></div>
+        <div class="kv-row"><dt>户名</dt><dd>${a?a.name:'—'}</dd></div>
+        <div class="kv-row"><dt>账号</dt><dd>${a?a.number:'—'}</dd></div>
+      </dl></div>
+      ${state.accounts.length<=1?`<div class="notice danger">${icons.info}<div>这是你当前唯一的收款账户，删除后将无法发起提现，需重新新增。</div></div>`:''}
+      <button class="btn danger" data-action="confirm-delete-account">确认删除</button>
+      <button class="btn secondary" style="margin-top:10px" data-action="close-acc-delete">取消</button>
+    </div></div>`;
+    return;
+  }
+  if(state.mp){
+    const m=state.mp,F=m.from,T=m.to||m.from;
+    const q=(a,b)=>m.from===a&&m.to===b;
+    const quick=[['本月',CUR_MONTH,CUR_MONTH],['近3个月','2026-08',CUR_MONTH],['今年','2026-01',CUR_MONTH],['全部','','']];
+    const cells=Array.from({length:12},(_,i)=>{
+      const v=m.year+'-'+String(i+1).padStart(2,'0');
+      let c='mp-cell';
+      if(F&&T&&v>=F&&v<=T){c+=' in';if(v===F)c+=' l s';else if(v===T)c+=' r s';if(v===F&&v===T)c='mp-cell s'}
+      if(F&&T&&v>F&&v<T)c='mp-cell in';
+      return `<button class="${c}" data-action="mp-month" data-v="${v}">${i+1} 月</button>`;
+    }).join('');
+    const tip=!F?'点选起始月份；再点一个月份可选区间':(!m.to?`已选起点 <b>${fmtYM(F)}</b>，再点一个月份选区间，或直接确定仅查该月`:`已选 <b>${F===T?fmtYM(F):fmtYM(F)+' – '+fmtYM(T)}</b>`);
+    overlay.innerHTML=`<div class="mask" data-action="close-mp"><div class="mp-sheet" data-stop>
+      <div class="handle"></div>
+      <h3>选择月份</h3>
+      <div class="mp-quick">${quick.map(x=>`<button class="${q(x[1],x[2])||(!m.from&&!m.to&&x[0]==='全部')?'on':''}" data-action="mp-quick" data-f="${x[1]}" data-t="${x[2]}">${x[0]}</button>`).join('')}</div>
+      <div class="mp-year"><button data-action="mp-year" data-d="-1">‹</button><b>${m.year} 年</b><button data-action="mp-year" data-d="1">›</button></div>
+      <div class="mp-grid">${cells}</div>
+      <div class="mp-tip">${tip}</div>
+      <div class="mp-ops"><button class="btn secondary" data-action="close-mp">取消</button><button class="btn" data-action="mp-ok">确定</button></div>
+    </div></div>`;
+    return;
+  }
+  if(state.showInvUpload){
+    const rest=Math.max(Number(state.draft.amount||0)-invSum(state.draft.invoices),0);
+    overlay.innerHTML=`<div class="mask" data-action="close-inv-upload"><div class="inv-preview-sheet" data-stop>
+      <div class="handle"></div>
+      <h3>上传电子发票</h3>
+      <p>原型模拟：选择文件后识别发票金额。可分多张上传，合计须等于提现金额 ${fmt(state.draft.amount)}。</p>
+      <div class="card form-card" style="box-shadow:none"><div class="field"><label>识别到的发票金额</label><div class="amount-input"><b>¥</b><input id="invAmtInput" inputmode="decimal" autocomplete="off" value="${rest>0?rest.toFixed(2):''}" placeholder="0.00"></div></div></div>
+      <button class="btn" style="margin-top:16px" data-action="confirm-inv-upload">确认上传</button>
+      <button class="btn secondary" style="margin-top:10px" data-action="close-inv-upload">取消</button>
+    </div></div>`;
+    return;
+  }
+  if(state.showInvoicePreview&&(state.draft.invoices||[])[state.invPreviewIdx]){
+    const cur=state.draft.invoices[state.invPreviewIdx];
+    overlay.innerHTML=`<div class="mask" data-action="close-preview"><div class="inv-preview-sheet" data-stop>
+      <div class="handle"></div>
+      <h3>发票预览</h3>
+      <p>${cur.name} · 金额 ${fmt(cur.amt)}</p>
+      <div class="inv-paper">
+        <div class="ph m"></div><div class="ph"></div><div class="ph s"></div>
+        <div class="ph"></div><div class="ph m"></div><div class="ph s"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:16px;font-size:12px;color:#667085"><span>价税合计</span><b style="color:var(--ink)">${fmt(cur.amt)}</b></div>
+        <div class="stamp">发票专用章</div>
+      </div>
+      <button class="btn" style="margin-top:16px" data-action="close-preview">关闭预览</button>
+    </div></div>`;
+    return;
+  }
+  if(state.showServiceQr){
+    overlay.innerHTML=`<div class="mask" data-action="close-service"><div class="qr-pop" data-stop>
+      <div class="handle"></div>
+      <h3>转企微人工客服</h3>
+      <p>AI 未能解决时，可扫码添加企业微信客服继续咨询课酬与提现问题</p>
+      <div class="qr-box">${qwQrSvg}</div>
+      <div class="qr-tip">演示二维码 · 正式版替换为真实企微活码</div>
+      <button class="btn secondary" data-action="close-service">关闭</button>
+    </div></div>`;
+    return;
+  }
+  if(state.showRules){
+    overlay.innerHTML=`<div class="mask" data-action="close-rules"><div class="sheet" data-stop><div class="handle"></div><h3>提现规则说明</h3><p>请在提现前了解以下规则</p>
+      <div class="card" style="margin:0 0 12px"><dl class="kv">
+        <div class="kv-row"><dt>普通提现</dt><dd>每月 ${WIN[0]}~${WIN[1]} 日开放</dd></div>
+        <div class="kv-row"><dt>紧急提现</dt><dd>紧急订单随时可提</dd></div>
+        <div class="kv-row"><dt>未到可提现日</dt><dd>到期后进入可提现</dd></div>
+        <div class="kv-row"><dt>提交后</dt><dd>不可撤销，进入提现中</dd></div>
+        <div class="kv-row"><dt>预计到账</dt><dd>普通提现当月月底前</dd></div>
+        <div class="kv-row"><dt>收款账户</dt><dd>提现时自行勾选确认</dd></div>
+      </dl></div>
+      <div class="notice">${icons.info}<div>文案占位，正式版由财务确认后替换。</div></div>
+      <button class="btn secondary" style="margin-top:8px" data-action="close-rules">我知道了</button>
+    </div></div>`;
+    return;
+  }
   if(!state.showScenario){overlay.innerHTML='';return}
   overlay.innerHTML=`<div class="mask" data-action="close-scenario"><div class="sheet" data-stop><div class="handle"></div><h3>演示场景</h3><p>切换后可立即体验不同业务状态</p>
-    <div class="scenario-row"><div><b>机构账户视角</b><span>开启后以机构机构收款人登录：仅可开发票、对公收款、不代扣个税</span></div><button class="switch ${state.orgMode?'on':''}" data-action="switch-org"></button></div>
+    <div class="scenario-row"><div><b>机构账户视角</b><span>开启后以机构收款人登录：仅可开发票、对公收款、不代扣个税</span></div><button class="switch ${state.orgMode?'on':''}" data-action="switch-org"></button></div>
     <div class="scenario-row"><div><b>普通提现窗口期</b><span>关闭后普通提现被拦截，仅可紧急提现</span></div><button class="switch ${state.inWindow?'on':''}" data-toggle="inWindow"></button></div>
     <div class="scenario-row"><div><b>已填写收款账户</b><span>关闭后发起提现会引导填写账户</span></div><button class="switch ${state.accountFilled?'on':''}" data-toggle="accountFilled"></button></div>
+    <div class="scenario-row"><div><b>已设提现密码</b><span>关闭后登录/提现会引导设置；开启后演示密码 123456</span></div><button class="switch ${state.pwdSet?'on':''}" data-action="toggle-pwd-set"></button></div>
     <div class="scenario-row"><div><b>手机号修改后失效</b><span>开启后需用新手机号重新绑定，余额与记录不变</span></div><button class="switch ${state.oldPhoneInvalid?'on':''}" data-toggle="oldPhoneInvalid"></button></div>
     <div class="scenario-row"><div><b>恢复初始演示数据</b><span>重置余额、提现记录及账户状态</span></div><button class="link" data-action="reset">恢复</button></div>
     <button class="btn secondary" style="margin-top:14px" data-action="close-scenario">完成</button>
@@ -442,6 +994,7 @@ document.addEventListener('click',e=>{
   const goEl=e.target.closest('[data-go]');if(goEl){go(goEl.dataset.go);return}
   const toggle=e.target.closest('[data-toggle]');if(toggle){const k=toggle.dataset.toggle;state[k]=!state[k];render();return}
   const el=e.target.closest('[data-action]');if(!el)return;
+  if(stop&&stop.contains(e.target)&&!stop.contains(el))return; /* 点弹层内空白处不触发遮罩关闭 */
   const a=el.dataset.action;
   if(a==='back'){history.length>1?history.back():go('/wallet')}
   else if(a==='toggle-money'){state.hideMoney=!state.hideMoney;const c=document.querySelector('.content'),top=c?c.scrollTop:0;render();const n=document.querySelector('.content');if(n)n.scrollTop=top}
@@ -455,24 +1008,78 @@ document.addEventListener('click',e=>{
     render();const n=document.querySelector('.content');if(n)n.scrollTop=top;
   }
   else if(a==='switch-org'){const m=!state.orgMode;state=JSON.parse(JSON.stringify(m?initialOrg:initial));state.showScenario=true;state.hideMoney=false;go('/wallet');render();toast(m?'已切换为机构账户视角':'已切换为个人账户视角')}
-  else if(a==='scenario'){state.showScenario=true;renderOverlay()}
+  else if(a==='scenario'){state.showRules=false;state.showServiceQr=false;state.showAccDelete=false;state.showScenario=true;renderOverlay()}
   else if(a==='close-scenario'){state.showScenario=false;renderOverlay()}
-  else if(a==='reset'){state=JSON.parse(JSON.stringify(state.orgMode?initialOrg:initial));state.showScenario=true;render();toast('演示数据已恢复')}
-  else if(a==='authorize'){state.bound=true;toast('手机号匹配成功，已绑定结算账户');setTimeout(()=>go('/wallet'),450)}
+  else if(a==='open-rules'){state.showScenario=false;state.showServiceQr=false;state.showRules=true;renderOverlay()}
+  else if(a==='close-rules'){state.showRules=false;renderOverlay()}
+  else if(a==='open-service'){state.showScenario=false;state.showRules=false;state.showServiceQr=false;state.showInvoicePreview=false;ensureChat();go('/service')}
+  else if(a==='close-service'){state.showServiceQr=false;renderOverlay()}
+  else if(a==='open-qw'){state.showScenario=false;state.showRules=false;state.showInvoicePreview=false;state.showAccDelete=false;state.showServiceQr=true;renderOverlay()}
+  else if(a==='ai-send'){const inp=document.getElementById('aiInput');pushAi(inp?inp.value:'')}
+  else if(a==='ai-quick'){pushAi(el.dataset.q||'')}
+  else if(a==='ai-unsolved'){ensureChat();state.chatMsgs.push({role:'bot',text:'已为你准备企微客服入口，添加后请说明你的姓名/手机号与问题，人工会继续协助。',fail:true});state.showServiceQr=true;render()}
+  else if(a==='open-mp'){
+    const k=el.dataset.kind==='income'?'income':'record';
+    const f=state.ui[k+'From'],to=state.ui[k+'To'];
+    state.mp={kind:el.dataset.kind,from:f,to:to,year:Number((f||CUR_MONTH).slice(0,4))};renderOverlay();
+  }
+  else if(a==='close-mp'){state.mp=null;renderOverlay()}
+  else if(a==='mp-year'){state.mp.year+=Number(el.dataset.d);renderOverlay()}
+  else if(a==='mp-month'){
+    const v=el.dataset.v,m=state.mp;
+    if(!m.from||(m.from&&m.to)){m.from=v;m.to=''}
+    else if(v<m.from){m.to=m.from;m.from=v}
+    else m.to=v;
+    renderOverlay()
+  }
+  else if(a==='mp-quick'){
+    const m=state.mp;m.from=el.dataset.f;m.to=el.dataset.t;if(m.from)m.year=Number(m.from.slice(0,4));renderOverlay()
+  }
+  else if(a==='mp-ok'){
+    const m=state.mp,k=m.kind==='income'?'income':'record';
+    state.ui[k+'From']=m.from||'';state.ui[k+'To']=m.from?(m.to||m.from):'';
+    state.mp=null;render();renderOverlay()
+  }
+  else if(a==='clear-date'){
+    if(el.dataset.kind==='income'){state.ui.incomeFrom='';state.ui.incomeTo=''}
+    else{state.ui.recordFrom='';state.ui.recordTo=''}
+    render();
+  }
+  else if(a==='reset'){state=JSON.parse(JSON.stringify(state.orgMode?initialOrg:initial));state.showScenario=true;state.showRules=false;state.showServiceQr=false;render();toast('演示数据已恢复')}
+  else if(a==='authorize'){
+    state.bound=true;
+    if(!state.pwdSet){toast('手机号匹配成功，请设置提现密码');resetPwdDraft('setup','enter');setTimeout(()=>go('/password/setup'),450)}
+    else{toast('手机号匹配成功，已绑定结算账户');setTimeout(()=>go('/wallet'),450)}
+  }
   else if(a==='start-withdraw'){
     const type=el.dataset.type;
     if(state.oldPhoneInvalid){toast('手机号已修改，请先重新绑定');setTimeout(()=>go('/rebind'),500);return}
     if(!state.bound){toast('请先完成微信手机号绑定');go('/invite');return}
-    if(!state.accountFilled){toast('请先填写收款账户');state.draft.type=type;setTimeout(()=>go('/account'),450);return}
-    state.draft={type,amount:'',method:state.orgMode?'invoice':''};go(type==='urgent'?'/withdraw/emergency':'/withdraw/normal');
+    if(!state.accountFilled||!state.accounts.length){toast('请先填写收款账户');state.draft.type=type;resetAccUI(state.accounts.length?'list':'add');setTimeout(()=>go('/account'),450);return}
+    if(!state.pwdSet){toast('请先设置提现密码');state.draft.type=type;resetPwdDraft('setup','enter');setTimeout(()=>go('/password/setup'),450);return}
+    state.draft={type,amount:'',method:state.orgMode?'invoice':'',accountId:state.draft.accountId||state.defaultAccountId||(state.accounts[0]&&state.accounts[0].id)||'',invoices:[]};go(type==='urgent'?'/withdraw/emergency':'/withdraw/normal');
+  }
+  else if(a==='toggle-pwd-set'){
+    state.pwdSet=!state.pwdSet;
+    if(state.pwdSet){state.pwd=DEMO_PWD;state.pwdFail=0;toast('已设提现密码，演示密码 123456')}
+    else{state.pwd='';state.pwdFail=0;toast('已清除提现密码，提现前需重新设置')}
+    render();
+  }
+  else if(a==='start-setup-pwd'){resetPwdDraft('setup','enter');go('/password/setup')}
+  else if(a==='start-change-pwd'){resetPwdDraft('change','old');go('/password/change')}
+  else if(a==='send-sms-code'){toast('验证码已发送（演示可用 000000）')}
+  else if(a==='go-verify-pwd'){
+    if(!state.pwdSet){toast('请先设置提现密码');resetPwdDraft('setup','enter');go('/password/setup');return}
+    resetPwdDraft('verify','');state.pwdDraft.value='';go('/withdraw/password');
   }
   else if(a==='all-amount'){const type=el.dataset.type,n=type==='urgent'?state.balances.urgent:state.balances.normal;document.getElementById('amount').value=n.toFixed(2)}
   else if(a==='amount-next'){
     const type=el.dataset.type,n=validateAmount(type);if(n===null)return;
     if(!state.draft.method||state.draft.type!==type){toast('请选择提现方式');return}
     if(state.draft.method==='invoice'){
-      if(!state.draft.invoice){toast('请先上传等额电子发票');return}
-      if(Math.abs(state.draft.invoiceAmt-n)>0.005){state.draft.invoice=false;toast('发票金额与提现金额不一致，请重新上传');render();return}
+      const invs=state.draft.invoices||[];
+      if(!invs.length){toast('请先上传电子发票');return}
+      if(Math.abs(invSum(invs)-n)>0.005){toast('发票合计 '+fmt(invSum(invs))+' 与提现金额 '+fmt(n)+' 不一致，请补传或删除后重传');return}
     }
     state.draft.type=type;state.draft.amount=n.toFixed(2);go('/withdraw/confirm');
   }
@@ -481,40 +1088,187 @@ document.addEventListener('click',e=>{
     const type=el.dataset.type;
     if(state.draft.type!==type){state.draft={type,amount:'',method:state.orgMode?'invoice':''}}
     if(inp)state.draft.amount=inp.value;
-    if(state.draft.method!==el.dataset.method){state.draft.invoice=false;state.draft.invoiceAmt=0}
+    if(state.draft.method!==el.dataset.method){state.draft.invoices=[]}
     state.draft.method=el.dataset.method;render();
     const n=document.querySelector('.content');if(n)n.scrollTop=top;
   }
-  else if(a==='save-account'){
-    const kind=document.getElementById('acc-kind').value,name=document.getElementById('acc-name').value.trim(),number=document.getElementById('acc-number').value.trim(),bank=document.getElementById('acc-bank').value.trim();
-    const needBank=kind==='银行卡'||kind==='对公账户';
-    if(!name||!number||(needBank&&!bank)){toast(needBank?'请完整填写户名、账号和开户行':'请完整填写户名和账号');return}
-    const id='a'+Date.now();state.accounts.push({id,kind,name,number,bank:needBank?bank:''});state.draft.accountId=id;state.accountFilled=true;toast('收款账户已保存，提现时可选择此账户');
-    setTimeout(()=>{if(state.draft.type&&state.draft.amount)go('/withdraw/confirm');else if(state.draft.type)go(state.draft.type==='urgent'?'/withdraw/emergency':'/withdraw/normal');else go('/profile')},450);
+  else if(a==='start-add-account'){
+    resetAccUI('add');render();
   }
-  else if(a==='delete-account'){state.accounts=state.accounts.filter(x=>x.id!==el.dataset.id);if(state.draft.accountId===el.dataset.id)state.draft.accountId='';toast('账户已删除');render()}
+  else if(a==='edit-account'){
+    const acc=state.accounts.find(x=>x.id===el.dataset.id);if(!acc)return;
+    resetAccUI('edit',acc);render();
+  }
+  else if(a==='cancel-acc-form'){resetAccUI('list');render()}
+  else if(a==='set-default-account'){
+    state.defaultAccountId=el.dataset.id;state.draft.accountId=el.dataset.id;toast('已设为默认收款账户');render();
+  }
+  else if(a==='ask-delete-account'){
+    state.accDeleteId=el.dataset.id;state.showAccDelete=true;state.showScenario=false;renderOverlay();
+  }
+  else if(a==='close-acc-delete'){state.showAccDelete=false;state.accDeleteId='';renderOverlay()}
+  else if(a==='confirm-delete-account'){
+    const id=state.accDeleteId;
+    state.accounts=state.accounts.filter(x=>x.id!==id);
+    syncAccountFilled();
+    state.showAccDelete=false;state.accDeleteId='';
+    if(state.accUI.mode==='edit'&&state.accUI.id===id)resetAccUI('list');
+    toast(state.accounts.length?'账户已删除':'账户已删除，请重新新增后才能提现');render();
+  }
+  else if(a==='save-account'){
+    readAccForm();
+    const err=validateAccForm();if(err){toast(err);return}
+    const f=state.accUI,needBank=f.kind==='银行卡'||f.kind==='对公账户';
+    const payload={kind:f.kind,name:f.name.trim(),number:f.number.trim(),bank:needBank?f.bank.trim():''};
+    const fromWithdraw=!!state.draft.type;
+    if(f.mode==='edit'){
+      const acc=state.accounts.find(x=>x.id===f.id);if(!acc){toast('账户不存在');return}
+      Object.assign(acc,payload);toast('账户已更新');
+    }else{
+      const id=(state.orgMode?'o':'a')+Date.now();
+      state.accounts.push(Object.assign({id},payload));
+      if(!state.defaultAccountId)state.defaultAccountId=id;
+      state.draft.accountId=id;toast('新账户已保存');
+    }
+    syncAccountFilled();resetAccUI('list');
+    if(fromWithdraw&&state.accounts.length){
+      setTimeout(()=>{
+        if(!state.pwdSet){resetPwdDraft('setup','enter');go('/password/setup');return}
+        if(state.draft.amount)go('/withdraw/confirm');
+        else go(state.draft.type==='urgent'?'/withdraw/emergency':'/withdraw/normal');
+      },450);
+    }else render();
+  }
   else if(a==='choose-account'){state.draft.accountId=el.dataset.id;render()}
-  else if(a==='copy-invoice'){toast('开票信息已复制')}
+  else if(a==='copy-invoice'){navigator.clipboard?.writeText(INVOICE_COPY).catch(()=>{});toast('开票信息已复制')}
   else if(a==='upload-invoice'){
     const inp=document.getElementById('amount'),v=Number(inp&&inp.value);
     if(!(v>0)){toast('请先输入提现金额');return}
-    state.draft.amount=inp.value;state.draft.invoice=true;state.draft.invoiceAmt=v;toast('发票上传成功，金额校验通过');render()
+    state.draft.amount=inp.value;
+    state.showInvUpload=true;renderOverlay();
   }
-  else if(a==='submit-withdraw'){
-    const n=Number(state.draft.amount),urgent=state.draft.type==='urgent',key=urgent?'urgent':'normal';
-    if(!state.accountFilled){toast('请先填写收款账户');go('/account');return}
-    if(n<=0||n>state.balances[key]){toast('余额发生变化，请返回重新输入');return}
-    state.balances[key]-=n;state.balances.processing+=n;
-    const now=new Date(),stamp=String(now.getTime()).slice(-6);
-    state.records.unshift({id:(urgent?'JTX':'TX')+'20261103'+stamp,type:urgent?'urgent':'normal',amount:n,method:methodName(state.draft.method),submit:'2026-11-03 19:16',eta:urgent?'以紧急付款进度为准':'当月月底前到账',status:'提现中',note:'',kind:'processing'});
-    go('/withdraw/success');
+  else if(a==='close-inv-upload'){state.showInvUpload=false;renderOverlay()}
+  else if(a==='confirm-inv-upload'){
+    const x=Number((document.getElementById('invAmtInput')||{}).value);
+    if(!(x>0)){toast('请输入发票金额');return}
+    const list=state.draft.invoices=state.draft.invoices||[];
+    list.push({name:'课酬发票_'+(list.length+1)+'_'+x.toFixed(2).replace('.','')+'.pdf',amt:Math.round(x*100)/100});
+    state.showInvUpload=false;toast('发票上传成功');render();renderOverlay()
   }
+  else if(a==='remove-invoice'){
+    state.draft.invoices.splice(Number(el.dataset.idx),1);toast('已删除该发票');render()
+  }
+  else if(a==='preview-invoice'){
+    const i=Number(el.dataset.idx||0);
+    if(!(state.draft.invoices||[])[i]){toast('请先上传电子发票');return}
+    state.invPreviewIdx=i;state.showInvoicePreview=true;renderOverlay();
+  }
+  else if(a==='close-preview'){state.showInvoicePreview=false;renderOverlay()}
   else if(a==='rebind'){
     if(state.oldPhoneInvalid){state.oldPhoneInvalid=false;state.bound=true;toast('新手机号已绑定原结算账户');setTimeout(()=>go('/profile'),500)}
     else{state.oldPhoneInvalid=true;state.bound=false;render();toast('旧绑定已失效，余额与历史保持不变')}
   }
 });
-window.addEventListener('hashchange',render);
+function doSubmitWithdraw(){
+  const n=Number(state.draft.amount),urgent=state.draft.type==='urgent',key=urgent?'urgent':'normal',a=curAcc();
+  if(!state.accountFilled){toast('请先填写收款账户');go('/account');return}
+  if(!state.pwdSet){toast('请先设置提现密码');resetPwdDraft('setup','enter');go('/password/setup');return}
+  if(n<=0||n>state.balances[key]){toast('余额发生变化，请返回重新输入');return}
+  state.balances[key]-=n;state.balances.processing+=n;state.pwdFail=0;
+  const now=new Date(),stamp=String(now.getTime()).slice(-6);
+  const mask=String(a.number||'').replace(/(\d{4})\d+(\d{4})/,'$1 **** $2');
+  state.records.unshift({id:(urgent?'JTX':'TX')+'20261103'+stamp,type:urgent?'urgent':'normal',amount:n,method:methodName(state.draft.method),submit:'2026-11-03 19:16',eta:urgent?'以紧急付款进度为准':'当月月底前到账',status:'提现中',note:'',kind:'processing',account:{kind:a.kind,name:a.name,number:mask||a.number,bank:a.bank||''}});
+  resetPwdDraft('','');
+  go('/withdraw/success');
+}
+function onPinInput(raw){
+  const v=String(raw||'').replace(/\D/g,'').slice(0,6);
+  const mode=state.pwdDraft.mode,step=state.pwdDraft.step;
+  if(mode==='setup'){
+    if(step==='enter'||!step){state.pwdDraft.step='enter';state.pwdDraft.value=v;render();if(v.length===6){state.pwdDraft.step='confirm';state.pwdDraft.confirm='';render();toast('请再次输入以确认')}return}
+    state.pwdDraft.confirm=v;render();
+    if(v.length===6){
+      if(v!==state.pwdDraft.value){toast('两次密码不一致，请重新设置');resetPwdDraft('setup','enter');render();return}
+      state.pwdSet=true;state.pwd=v;state.pwdFail=0;toast('提现密码设置成功');
+      setTimeout(afterPwdSetup,450);
+    }
+    return;
+  }
+  if(mode==='verify'){
+    state.pwdDraft.value=v;render();
+    if(v.length===6){
+      if(v===state.pwd){doSubmitWithdraw()}
+      else{state.pwdFail=(state.pwdFail||0)+1;state.pwdDraft.value='';toast('提现密码错误');render()}
+    }
+    return;
+  }
+  if(mode==='change'){
+    if(step==='old'){
+      state.pwdDraft.old=v;render();
+      if(v.length===6){
+        if(v!==state.pwd){state.pwdDraft.old='';toast('原密码错误');render();return}
+        state.pwdDraft.step='enter';state.pwdDraft.value='';render();toast('请设置新密码');
+      }
+      return;
+    }
+    if(step==='enter'){
+      state.pwdDraft.value=v;render();
+      if(v.length===6){state.pwdDraft.step='confirm';state.pwdDraft.confirm='';render();toast('请再次输入新密码')}
+      return;
+    }
+    state.pwdDraft.confirm=v;render();
+    if(v.length===6){
+      if(v!==state.pwdDraft.value){toast('两次新密码不一致');state.pwdDraft.step='enter';state.pwdDraft.value='';state.pwdDraft.confirm='';render();return}
+      state.pwd=v;state.pwdFail=0;toast('提现密码已修改');resetPwdDraft('','');setTimeout(()=>go('/password/manage'),450);
+    }
+    return;
+  }
+  if(mode==='forgot'){
+    if(step==='sms'){
+      state.pwdDraft.code=v;render();
+      if(v.length===6){state.pwdDraft.step='enter';state.pwdDraft.value='';render();toast('验证通过，请设置新密码')}
+      return;
+    }
+    if(step==='enter'){
+      state.pwdDraft.value=v;render();
+      if(v.length===6){state.pwdDraft.step='confirm';state.pwdDraft.confirm='';render();toast('请再次输入新密码')}
+      return;
+    }
+    state.pwdDraft.confirm=v;render();
+    if(v.length===6){
+      if(v!==state.pwdDraft.value){toast('两次密码不一致');state.pwdDraft.step='enter';state.pwdDraft.value='';state.pwdDraft.confirm='';render();return}
+      state.pwdSet=true;state.pwd=v;state.pwdFail=0;toast('提现密码已重置');resetPwdDraft('','');
+      setTimeout(()=>{if(state.draft.amount)go('/withdraw/password');else go('/password/manage')},450);
+    }
+  }
+}
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.shiftKey)return;
+  if(e.target&&e.target.id==='aiInput'){e.preventDefault();pushAi(e.target.value)}
+});
+document.addEventListener('input',e=>{
+  if(e.target&&e.target.id==='pin')onPinInput(e.target.value);
+});
+document.addEventListener('change',e=>{
+  if(e.target&&e.target.id==='acc-kind'){
+    readAccForm();state.accUI.kind=e.target.value;if(state.accUI.kind==='支付宝')state.accUI.bank='';render();return
+  }
+  const el=e.target.closest('[data-date]');if(!el)return;
+  const k=el.dataset.date;
+  const [kind,end]=k.split('-'),pre=kind==='income'?'income':'record';
+  state.ui[pre+(end==='from'?'From':'To')]=el.value;
+  const F=state.ui[pre+'From'],T=state.ui[pre+'To'];
+  if(F&&T&&F>T){if(end==='from')state.ui[pre+'To']=F;else state.ui[pre+'From']=T}
+  render();
+});
+window.addEventListener('hashchange',()=>{
+  const p=route();
+  if(p==='/password/setup')resetPwdDraft('setup','enter');
+  else if(p==='/password/change')resetPwdDraft('change','old');
+  else if(p==='/password/forgot')resetPwdDraft('forgot','sms');
+  else if(p==='/withdraw/password'){resetPwdDraft('verify','');state.pwdDraft.value=''}
+  render();
+});
 render();
 </script>
 <script src="./返回目录.js" data-style="top:20px;left:24px"></script>

@@ -174,9 +174,9 @@
     <div class="chart">
 <div class="flow" style="--cols:6;--rows:2;">
   <div class="fgrid" style="grid-template-columns:230px 120px 216px 120px 230px 120px;grid-template-rows:196px 64px;--gap:26px;">
-    <div class="node stage c1" data-id="s1" data-r="1" data-c="1"><b>① 课酬确认段</b><span>项目排期预填课酬（非必填）→ 执行单自动带入预填课酬（不新增必填项）→ 自动生成课酬草稿（自动带入人员，选择即视为正确）→ 项目经理确认付款合同号后加入待结算清单 → 按常规 / 紧急提交结算申请单 → 合同系统整单审批：部门负责人 → VP → 财务（常规、紧急同一条链）。</span></div>
+    <div class="node stage c1" data-id="s1" data-r="1" data-c="1"><b>① 课酬确认段</b><span>项目排期只选讲师 / 助教 → 按排期生成执行单（一排期一执行单，带入培训班名称、人员、培训日期）并填写、确认课酬 → 路径 A：执行单直接发起付款申请（全部校验通过，生成申请单，不经待结算清单）；路径 B：提交执行单生成课酬账单 → 加入待结算清单 → 按常规 / 紧急批量提交结算申请单 → 合同系统整单审批：部门负责人 → 财务（常规、紧急同一条链）。</span></div>
     <div class="node pill" data-id="r1" data-r="1" data-c="2"><b>讲师账户<br>账期中 / 可提现</b></div>
-    <div class="node stage c3" data-id="s2" data-r="1" data-c="3"><b>② 提现段</b><span>普通 / 紧急分开入口、分开成单；常规余额仅 1~10 号可提，紧急余额随时可提；选择收款账户与提现方式（开发票须上传等额发票；机构账户仅可开发票、对公收款）；系统自动拆分并冻结为「提现中」。</span></div>
+    <div class="node stage c3" data-id="s2" data-r="1" data-c="3"><b>② 提现段</b><span>普通 / 紧急分开入口、分开成单；常规余额仅 1~10 号可提，紧急余额随时可提；选择收款账户与提现方式（开发票须上传发票（可多张，合计等于提现金额）；机构账户仅可开发票、对公收款）；系统自动拆分并冻结为「提现中」。</span></div>
     <div class="node pill" data-id="r2" data-r="1" data-c="4"><b>提现单</b></div>
     <div class="node stage c4" data-id="s3" data-r="1" data-c="5"><b>③ 出款段</b><span>系统 11 号按三种方式生成三张月度付款单；紧急提现无账期，不等 11 号批次、随时付款；每笔紧急提现生成一张紧急付款单，易快报同样线下发起。财务付款后，经办人批量 / 整单确认成功（转已到账）；确定不再支付时走合同系统 / 钉钉两级审批，本系统同步结果。财务、经办人对全部页面只读、可下载。</span></div>
     <div class="node pill" data-id="r3" data-r="1" data-c="6"><b>资金到账<br>+ 线上确认</b></div>
@@ -198,7 +198,7 @@
   <section id="c2">
     <h3>图 2 · 端到端主流程（泳道图）</h3>
     <div class="chart">
-<div class="flow lanes" style="--cols:14;--colw:114px;--rows:6;--rowh:158px;--gap:16px;">
+<div class="flow lanes" style="--cols:13;--colw:114px;--rows:6;--rowh:158px;--gap:16px;">
   <div class="fgrid">
     <div class="lane l5" data-r="1"></div>
     <div class="lane l1" data-r="2"></div>
@@ -208,36 +208,35 @@
     <div class="lane l4 last" data-r="6"></div>
     <div class="lab l5" data-r="1"><b>讲师运营</b><i>讲师 / 助教 / 机构档案</i></div>
     <div class="lab l1" data-r="2"><b>项目经理</b><i>后台管理系统</i></div>
-    <div class="lab l2" data-r="3"><b>合同系统审批</b><i>部门 / 财务 / VP</i></div>
+    <div class="lab l2" data-r="3"><b>合同系统审批</b><i>部门 / 财务</i></div>
     <div class="lab" data-r="4"><b>系统</b><i>自动处理</i></div>
     <div class="lab l3" data-r="5"><b>讲师 / 助教 / 机构收款人</b><i>微信小程序</i></div>
     <div class="lab l4" data-r="6"><b>经办人 / 财务</b><i>后台 + 易快报</i></div>
 
     <div class="node c5" data-id="n0" data-r="1" data-c="1" data-span="2"><i class="no">0</i><b>前置：维护结算档案</b><span>讲师：从运营系统选择带入<br>助教：无上游，手工新建<br>机构：新建或抓取，录入机构收款人</span></div>
-    <div class="node c1" data-id="n1" data-r="2" data-c="1"><i class="no">1</i><b>项目排期</b><span>预填课酬（非必填）<br>重复占用仅提醒</span></div>
-    <div class="node c1" data-id="n1b" data-r="2" data-c="2"><i class="no">2</i><b>执行单</b><span>自动带入预填课酬<br>不新增必填项</span></div>
-    <div class="node sys" data-id="n2" data-r="4" data-c="2"><i class="no">3</i><b>生成课酬草稿</b><span>自动生成<br>自动带入人员</span></div>
-    <div class="node c1" data-id="n3" data-r="2" data-c="3" data-span="2"><i class="no">4</i><b>待结算清单提交结算申请</b><span>确认后加入待结算清单<br>常规 / 紧急分开成单<br>须已确认付款合同号<br>档案缺失将被拦截</span></div>
+    <div class="node c1" data-id="n1" data-r="2" data-c="1"><i class="no">1</i><b>项目排期</b><span>只选讲师 / 助教<br>不填课酬 · 一排期一张执行单</span></div>
+    <div class="node c1" data-id="n1b" data-r="2" data-c="2"><i class="no">2</i><b>执行单</b><span>带入人员 · 填写并确认课酬<br>可直接发起付款申请</span></div>
+    <div class="node sys" data-id="n2" data-r="4" data-c="2"><i class="no">3</i><b>生成课酬账单</b><span>提交执行单后生成<br>待提交 · 只提醒不校验</span></div>
+    <div class="node c1" data-id="n3" data-r="2" data-c="3" data-span="2"><i class="no">4</i><b>待结算清单提交结算申请</b><span>确认后加入待结算清单<br>常规 / 紧急分开成单<br>付款合同卡控 + 讲师评价<br>档案缺失将被拦截</span></div>
     <div class="node c2" data-id="n4" data-r="3" data-c="4"><i class="no">5</i><b>部门负责人</b><span>整单通过 / 驳回<br>展示讲师历史单价</span></div>
-    <div class="node c3 key" data-id="n5" data-r="3" data-c="5"><i class="no">6</i><b>VP</b><span>整单通过 / 驳回<br>驳回必选原因</span></div>
-    <div class="node c2" data-id="n6" data-r="3" data-c="6"><i class="no">7</i><b>财务·常规紧急均审</b><span>核对类别 / 单价 / 数量 / 时间<br>通过即确认入账<br>财务内部两级审批</span></div>
-    <div class="node sys" data-id="n7" data-r="4" data-c="7"><i class="no">8</i>
+    <div class="node c2" data-id="n6" data-r="3" data-c="5"><i class="no">6</i><b>财务·常规紧急均审</b><span>核对类别 / 单价 / 数量 / 时间<br>通过即确认入账<br>财务内部两级审批</span></div>
+    <div class="node sys" data-id="n7" data-r="4" data-c="6"><i class="no">7</i>
       <b>审批通过入账</b><span>个人入本人账户 · 机构入机构账户<br>首次入账发送登录邀请<br>常规→账期中 · 紧急→可提现</span></div>
-    <div class="node sys" data-id="n8" data-r="4" data-c="8"><i class="no">10</i><b>到期转可提现</b><span>最后执行日 + N 天整体到期<br>紧急 &gt; 讲师特殊 &gt; 角色默认<br>到期后仍须在 1~10 号提现</span></div>
-    <div class="node c3" data-id="n7a" data-r="5" data-c="7"><i class="no">9</i><b>绑定手机号</b><span>接收小程序绑定通知<br>授权登录 · 绑定微信</span></div>
-    <div class="node c3" data-id="n7b" data-r="5" data-c="8"><i class="no">11</i><b>录入收款账户</b><span>户名 · 账号 · 开户行<br>个人卡 / 支付宝<br>机构仅对公</span></div>
-    <div class="node c3 key" data-id="n9" data-r="5" data-c="9"><i class="no">12</i><b>分入口自助提现</b><span>普通 1~10 号 · 紧急随时<br>选收款账户 · 选提现方式<br>机构仅开发票 · 分别成单</span></div>
-    <div class="node sys" data-id="n10" data-r="4" data-c="10"><i class="no">13</i>
+    <div class="node sys" data-id="n8" data-r="4" data-c="7"><i class="no">9</i><b>到期转可提现</b><span>最后执行日 + N 天整体到期<br>紧急 &gt; 讲师特殊 &gt; 角色默认<br>到期后仍须在 1~10 号提现</span></div>
+    <div class="node c3" data-id="n7a" data-r="5" data-c="6"><i class="no">8</i><b>绑定手机号</b><span>接收小程序绑定通知<br>授权登录 · 绑定微信</span></div>
+    <div class="node c3" data-id="n7b" data-r="5" data-c="7"><i class="no">10</i><b>录入收款账户</b><span>户名 · 账号 · 开户行<br>个人卡 / 支付宝<br>机构仅对公</span></div>
+    <div class="node c3 key" data-id="n9" data-r="5" data-c="8"><i class="no">11</i><b>分入口自助提现</b><span>普通 1~10 号 · 紧急随时<br>选收款账户 · 选提现方式<br>机构仅开发票 · 分别成单</span></div>
+    <div class="node sys" data-id="n10" data-r="4" data-c="9"><i class="no">12</i>
       <b>生成对应提现单</b><span>普通 / 紧急分别生成<br>自动拆分 · 冻结为提现中</span></div>
-    <div class="node c1" data-id="n10e" data-r="2" data-c="11">
+    <div class="node c1" data-id="n10e" data-r="2" data-c="10">
       <b>紧急付款单付款</b><span>无账期 · 随时付款<br>每笔一张 · 走易快报</span></div>
-    <div class="node c4" data-id="n11" data-r="6" data-c="11"><i class="no">14</i>
+    <div class="node c4" data-id="n11" data-r="6" data-c="10"><i class="no">13</i>
       <b>11号生成月度付款单</b><span>系统按三种方式生成三张<br>经办人核对并提易快报</span></div>
-    <div class="node c4" data-id="n12" data-r="6" data-c="12"><i class="no">15</i>
+    <div class="node c4" data-id="n12" data-r="6" data-c="11"><i class="no">14</i>
       <b>审批·线下付款</b><span>时间不固定<br>预计月底到账</span></div>
-    <div class="node c4 key" data-id="n13" data-r="6" data-c="13"><i class="no">16</i>
+    <div class="node c4 key" data-id="n13" data-r="6" data-c="12"><i class="no">15</i>
       <b>统一确认结果</b><span>成功可批量确认<br>异常 / 付款失败必须逐笔</span></div>
-    <div class="node sys" data-id="n14" data-r="4" data-c="14"><i class="no">17</i><b>落账·推送</b><span>成功→已到账<br>不再支付→审批通过后退回</span></div>
+    <div class="node sys" data-id="n14" data-r="4" data-c="13"><i class="no">16</i><b>落账·推送</b><span>成功→已到账<br>不再支付→审批通过后退回</span></div>
   </div>
   <script type="application/json" class="fedges">[
     {"f":"n1","t":"n1b"},
@@ -245,8 +244,7 @@
     {"f":"n1b","t":"n2"},
     {"f":"n2","t":"n3"},
     {"f":"n3","t":"n4","fs":"b","ts":"t"},
-    {"f":"n4","t":"n5"},
-    {"f":"n5","t":"n6"},
+    {"f":"n4","t":"n6"},
     {"f":"n6","t":"n7"},
     {"f":"n7","t":"n8","label":"常规"},
     {"f":"n7","t":"n7a","fs":"b","ts":"t","label":"邀请"},
@@ -264,7 +262,7 @@
   ]</script>
   <div class="legend">
     <span><i></i>主流程（常规账期）</span>
-    <span><i class="o"></i>紧急账期：审批链与常规相同（部门负责人 → VP → 财务），区别仅在审批通过后直接可提现，提现与付款走图 6 单独通道</span>
+    <span><i class="o"></i>紧急账期：审批链与常规相同（部门负责人 → 财务），区别仅在审批通过后直接可提现，提现与付款走图 6 单独通道</span>
     <span><em></em>条件节点</span>
     <span><em class="key"></em>关键动作：讲师提现 / 经办人确认</span>
     <span>任一审批节点只能整单通过 / 驳回；驳回保留原单号并从首节点重审，见图 5；只有决定不再支付时才发起付款失败审批（合同系统 / 钉钉，两级），见图 8</span>
@@ -337,17 +335,17 @@
   <!-- ===================== 图 4 课酬来源 ===================== -->
   <section id="c4">
     <h3>图 4 · 课酬来源与课酬账单</h3>
-    <p class="desc">课酬账单有两个来源：<b>主线是项目排期预填课酬 → 执行单自动带入预填课酬 → 自动生成课酬草稿</b>，补充是<b>手工创建</b>（咨询、大赛、预付等无执行单场景，创建时必须选合同）。排期预填<b>非必填</b>，执行单<b>不新增必填项</b>；自动带入的人员<b>不需要再单独确认</b>，选择即视为正确，项目经理核对并确认付款合同号后即可加入<b>待结算清单</b>（原「待申请课酬单」合并），再按常规 / 紧急账期提交。<b>变更联动规则</b>：排期变更只影响执行单；执行单变更只同步待提交的课酬账单；已提交申请中的账单必须整单驳回后方可修改。</p>
+    <p class="desc">课酬账单有两个来源：<b>主线是项目排期选人 → 按排期生成执行单（一排期一张，已用排期剔除；课程名称取培训班名称，实际培训日期取排期所选日期，执行日期由项目经理自选）并填写、确认课酬 → 生成课酬账单</b>，补充是<b>手工创建</b>（咨询、大赛、预付等无执行单场景，创建时必须选合同）。排期<b>不再预填课酬</b>；自动带入的人员<b>不需要再单独确认</b>，选择即视为正确。生成账单时自动带入<b>最终客户名称</b>（取合同最终客户）和<b>课程名称</b>（取执行单课程），手工创建时二者必填；小程序据此按课程 / 服务客户展示。执行单有两个出口：<b>「提交执行单」</b>生成课酬账单（只提醒、不校验），之后加入<b>待结算清单</b>批量提交；<b>「提交并发起付款申请」</b>仅项目经理可用，勾选人员后全部校验通过，直接生成付款申请单进入审批，<b>不经待结算清单</b>。<b>变更联动规则</b>：排期变更只影响执行单；执行单变更只同步待提交的课酬账单；已提交申请中的账单必须整单驳回后方可修改。</p>
     <div class="chart">
 <div class="flow" style="--cols:6;--rows:3;--colw:150px;--gap:26px;">
   <div class="fgrid" style="grid-template-columns:repeat(5,150px) 200px;grid-template-rows:152px 120px 120px;">
     <div class="node c1" data-id="a1" data-r="1" data-c="1"><i class="no">1</i>
-      <b>项目排期预填课酬</b><span>讲师 / 助教 · 天数 · 单价<br>非必填 · 重复占用仅提醒</span></div>
-    <div class="node c1" data-id="a2" data-r="1" data-c="2"><i class="no">2</i><b>执行单自动带入</b><span>带入排期预填的课酬<br>挂在合同下 · 不新增必填项</span></div>
-    <div class="node sys" data-id="a3" data-r="1" data-c="3"><i class="no">3</i><b>生成课酬草稿</b><span>系统自动生成<br>自动带入人员</span></div>
-    <div class="node c1" data-id="a4" data-r="1" data-c="4"><i class="no">4</i><b>确认并加入待结算清单</b><span>填类别 · 单价 · 数量 · 单位<br>项目经理选并确认付款合同号<br>确认即占额度，超限拦截<br>可选上传附件（审批凭证）</span></div>
+      <b>项目排期选人</b><span>只选讲师 / 助教<br>不填课酬 · 重复占用仅提醒<br>一排期生成一张执行单</span></div>
+    <div class="node c1" data-id="a2" data-r="1" data-c="2"><i class="no">2</i><b>执行单填写课酬</b><span>带入人员 · 填写并确认课酬<br>可直接发起付款申请</span></div>
+    <div class="node sys" data-id="a3" data-r="1" data-c="3"><i class="no">3</i><b>生成课酬账单</b><span>提交执行单后生成<br>只提醒不校验</span></div>
+    <div class="node c1" data-id="a4" data-r="1" data-c="4"><i class="no">4</i><b>确认并加入待结算清单</b><span>填类别 · 单价 · 数量 · 单位<br>项目经理选付款合同号<br>选择即占额度，超限拦截<br>可选上传附件（审批凭证）</span></div>
     <div class="node dec" data-id="a5" data-r="1" data-c="5"><i class="no">5</i><b>录入校验</b><span>执行日期 ≤ 录入当天？<br>同人同时段无重复？</span></div>
-    <div class="node c1 keyb" data-id="a6" data-r="1" data-c="6"><i class="no">6</i><b>提交结算申请单</b><span>待结算清单勾选 · 选常规 / 紧急<br>须已确认付款合同号<br>未关联执行单：提交时二次确认<br>附件、标注一并同步合同系统 / 钉钉<br>通过后进入图 5</span></div>
+    <div class="node c1 keyb" data-id="a6" data-r="1" data-c="6"><i class="no">6</i><b>提交结算申请单</b><span>待结算清单勾选，或执行单直接发起 · 选常规 / 紧急<br>须选付款合同号 / 须完成讲师评价<br>未关联执行单：提交时二次确认<br>附件、标注一并同步合同系统 / 钉钉<br>通过后进入图 5</span></div>
 
     <div class="node sys" data-id="chg1" data-r="2" data-c="1"><b>排期变更</b><span>只影响执行单数据</span></div>
     <div class="node sys" data-id="chg2" data-r="2" data-c="2"><b>执行单变更</b><span>仅同步待提交的账单</span></div>
@@ -378,44 +376,40 @@
     <span><i class="s"></i>变更联动 / 定时同步</span>
     <span><i class="r"></i>校验不通过 → 不允许保存</span>
     <span><em></em>判断节点</span>
-    <span>付款合同号：归属销售合同，项目经理在<b>课酬账单页</b>从该销售合同下选择并<b>确认</b>，提交待结算清单前均可修改；<b>确认即占用额度</b>（按课酬账单金额汇总，同一付款合同号可关联多笔，合计不得超过付款总金额），超限直接拦截并列出已关联的课酬账单。未确认付款合同号不能加入待结算清单；手工创建账单可先不选执行单，<b>不阻断申请与付款，但最终必须关联</b>：系统在账单列表、详情、待结算清单、申请单详情持续提醒，提交时二次确认，同步合同系统 / 钉钉时标注「未关联执行单」，任何状态下项目经理均可补关联。<b>仅助教、出题费豁免付款合同</b>（豁免清单待财务确认）。项目经理侧不展示合同原件状态；<b>销售合同附件、付款合同附件</b>仅在财务审批时展示给财务（随申请单从合同系统同步）。</span>
+    <span>付款合同号：归属销售合同，项目经理在<b>课酬账单页</b>从该销售合同下选择，提交待结算清单前均可更换；<b>选择即视为确认并占用额度</b>（按课酬账单金额汇总，同一付款合同号可关联多笔，合计不得超过付款总金额），超限直接拦截并列出已关联的课酬账单。未选择付款合同号（须选的情形）不能加入待结算清单；手工创建账单可先不选执行单，<b>不阻断申请与付款，但最终必须关联</b>：系统在账单列表、详情、待结算清单、申请单详情持续提醒，提交时二次确认，同步合同系统 / 钉钉时标注「未关联执行单」，任何状态下项目经理均可补关联。<b>单次 ≤5000 免签</b>；助教 / 兼职付款合同<b>无需选择，但可填</b>；出题费不按类别豁免。项目经理侧不展示合同原件状态；<b>销售合同附件、付款合同附件</b>仅在财务审批时展示给财务（随申请单从合同系统同步）。</span>
     <span><b>归属规则</b>：课酬账单归属执行单上的<b>项目经理</b>（不看录入人），一个执行单只有一位项目经理；项目经理只能看到自己名下的账单，多人共同执行时按各自执行单拆分。离职前须处理完名下待提交课酬，管理员 / 经办人 / 财务可按「项目经理」筛选核查。</span>
   </div>
 </div>
     </div>
-    <div class="note"><b>录入校验</b>：执行日期不得晚于录入当天；同一师资同一执行时段（精确到上午 / 下午）跨项目也不允许重复，在<b>账单阶段强拦截</b>；排期阶段的重复占用仅作提醒。同一执行单内多人课酬合计超过执行单费用总额时<b>只提醒、不拦截</b>。<b>杂费</b>口径同课酬：税前金额，仍使用三类提现方式，不新增易快报模板。<br><b>补充</b>：课酬账单新增<b>费用类别、单价、数量、单位</b>（天 / 半天 / 小时 / 场 / 题 / 个 / 套 / 打包），金额 = 单价 × 数量；审批时展示该讲师历史单价。离职前，项目经理须处理完名下待提交课酬，系统可按项目经理查询是否仍有待申请记录。</div>
+    <div class="note"><b>录入校验</b>：执行日期不得晚于录入当天；同一师资同一执行时段（精确到上午 / 下午）跨项目也不允许重复，在<b>账单阶段强拦截</b>；排期阶段的重复占用仅作提醒。同一执行单内多人课酬合计超过执行单费用总额时<b>只提醒、不拦截</b>。<b>杂费</b>口径同课酬：税前金额，仍使用三类提现方式，不新增易快报模板。<br><b>补充</b>：课酬账单新增<b>费用类别（一级/二级）、单价、数量、单位</b>（天 / 小时 / 道 / 批），金额 = 单价 × 数量；审批时展示该讲师历史单价。离职前，项目经理须处理完名下待提交课酬，系统可按项目经理查询是否仍有待申请记录。</div>
   </section>
 
   <!-- ===================== 图 5 结算申请单与审批 ===================== -->
   <section id="c5">
     <h3>图 5 · 结算申请单与审批（常规 / 紧急账期分流）</h3>
-    <p class="desc">待结算清单页有两个提交按钮：<b>「常规账期」</b>与<b>「紧急账期」</b>，由项目经理自行判断，两类账单<b>分别提交、不混单</b>。账单加入待结算清单前已校验手机号和机构账户，加入前须已确认付款合同号（助教、出题费豁免付款合同）；未关联执行单的账单可提交，提交时二次确认并在审批单中标注。审批在<b>合同系统</b>完成，本系统同步审批状态与驳回原因；<b>常规、紧急使用同一条审批链：部门负责人 → VP → 财务</b>，审批人只能<b>整单通过或整单驳回</b>。财务审批通过即确认要付，金额入账。驳回后原申请单号不变，项目经理修改后从首节点重新审批。</p>
+    <p class="desc"><b>另有执行单直接发起</b>：项目经理在执行单页勾选人员，全部校验通过后直接生成申请单，不经待结算清单；校验未通过的人员保存为课酬账单，再走本批量路径。待结算清单页有两个提交按钮：<b>「常规账期」</b>与<b>「紧急账期」</b>，由项目经理自行判断，两类账单<b>分别提交、不混单</b>。账单加入待结算清单前已校验手机号和机构账户，加入前：须选择付款合同号的账单已选择（≤5000 或助教/兼职无需选择）；提交前须完成讲师评价；未关联执行单的账单可提交，提交时二次确认并在审批单中标注。审批在<b>合同系统</b>完成，本系统同步审批状态与驳回原因；<b>常规、紧急使用同一条审批链：部门负责人 → 财务</b>，审批人只能<b>整单通过或整单驳回</b>。财务审批通过即确认要付，金额入账。驳回后原申请单号不变，项目经理修改后从首节点重新审批。</p>
     <div class="chart">
-<div class="flow" style="--cols:6;--rows:3;--colw:158px;--gap:26px;">
+<div class="flow" style="--cols:5;--rows:3;--colw:158px;--gap:26px;">
   <div class="fgrid" style="grid-template-rows:140px 110px 140px;padding-top:6px;">
     <div class="node c1" data-id="q1" data-r="1" data-c="1"><i class="no">A</i><b>常规账期申请</b><span>点「常规账期」按钮<br>账期 = 讲师特殊账期 / 角色默认<br>（天数，申请时不再自选）</span></div>
     <div class="node c2" data-id="n2" data-r="1" data-c="2"><i class="no">1</i><b>部门负责人</b><span>整单通过 / 驳回<br>展示讲师历史单价</span></div>
-    <div class="node c2" data-id="n3" data-r="1" data-c="3"><i class="no">2</i><b>VP</b><span>整单通过 / 驳回<br>驳回必选原因</span></div>
-    <div class="node c2" data-id="nF" data-r="1" data-c="4"><i class="no">3</i><b>财务</b><span>常规也审 · 整单通过 / 驳回<br>通过即确认入账<br>财务内部两级审批</span></div>
-    <div class="node sys" data-id="n4" data-r="1" data-c="5"><i class="no">4</i><b>审批通过 · 账期中</b><span>账单锁定不可修改<br>金额入讲师账户<br>（机构讲师入机构账户）</span></div>
-    <div class="node c3 key" data-id="n5" data-r="1" data-c="6"><i class="no">5</i><b>到期转可提现</b><span>最后执行日 + N 天整体到期<br>紧急 &gt; 讲师特殊 &gt; 角色默认</span></div>
+    <div class="node c2" data-id="nF" data-r="1" data-c="3"><i class="no">2</i><b>财务</b><span>常规也审 · 整单通过 / 驳回<br>通过即确认入账<br>财务内部两级审批</span></div>
+    <div class="node sys" data-id="n4" data-r="1" data-c="4"><i class="no">3</i><b>审批通过 · 账期中</b><span>账单锁定不可修改<br>金额入讲师账户<br>（机构讲师入机构账户）</span></div>
+    <div class="node c3 key" data-id="n5" data-r="1" data-c="5"><i class="no">4</i><b>到期转可提现</b><span>最后执行日 + N 天整体到期<br>紧急 &gt; 讲师特殊 &gt; 角色默认</span></div>
 
-    <div class="node stop" data-id="xR" data-r="2" data-c="2" data-span="3"><i class="no">✕</i><b>整单驳回（常规 / 紧急通用）</b><span>必选原因 · 可补充说明<br>原单号不变 · 回首节点</span></div>
+    <div class="node stop" data-id="xR" data-r="2" data-c="2" data-span="2"><i class="no">✕</i><b>整单驳回（常规 / 紧急通用）</b><span>必选原因 · 可补充说明<br>原单号不变 · 回首节点</span></div>
 
     <div class="node c1" data-id="q2" data-r="3" data-c="1"><i class="no">B</i><b>紧急账期申请</b><span>点「紧急账期」按钮<br>必填原因 · 单独成单</span></div>
     <div class="node c2" data-id="e2" data-r="3" data-c="2"><i class="no">1</i><b>部门负责人</b><span>整单通过 / 驳回<br>展示讲师历史单价</span></div>
-    <div class="node c2" data-id="e3" data-r="3" data-c="3"><i class="no">2</i><b>VP</b><span>整单通过 / 驳回<br>驳回必选原因</span></div>
-    <div class="node c2" data-id="e4" data-r="3" data-c="4"><i class="no">3</i><b>财务</b><span>整单通过 / 驳回<br>与常规同一条链<br>财务内部两级审批</span></div>
-    <div class="node c3 key" data-id="e5" data-r="3" data-c="5"><i class="no">4</i><b>直接进入可提现</b><span>无账期 · 推送讲师<br>提现与付款见图 6</span></div>
+    <div class="node c2" data-id="e4" data-r="3" data-c="3"><i class="no">2</i><b>财务</b><span>整单通过 / 驳回<br>与常规同一条链<br>财务内部两级审批</span></div>
+    <div class="node c3 key" data-id="e5" data-r="3" data-c="4"><i class="no">3</i><b>直接进入可提现</b><span>无账期 · 推送讲师<br>提现与付款见图 6</span></div>
   </div>
   <script type="application/json" class="fedges">[
-    {"f":"q1","t":"n2"},{"f":"n2","t":"n3"},{"f":"n3","t":"nF"},{"f":"nF","t":"n4"},{"f":"n4","t":"n5","type":"ok"},
-    {"f":"q2","t":"e2","type":"warn"},{"f":"e2","t":"e3","type":"warn"},{"f":"e3","t":"e4","type":"warn"},{"f":"e4","t":"e5","type":"ok"},
+    {"f":"q1","t":"n2"},{"f":"n2","t":"nF"},{"f":"nF","t":"n4"},{"f":"n4","t":"n5","type":"ok"},
+    {"f":"q2","t":"e2","type":"warn"},{"f":"e2","t":"e4","type":"warn"},{"f":"e4","t":"e5","type":"ok"},
     {"f":"n2","t":"xR","fs":"b","ts":"t","type":"reject","label":"驳回"},
-    {"f":"n3","t":"xR","fs":"b","ts":"t","type":"reject"},
     {"f":"nF","t":"xR","fs":"b","ts":"t","type":"reject"},
     {"f":"e2","t":"xR","fs":"t","ts":"b","type":"reject"},
-    {"f":"e3","t":"xR","fs":"t","ts":"b","type":"reject"},
     {"f":"e4","t":"xR","fs":"t","ts":"b","type":"reject","label":"驳回"},
     {"f":"xR","t":"q1","fs":"l","ts":"b","type":"reject","label":"常规：修改后从首节点重提"},
     {"f":"xR","t":"q2","fs":"l","ts":"t","type":"reject","label":"紧急：修改后从首节点重提"}
@@ -429,7 +423,7 @@
   </div>
 </div>
     </div>
-    <div class="note"><b>审批通过后账单不可修改</b>。常规与紧急都经<b>部门负责人 → VP → 财务</b>，财务审批通过即确认要付。通过后，常规账期先入「账期中」，到期转「可提现」；紧急账期直接「可提现」。审批仍以整张结算申请单为单位。<br><b>规则</b>：财务内部两级审批；合同系统和钉钉两边均可；账期以<b>天数</b>配置（财务在配置页设置讲师 / 助教默认天数，初始 60 / 30 天；讲师特殊账期在讲师账户中维护），整张执行单从最后执行日起 + N 天整体到期，到期后余额即显示「可提现」，但提现操作仍限窗口期（默认每月 1~10 号，财务可配）；优先级 紧急 &gt; 讲师特殊 &gt; 角色默认。</div>
+    <div class="note"><b>审批通过后账单不可修改</b>。常规与紧急都经<b>部门负责人 → 财务</b>，财务审批通过即确认要付。通过后，常规账期先入「账期中」，到期转「可提现」；紧急账期直接「可提现」。审批仍以整张结算申请单为单位。<br><b>规则</b>：财务内部两级审批；合同系统和钉钉两边均可；账期以<b>天数</b>配置（财务在配置页设置讲师 / 助教默认天数，初始 60 / 30 天；讲师特殊账期在讲师账户中维护），整张执行单从最后执行日起 + N 天整体到期，到期后余额即显示「可提现」，但提现操作仍限窗口期（默认每月 1~10 号，财务可配）；优先级 紧急 &gt; 讲师特殊 &gt; 角色默认。</div>
   </section>
 
   <!-- ===================== 图 6 紧急通道 ===================== -->
@@ -479,7 +473,7 @@
   </div>
 </div>
     </div>
-    <div class="note"><b>要点</b>：① 紧急单收款方式同样由讲师自选，开发票类由月度账单经办人收票、核票；② 紧急单不进 11 号月度付款批次，但在统一「付款确认」页面以“紧急”标签展示；③ 付款异常默认保持提现中并在线下继续处理，只有确定不再支付时才发起财务付款失败审批。<br><b>补充</b>：紧急结算的审批链与常规一致（部门负责人 → VP → 财务）；对外不承诺 21 号。</div>
+    <div class="note"><b>要点</b>：① 紧急单收款方式同样由讲师自选，开发票类由月度账单经办人收票、核票；② 紧急单不进 11 号月度付款批次，但在统一「付款确认」页面以“紧急”标签展示；③ 付款异常默认保持提现中并在线下继续处理，只有确定不再支付时才发起财务付款失败审批。<br><b>补充</b>：紧急结算的审批链与常规一致（部门负责人 → 财务）；对外不承诺 21 号。</div>
   </section>
 
   <!-- ===================== 图 7 提现 ===================== -->
@@ -495,7 +489,7 @@
       <b>入口与前置校验</b><span>普通是否在 1~10 号？<br>对应余额 / 收款信息完整？</span></div>
     <div class="node c3" data-id="w3" data-r="1" data-c="3"><i class="no">3</i>
       <b>输入提现金额</b><span>≤ 可提现余额<br>可部分提现</span></div>
-    <div class="node c3" data-id="w4" data-r="1" data-c="4"><i class="no">4</i><b>选择提现方式</b><span>个人：云账户 / 开发票 / 劳务费<br>机构：仅开发票（上传等额发票）<br>机构不代扣个税</span></div>
+    <div class="node c3" data-id="w4" data-r="1" data-c="4"><i class="no">4</i><b>选择提现方式</b><span>个人：云账户 / 开发票 / 劳务费<br>机构：仅开发票（可传多张，合计等于提现金额）<br>机构不代扣个税</span></div>
     <div class="node c3" data-id="w5" data-r="1" data-c="5"><i class="no">5</i><b>选择收款账户</b><span>单账户自动带出<br>多账户自行选择<br>个人：银行卡 / 支付宝<br>机构：对公账户</span></div>
     <div class="node c3 key" data-id="w6" data-r="1" data-c="6"><i class="no">6</i>
       <b>提交提现</b><span>零审核 · 即时受理<br>提交后不可撤销</span></div>
@@ -529,7 +523,7 @@
   </div>
 </div>
     </div>
-    <div class="note"><b>零审核</b>：公司侧的金额确认已在结算申请单审批环节完成。讲师不选择具体账单；系统优先扣减可提现日期最早的账单，同日再按执行日期排序。构成关系仅供后台付款页面查看，讲师提现详情不显示。提交需具备幂等和原子冻结能力，避免重复提现。<br><b>补充</b>：<b>云账户</b>：提示实际到账可能因个税、增值税与提现金额不同，不计算明细（文案待财务提供）；<b>开发票</b>：必须上传等额电子发票并校验金额，可一键复制公司开票信息，提示不得开咨询类；<b>劳务费代扣</b>：展示预计代扣个税和预计到账金额。发票先提示加金额校验；开错发票当月重开仍算正常提现，不驳回；云账户 / 劳务费的到账差异与预估个税文案由财务提供。<b>机构账户</b>：仅可选「开发票」，提现方式不可改；收款为对公账户（户名为机构全称）；机构收款人登录后可查看机构下全部授课讲师的课酬明细，不展示个税。个人代收是否允许见图 10（待定）。</div>
+    <div class="note"><b>零审核</b>：公司侧的金额确认已在结算申请单审批环节完成。讲师不选择具体账单；系统优先扣减可提现日期最早的账单，同日再按执行日期排序。构成关系仅供后台付款页面查看，讲师提现详情不显示。提交需具备幂等和原子冻结能力，避免重复提现。<br><b>补充</b>：<b>云账户</b>：提示实际到账可能因个税、增值税与提现金额不同，不计算明细（温馨提示文案已由财务提供）；<b>开发票</b>：须上传电子发票（支持多张）并校验合计金额等于提现金额，可一键复制公司开票信息，提示不得开咨询类；<b>劳务费代扣</b>：展示预计代扣个税和预计到账金额。发票先提示加金额校验；开错发票当月重开仍算正常提现，不驳回；云账户 / 劳务费的提示文案及劳务费预估公式已按财务反馈落地（单月多笔劳务费计税基础累加）。<b>机构账户</b>：仅可选「开发票」，提现方式不可改；收款为对公账户（户名为机构全称）；机构收款人登录后可查看机构下全部授课讲师的课酬明细，不展示个税。个人代收是否允许见图 10（待定）。</div>
   </section>
 
   <!-- ===================== 图 8 出款 ===================== -->
@@ -591,7 +585,7 @@
   </div>
 </div>
     </div>
-    <div class="note"><b>暂不付款</b>：本次暂不付款的提现单必须填写原因；弹框明确提示款项将退回讲师提现余额、只能下个月提现窗口重新申请，需慎重；讲师收到通知，端内展示标准原因。<b>异常 / 付款失败</b>：易快报驳回或仍会继续支付时保持「提现中」；确定不再支付时逐笔确认付款失败，讲师只看标准失败原因及“金额已退回可提现余额”，不看内部备注和审批记录。已确认后退票仍线下处理，不做系统冲正。<br><b>补充</b>：月度付款单明细可穿透到<b>销售合同号</b>，并展示费用类别、单价、数量及收款户名、开户行、收款账号（分列）；提现金额按<b>先进先出</b>拆分到课酬账单。付款单详情支持「导出明细」，供经办人提交易快报。付款失败审批在<b>合同系统 / 钉钉</b>完成，<b>至少两级</b>，本系统同步审批结果；退回可提现后讲师可再次提现，须防重复付款。<b>规则</b>：导出字段按现有页面（最终模板待财务确认）；付款失败审批至少两级；对外不承诺 21 号；银行退票不做系统冲正，沿用线下重付。</div>
+    <div class="note"><b>暂不付款</b>：本次暂不付款的提现单必须填写原因；弹框明确提示款项将退回讲师提现余额、只能下个月提现窗口重新申请，需慎重；讲师收到通知，端内展示标准原因。<b>异常 / 付款失败</b>：易快报驳回或仍会继续支付时保持「提现中」；确定不再支付时逐笔确认付款失败，讲师只看标准失败原因及“金额已退回可提现余额”，不看内部备注和审批记录。已确认后退票仍线下处理，不做系统冲正。<br><b>补充</b>：月度付款单明细可穿透到<b>销售合同号</b>，并展示费用类别、单价、数量及收款户名、开户行、收款账号（分列）；提现金额按<b>先进先出</b>拆分到课酬账单。付款单详情支持「导出明细」，供经办人提交易快报。付款失败审批在<b>合同系统 / 钉钉</b>完成，<b>至少两级</b>，本系统同步审批结果；退回可提现后讲师可再次提现，须防重复付款。<b>规则</b>：导出字段已按财务反馈补充：单位、项目经理姓名、项目经理所属组别；云账户 / 劳务费另含身份证号、手机号；付款失败审批至少两级；对外不承诺 21 号；银行退票不做系统冲正，沿用线下重付。</div>
   </section>
 
   <!-- ===================== 图 9 状态机 ===================== -->
@@ -612,7 +606,7 @@
 
     <div class="node state c1" data-id="b1" data-r="1" data-c="1"><b>待提交</b><span>可编辑 · 可删除<br>加入前须过校验</span></div>
     <div class="node state c1" data-id="b2" data-r="1" data-c="5"><b>驳回待修改</b><span>仍锁定原申请单<br>修改后重新提交</span></div>
-    <div class="node state c2" data-id="b3" data-r="1" data-c="2"><b>审批中</b><span>合同系统整单审批<br>部门负责人 → VP → 财务</span></div>
+    <div class="node state c2" data-id="b3" data-r="1" data-c="2"><b>审批中</b><span>合同系统整单审批<br>部门负责人 → 财务</span></div>
     <div class="node state sys" data-id="b4" data-r="1" data-c="3"><b>账期中</b><span>账期未到<br>按最后执行日整体到期</span></div>
     <div class="node state c3 key" data-id="b5" data-r="1" data-c="4"><b>可提现</b><span>账期到期转 / 紧急直达<br>仅 1~10 号可提现</span></div>
 

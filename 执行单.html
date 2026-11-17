@@ -87,7 +87,27 @@ tr.lk td{background:#fafafa;color:#6b7280}
 .foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 24px;display:flex;align-items:center;gap:22px;z-index:25}
 .foot .s{display:flex;gap:6px;align-items:baseline}.foot .s span{color:var(--sub)}
 .foot .s.bad b{color:var(--red)}.foot .e{color:var(--red);font-size:12px}
-.foot .btn{margin-left:auto}
+.foot .fx{flex:1}.foot .tip2{font-size:12px;color:var(--sub)}.foot .tip2.bad{color:var(--red)}.foot .tip2.ok{color:var(--green)}
+.rowtip{background:#f5f8ff;border:1px solid #d7e3ff;border-radius:3px;padding:7px 12px;margin:10px 14px;color:#44558a;font-size:12px;line-height:1.7}
+.pay .ph .pb{margin-left:10px;font-size:12px;font-weight:400}.pay .ph .pb.ok{color:var(--green)}.pay .ph .pb.bad{color:var(--orange)}
+.ck{display:flex;flex-wrap:wrap;gap:4px;max-width:210px}
+td select.pc{width:128px}td .pcok{display:flex;gap:4px;align-items:center;margin-top:3px;font-size:12px;color:var(--sub)}
+.modal.w{width:800px;max-width:94vw;max-height:88vh;overflow:auto;padding:18px 22px}
+.modal .lead{color:var(--sub);font-size:12px;margin:-4px 0 12px;line-height:1.7}
+.sec2{font-weight:600;margin:14px 0 6px}
+.banner{border-radius:4px;padding:9px 12px;margin-bottom:10px;font-size:12.5px;line-height:1.8}
+.banner.bad{background:#fff4f4;border:1px solid #f5c2c2;color:#b42318}.banner.ok{background:#eefbf3;border:1px solid #b7e4c7;color:#15803d}
+.banner ul{margin:4px 0 0;padding-left:18px}.banner li{margin-bottom:2px}.banner a{color:var(--blue);cursor:pointer;margin-left:8px}
+.gchk{display:flex;flex-direction:column;gap:6px}
+.gc{display:flex;gap:8px;align-items:flex-start;font-size:12.5px}.gc i{font-style:normal;flex:none;width:16px;text-align:center}.gc.ok i{color:var(--green)}.gc.no i{color:var(--red)}.gc.no span{color:#b42318}
+.gc a{color:var(--blue);cursor:pointer;margin-left:8px}
+.chn{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.chn label{display:flex;gap:5px;align-items:center;cursor:pointer}
+.atb{width:100%;border:1px solid var(--line);border-radius:4px}.atb th,.atb td{padding:6px 8px;font-size:12px}
+.atb td .bad{color:#b42318;line-height:1.6}.atb tr.lk td{background:#fafafa;color:#8b93a1}
+.sumbar{display:flex;justify-content:space-between;gap:12px;margin-top:10px;padding:8px 12px;background:#fafafa;border:1px solid var(--line);border-radius:4px;font-size:12.5px;flex-wrap:wrap}
+.sumbar b{color:var(--blue)}
+.remind{margin-top:8px;background:var(--orange-bg);border:1px solid #f6d49b;border-radius:3px;padding:8px 12px;color:#92560a;font-size:12.5px;line-height:1.7}.remind ul{margin:4px 0 0}
+.modal .ops.sp{justify-content:space-between;align-items:center}.modal .ops .l{display:flex;gap:10px}
 .mask{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:50}.mask.on{display:flex}
 .modal{background:#fff;border-radius:6px;width:440px;padding:20px 22px}.modal h4{margin:0 0 12px;font-size:15px}
 .modal .f{margin-bottom:12px}.modal .f>label{display:block;margin-bottom:4px}
@@ -98,14 +118,15 @@ tr.lk td{background:#fafafa;color:#6b7280}
 </style>
 </head>
 <body>
-<div class="top">☰ <span>执行成本管理 ▾</span> / <span>项目执行列表-企培业务</span> / <b>执行单流转</b><span class="sp"></span><span class="user">承艳军 (chengyj)</span></div>
+<div class="top">☰ <span>执行成本管理 ▾</span> / <span>项目执行列表-企培业务</span> / <b>执行单流转</b><span class="sp"></span><span class="user" id="curUser"></span></div>
 <div class="sub"><span style="cursor:pointer" onclick="toast('返回上一页')">←</span><span id="pageTitle">添加执行单</span>
-<span class="demo">原型演示状态：<select id="demo" onchange="setDemo(this.value)"><option value="new">新建执行单（合同有排期）</option><option value="nosched">新建执行单（合同无排期）</option><option value="edit">编辑已有执行单（含已提交账单）</option></select></span></div>
+<span class="demo">原型演示状态：<select id="demo" onchange="setDemo(this.value)"><option value="new">新建执行单（合同有排期）</option><option value="ready">新建执行单（合同有排期，信息已补全）</option><option value="nosched">新建执行单（合同无排期）</option><option value="edit">编辑已有执行单（含已提交账单）</option></select>
+ &nbsp;&nbsp;当前身份：<select id="who" onchange="setWho(this.value)"><option value="pm">项目经理本人（张雅淇）</option><option value="entry">执行单录入人（非项目经理）</option></select></span></div>
 
 <div class="wrap">
 <div class="panel" id="info"></div>
 <div id="cards"></div>
-<div class="add"><a onclick="addCard()">+ 再填一份</a></div>
+<div class="add" id="addbar"></div>
 <div class="warns" id="warns"></div>
 </div>
 
@@ -117,23 +138,39 @@ tr.lk td{background:#fafafa;color:#6b7280}
 /* ================= 模拟数据 ================= */
 const TODAY='2026-11-10';
 const wd=['日','一','二','三','四','五','六'];
-const CATS=['授课','助教','出题 / 题库','源文件','视频','打包价','其他'];
-const UNITS=['天','半天','小时','场','题','个','套','打包'];
-const CONTRACT={no:'A-BC-QP1026-1281',sign:'中国移动通信集团江西有限公司',final:'中国移动通信集团江西有限公司',project:'（一采）-江西移动虚拟课实中心-FDE管理外招认证',content:'定制培训',amount:127200,used:45200,sales:'侯欣洋',entry:'承艳军'};
+const FEE_TREE={
+  '企培讲师成本':['授课费','出题费','课程开发费','咨询费','源文件分成','评委评审费','方案或报告撰写费','其他'],
+  '企培助教成本':['线下助教费','线上助教运营费'],
+  '企培其他兼职成本':['图文设计','PPT美化','视频制作','文案撰写','资料整理','视频拍摄','摄影','主持','其他']
+};
+const CATS=Object.values(FEE_TREE).flat();
+/* 讲师只能选讲师成本；助教可选助教成本 + 兼职成本 */
+const ROLE_GROUPS={lec:['企培讲师成本'],ast:['企培助教成本','企培其他兼职成本']};
+const catOpts=(cur,role)=>Object.entries(FEE_TREE).filter(([g])=>!role||ROLE_GROUPS[role].includes(g)).map(([g,arr])=>`<optgroup label="${g}">`+arr.map(c=>`<option value="${c}" ${c===cur?'selected':''}>${c}</option>`).join('')+'</optgroup>').join('');
+const UNITS=['天','小时','道','批'];
+const CONTRACT={no:'A-BC-QP1026-1281',sign:'中国移动通信集团江西有限公司',final:'中国移动通信集团江西有限公司',project:'（一采）-江西移动虚拟课实中心-FDE管理外招认证',content:'定制培训',amount:127200,used:45200,sales:'侯欣洋'};
 const COURSES=[{n:'FDE管理者认证（定制）',price:4000},{n:'数字化领导力（定制）',price:3500},{n:'项目管理实战（定制）',price:3000}];
 const OWNERS=['华东一部','华南二部','金融制造组'];
 const PMS=['张雅淇','承艳军','李明'];
-const LECTURERS=[{id:'L001',name:'肖婷',phone:'13611110001'},{id:'L002',name:'马宇峰',phone:'13611110002'},{id:'L003',name:'王磊',phone:'13611110003'},{id:'L004',name:'李娜',phone:''},{id:'L005',name:'周明',phone:'13611110005'}];
+const LECTURERS=[{id:'L001',name:'肖婷',phone:'13611110001'},{id:'L002',name:'马宇峰',phone:'13611110002'},{id:'L003',name:'王磊',phone:'13611110003'},{id:'L004',name:'李娜',phone:''},{id:'L005',name:'周明',phone:'13611110005',org:'北京云课堂教育科技有限公司',orgOk:false}];
 let ASSISTANTS=[{id:'A001',name:'刘洋',phone:'13800001111'},{id:'A002',name:'陈静',phone:'13900002222'},{id:'A003',name:'赵敏',phone:''}];
 const OCCUPY={L002:[{date:'2026-11-24',slot:'全天',project:'中国银行数字化培训'}]};
 /* 合同唯一对应的排期（一个排期只关联一个合同） */
-const SCHED={id:'P1',name:'江西移动FDE管理认证班',dates:['2026-11-09','2026-11-10','2026-11-11','2026-11-12','2026-11-23','2026-11-24','2026-11-25','2026-12-07','2026-12-08','2026-12-09'],method:'线下',city:'江西 · 南昌',pm:'张雅淇',lec:['L001','L002'],ast:['A002'],
-  pay:{L001:{exc:{'2026-11-10':['下午']},price:1000,cat:'授课'},L002:{exc:{'2026-11-09':[],'2026-11-10':[],'2026-11-11':[],'2026-11-12':[]},price:2000,cat:'授课'},A002:{exc:{},price:500,cat:'助教'}}};
+/* 合同下可有多个排期（培训班）：一个排期生成一张执行单；培训班名称作为执行单课程名称 */
+const SCHEDS=[
+ {id:'P1',cls:'FDE管理者认证（定制）',dates:['2026-11-09','2026-11-10','2026-11-11','2026-11-12'],method:'线下',city:'江西 · 南昌',pm:'张雅淇',lec:['L001','L002'],ast:['A002']},
+ {id:'P2',cls:'数字化领导力（定制）',dates:['2026-11-23','2026-11-24','2026-11-25'],method:'线下',city:'江西 · 南昌',pm:'张雅淇',lec:['L002'],ast:['A001']},
+ {id:'P3',cls:'项目管理实战（定制）',dates:['2026-12-07','2026-12-08','2026-12-09'],method:'线上',city:'',pm:'张雅淇',lec:['L005'],ast:['A002']}
+];
 /* 该合同下已存在的执行单（用于重复录入提醒） */
-const EXISTING=[{no:'ZX202611-021',pids:{L001:['2026-11-09','2026-11-10'],A002:['2026-11-09','2026-11-10']}}];
+/* sched：该执行单使用的排期；已使用的排期不再出现在可选列表 */
+const EXISTING=[{no:'ZX202611-021',sched:'P0',pids:{L001:['2026-11-10'],A002:['2026-11-10']}},{no:'ZX202611-018',sched:'P3',pids:{}}];
+/* 该销售合同下可选的付款合同（剩余额度 = 总额 − 已占用） */
+const PAY_CONTRACTS=[{no:'FK-2026-0381',total:60000,used:20000},{no:'FK-2026-0415',total:30000,used:28000}];
+const USERS={pm:{name:'张雅淇',id:'zhangyq',role:'项目经理'},entry:{name:'承艳军',id:'chengyj',role:'执行单录入人'}};
 
 /* ================= 状态 ================= */
-const S={mode:'new',sched:null,pm:'',cards:[],nid:1};
+const S={mode:'new',hasSched:true,pm:'',cards:[],nid:1,user:'pm',evalDone:false};
 const $=id=>document.getElementById(id);
 const fm=n=>n.toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1600)}
@@ -158,62 +195,46 @@ function segmentsOf(dates){
 function dlShort(ds){return segmentsOf(ds).map(g=>g.length===1?g[0].slice(5):g[0].slice(5)+'~'+g[g.length-1].slice(5)).join('、')}
 function findP(role,id){return (role==='lec'?LECTURERS:ASSISTANTS).find(p=>p.id===id)}
 function slotsFor(pid,d){
-  const pay=S.sched&&S.sched.pay[pid];
-  if(!pay)return SL.slice();
-  return (d in pay.exc)?pay.exc[d]:SL.slice();
+  return SL.slice();
 }
-function inRoster(pid){return !!S.sched&&(S.sched.lec.includes(pid)||S.sched.ast.includes(pid))}
-
-/* ================= 排期命中 ================= */
+function inRoster(c,pid){return !!c.sched&&(c.schedLec.includes(pid)||c.schedAst.includes(pid))}
 function validRange(c){return !!(c.from&&c.to&&c.to>=c.from)}
-function hitDates(c){return (S.sched&&validRange(c))?S.sched.dates.filter(d=>d>=c.from&&d<=c.to):[]}
-function candidates(c,role){
-  const h=hitDates(c);
-  if(!h.length)return [];
-  return S.sched[role].map(id=>findP(role,id)).filter(p=>p&&h.some(d=>slotsFor(p.id,d).length)).map(p=>{
-    const days=h.reduce((n,d)=>n+slotsFor(p.id,d).length*.5,0);
-    const mine=h.filter(d=>slotsFor(p.id,d).length);
-    const used=EXISTING.filter(e=>(e.pids[p.id]||[]).some(d=>mine.includes(d))).map(e=>e.no);
-    return {...p,role,days,price:S.sched.pay[p.id]?S.sched.pay[p.id].price:'',used};
-  });
-}
-/* 同一日期下是否有多位讲师 */
-function ambiguous(c){
-  const lc=candidates(c,'lec');
-  return hitDates(c).some(d=>lc.filter(x=>slotsFor(x.id,d).length).length>=2);
-}
-/* 选择执行时段后自动带出：助教全部带出；讲师仅在无歧义时带出，歧义由项目经理自选 */
-function autofill(c){
-  if(!S.sched)return;
-  const lc=candidates(c,'lec'),ac=candidates(c,'ast');
-  const want=new Set([...ac.map(x=>x.id),...(ambiguous(c)?[]:lc.map(x=>x.id))]);
-  ['lec','ast'].forEach(role=>{c[role]=c[role].filter(p=>{
-    if(p.src==='auto'&&!want.has(p.id)&&!isLocked(c,p.id)){delete c.rows[p.id];return false}return true})});
-  lc.forEach(x=>{if(want.has(x.id))addPerson(c,'lec',x.id,'auto')});
-  ac.forEach(x=>{if(want.has(x.id))addPerson(c,'ast',x.id,'auto')});
-}
+/* 实际培训日期：来自排期的日期；手工执行单则取执行时段 */
+function trainDates(c){return c.sched?c.trainDates:rangeDates(c)}
+function usedSched(){return new Set([...EXISTING.map(e=>e.sched),...S.cards.map(c=>c.sched).filter(Boolean)])}
+function freeScheds(){const u=usedSched();return SCHEDS.filter(s=>!u.has(s.id))}
+function namesOf(role,ids){return ids.map(id=>(findP(role,id)||{}).name).filter(Boolean).join('、')||'—'}
 
 /* ================= 数据构造 ================= */
 function newCard(){
   return {id:S.nid++,content:'定制培训',from:'',to:'',daysManual:null,owner:'',course:'',ratio:0,adj:0,adjAmt:0,free:'',mid:false,note:'',
-    method:S.sched?S.sched.method:'线下',lec:[],ast:[],rows:{},open:true,errs:{}};
+    method:'线下',city:'',sched:'',schedName:'',trainDates:[],schedLec:[],schedAst:[],priceManual:'',lec:[],ast:[],rows:{},open:true,errs:{}};
+}
+/* 一个排期生成一张执行单：带入培训班名称（课程）、讲师、助教、方式、培训日期；执行时段由项目经理自行选择 */
+function cardFromSched(sc){
+  const c=newCard();
+  c.sched=sc.id;c.schedName=sc.cls;c.trainDates=sc.dates.slice();c.schedLec=sc.lec.slice();c.schedAst=sc.ast.slice();
+  c.course=sc.cls;c.method=sc.method;c.city=sc.city;
+  /* 排期不含单价：有标准课程单价时作为默认值带入，可编辑；无则由项目经理手填 */
+  const std=COURSES.find(x=>x.n===sc.cls);c.priceManual=std?String(std.price):'';
+  sc.lec.forEach(id=>addPerson(c,'lec',id,'auto'));sc.ast.forEach(id=>addPerson(c,'ast',id,'auto'));
+  return c;
 }
 function addPerson(c,role,id,src){
   const base=findP(role,id);if(!base)return;
   const list=role==='lec'?c.lec:c.ast;
   if(list.some(x=>x.id===id))return;
   list.push({id,name:base.name,phone:base.phone,src,role});
-  const pre=S.sched&&S.sched.pay[id];
-  c.rows[id]={cat:pre&&pre.cat?pre.cat:'',price:pre?String(pre.price):'',unit:'天',qty:null,status:null};
+  c.rows[id]={cat:'',price:'',unit:'天',qty:null,status:null,inList:false,pc:''};
 }
 
 /* ================= 计算 ================= */
 function naturalDays(c){if(!validRange(c))return 0;return Math.round((pd(c.to)-pd(c.from))/864e5)+1}
-function autoDays(c){return naturalDays(c)}
+function autoDays(c){return c.sched?c.trainDates.length:naturalDays(c)}
 function daysVal(c){if(c.daysManual!==null&&c.daysManual!=='')return +c.daysManual;return autoDays(c)}
-function coursePrice(c){const k=COURSES.find(x=>x.n===c.course);return k?k.price:null}
+function coursePrice(c){if(!c.sched){const k=COURSES.find(x=>x.n===c.course);if(k)return k.price}return (c.priceManual!==''&&c.priceManual!=null&&!isNaN(+c.priceManual))?+c.priceManual:null}
 function cardAmount(c){const p=coursePrice(c);if(p===null)return null;return (p+(+c.adj||0))*daysVal(c)+(+c.adjAmt||0)}
-function personDays(c,pid){return daysVal(c)}
+function personDays(c,pid){return c.sched?c.trainDates.length:daysVal(c)}
 function rowQty(c,pid){const r=c.rows[pid];return r.qty!==null&&r.qty!==''?+r.qty:personDays(c,pid)}
 function rowAmt(c,pid){const r=c.rows[pid];if(r.price===''||r.price===null)return null;return (+r.price)*rowQty(c,pid)}
 function cardPersons(c){return [...c.lec,...c.ast]}
@@ -222,88 +243,106 @@ function paySum(c){return cardPersons(c).reduce((n,p)=>n+(rowAmt(c,p.id)||0),0)}
 function isLocked(c,pid){return false}
 function isSubmitted(c,pid){const r=c.rows[pid];return !!(r&&r.status&&r.status!=='待提交')}
 function lastDate(c,pid){return c.to||''}
+function rangeDates(c){const o=[];if(!validRange(c))return o;let x=c.from,n=0;while(x<=c.to&&n<400){o.push(x);x=addDays(x,1);n++}return o}
+function catGroup(cat,role){for(const g of ROLE_GROUPS[role]||[])if(FEE_TREE[g].includes(cat))return g;return role==='lec'?'企培讲师成本':'企培助教成本'}
+/* 付款合同卡控：单次付款金额≤5000 免签；助教 / 兼职无需选择（保留填写入口）；其余须选择并确认 */
+function needContract(c,p){const r=c.rows[p.id],amt=rowAmt(c,p.id)||0;return amt>5000&&catGroup(r.cat,p.role)==='企培讲师成本'}
+/* 同人同时段重复（强拦截）：合同下已有执行单 + 本页其他执行单 */
+function conflictsOf(c,p){
+  const out=[],mine=trainDates(c);
+  EXISTING.forEach(e=>{const ov=mine.filter(d=>(e.pids[p.id]||[]).includes(d));if(ov.length)out.push(`${dlShort(ov)} 已在执行单 ${e.no} 中录入，同人同时段重复`)});
+  S.cards.forEach((o,j)=>{if(o===c||!cardPersons(o).some(q=>q.id===p.id))return;const ov=mine.filter(d=>trainDates(o).includes(d));if(ov.length)out.push(`${dlShort(ov)} 与本页执行单 ${j+1} 同人同时段重复`)});
+  return out;
+}
+/* 发起付款申请前的逐项校验（s=短名，m=说明） */
+function rowIssues(c,p){
+  const r=c.rows[p.id],iss=[],add=(k,s,m)=>iss.push({k,s,m});
+  if(!r.cat)add('cat','费用类别','未选择费用类别');
+  if(!(+r.price>0))add('price','课酬单价','课酬单价未填写');
+  if(!(rowQty(c,p.id)>0))add('qty','数量','数量需大于 0');
+  if(lastDate(c,p.id)>TODAY)add('date','执行日期','最后执行日期 '+(c.to||'')+' 晚于今天，到期前不能发起');
+  if(!p.phone)add('phone','手机号','手机号未补充（影响账户校验）');
+  const base=findP(p.role,p.id);
+  if(base&&base.org&&!base.orgOk)add('org','机构账户','所属机构「'+base.org+'」尚未建立机构账户');
+  if(needContract(c,p)){
+    if(!r.pc)add('pc','付款合同号','金额超过 5000，须选择付款合同号');
+  }
+  conflictsOf(c,p).forEach(m=>add('dup','时段重复',m));
+  return iss;
+}
+function allRows(){const a=[];S.cards.forEach((c,i)=>cardPersons(c).forEach(p=>a.push({c,p,i,k:c.id+':'+p.id,r:c.rows[p.id]})));return a}
+/* 可发起的行：账单尚未提交（无账单或待提交） */
+function applyRows(){return allRows().filter(x=>!isSubmitted(x.c,x.p.id))}
+function canInit(){return S.pm===USERS[S.user].name}
+function pcLeft(no){const k=PAY_CONTRACTS.find(x=>x.no===no);return k?k.total-k.used:0}
 function totalNow(){return S.cards.reduce((n,c)=>n+(cardAmount(c)||0),0)}
 function contractLeft(){return CONTRACT.amount-CONTRACT.used}
 
 /* ================= 渲染 ================= */
-function renderAll(){renderInfo();renderCards();recalc()}
+function renderAdd(){
+  const free=freeScheds();
+  $('addbar').innerHTML=(S.hasSched?`<a onclick="openGen()">+ 从排期生成执行单</a>${free.length?`<span class="tag o" style="margin-left:8px">该合同还有 ${free.length} 个排期未生成执行单</span>`:'<span class="hint" style="margin-left:8px">该合同下的排期均已生成执行单</span>'}<span style="margin:0 14px;color:#d1d5db">|</span>`:'')+'<a onclick="addCard()">+ 手工新增一份（不关联排期）</a>';
+}
+function renderAll(){renderInfo();renderCards();renderAdd();recalc()}
 function renderInfo(){
   const kv=(k,v,req)=>`<div class="kv"><span class="${req?'req':''}">${k}：</span><span style="flex:1">${v}</span></div>`;
   $('info').innerHTML=
    kv('合同编号',`<select><option>${CONTRACT.no}</option></select>`,1)+kv('签约客户名称',CONTRACT.sign)+kv('最终客户名称',CONTRACT.final)+kv('项目名称',CONTRACT.project)
    +kv('合作内容',CONTRACT.content)+kv('合同金额',fm(CONTRACT.amount))+kv('销售人员',CONTRACT.sales)
    +kv('项目经理',`<span class="${S.errPm?'err':''}"><select onchange="S.pm=this.value;S.errPm=false;renderInfo()"><option value="">请选择</option>${PMS.map(x=>`<option ${S.pm===x?'selected':''}>${x}</option>`).join('')}</select>${S.errPm?'<div class="errtxt">请选择项目经理</div>':''}</span>`,1)
-   +kv('执行单录入人员',CONTRACT.entry);
+   +kv('执行单录入人员',USERS[S.user].name);
 }
 function fld(label,html,o={}){return `<div class="fl ${o.full?'full':''} ${o.err?'err':''}"><label class="${o.req?'req':''}">${label}</label><div class="c">${html}${o.err?`<div class="errtxt">${o.err}</div>`:''}</div></div>`}
 function opt(list,v,ph){return (ph?`<option value="">${ph}</option>`:'')+list.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('')}
-function hitStatus(c){
-  if(c.from&&c.to&&c.to<c.from)return '<div class="errtxt">结束日期不能早于开始日期</div>';
-  if(!S.sched||!validRange(c))return '';
-  const h=hitDates(c);
-  if(!h.length)return `<div class="hitst"><span class="tag o">未命中排期</span><span class="hint">按所选执行时段计 ${naturalDays(c)} 天</span></div>`;
-  let edge=0,x=c.from;
-  while(x<h[0]){if(!isWk(x))edge++;x=addDays(x,1)}
-  x=addDays(h[h.length-1],1);
-  while(x<=c.to){if(!isWk(x))edge++;x=addDays(x,1)}
-  return `<div class="hitst"><span class="tag g">命中排期 ${h.length} 天</span>${edge?`<span class="tag o">时段首尾另有 ${edge} 个工作日不在排期内，需手动确认</span>`:''}</div>`;
-}
 function dateField(c){
   let h=`<div class="rg"><input type="date" value="${c.from}" onchange="setRange(${c.id},'from',this.value)"><span>→</span><input type="date" value="${c.to}" onchange="setRange(${c.id},'to',this.value)"></div>`;
-  if(S.sched){
-    h+=`<div class="segs">排期段：${segmentsOf(S.sched.dates).map(g=>{const f=g[0],t=g[g.length-1];
-      return `<button class="seg ${c.from===f&&c.to===t?'on':''}" onclick="pickSeg(${c.id},'${f}','${t}')">${g.length===1?f.slice(5):f.slice(5)+'~'+t.slice(5)}</button>`}).join('')}</div>`;
-  }
-  return h+hitStatus(c);
+  if(c.from&&c.to&&c.to<c.from)h+='<div class="errtxt">结束日期不能早于开始日期</div>';
+  return h;
 }
 function pbox(c,role){
   const list=role==='lec'?c.lec:c.ast,err=role==='lec'&&c.errs.lec;
   const chips=list.map(p=>{const lk=isLocked(c,p.id);
     return `<span class="chip ${lk?'lock':''}">${p.name} <small>${p.phone||'手机号待补充'}</small>${lk?'<span title="已有课酬账单进入审批或之后状态，不可移除">🔒</span>':`<i onclick="rmP(${c.id},'${role}','${p.id}')">✕</i>`}</span>`}).join('');
   let panel='';
-  if(role==='lec'&&S.sched){
-    const cs=candidates(c,'lec');
-    if(cs.length&&(cs.length>=2||!c.lec.some(p=>p.id===cs[0].id))){
-      panel=`<div class="cand">${!c.lec.length&&cs.length>=2?`<div class="tip">该时段有 ${cs.length} 位讲师，请选择</div>`:''}<div class="list">${cs.map(x=>{const on=c.lec.some(p=>p.id===x.id);
-        return `<div class="cd ${on?'on':''}" onclick="togglePick(${c.id},'${x.id}')"><span class="ck">${on?'✓':''}</span><b>${x.name}</b><small>${x.phone||'手机号待补充'}</small><small>授课 ${x.days} 天</small>${x.price!==''?`<small>¥${x.price}/天</small>`:''}${x.used.length?`<span class="tag o">已在执行单 ${x.used.join('、')} 录入</span>`:''}</div>`}).join('')}</div></div>`;
-    }
-  }
   return `<div class="pbox ${err?'err':''}" onclick="event.stopPropagation()"><div class="chips">${chips}</div>
-   <input id="in_${c.id}_${role}" type="text" placeholder="${role==='lec'?'搜索讲师姓名后选择':'搜索助教姓名后选择，可添加多人'}" autocomplete="off" oninput="dd(${c.id},'${role}')" onfocus="dd(${c.id},'${role}')">
+   <input id="in_${c.id}_${role}" type="text" autocomplete="off" oninput="dd(${c.id},'${role}')" onfocus="dd(${c.id},'${role}')">
    <div class="dd" id="dd_${c.id}_${role}"></div></div>${err?'<div class="errtxt">请选择讲师名称</div>':''}${panel}`;
 }
 function rowDatesText(c,p){
+  if(c.sched)return `${dlShort(c.trainDates)}（${c.trainDates.length}天）`+(c.rows[p.id]&&!inRoster(c,p.id)?' <span class="tag k">非排期人员</span>':'');
   if(!validRange(c))return '请先选择执行时段';
-  const h=hitDates(c);
-  if(S.sched&&h.length&&c.rows[p.id]&&inRoster(p.id)&&!h.some(d=>slotsFor(p.id,d).length))return '<span class="tag o">所选时段内无排期</span>';
   return `${c.from.slice(5)}~${c.to.slice(5)}（${naturalDays(c)}天）`;
 }
-function statusTag(c,p){
+function checkCell(c,p){
   const r=c.rows[p.id];
-  if(r.status)return `<span class="tag ${r.status==='待提交'?'b':'k'}">账单${r.status}${r.status==='待提交'?'':' · 已锁定'}</span>`;
-  if(p.src==='auto')return '<span class="tag o">待确认</span>';
-  if(S.sched&&!inRoster(p.id))return '<span class="tag k">非排期人员</span>';
-  return '<span class="tag g">已指定</span>';
+  if(isSubmitted(c,p.id))return `<span class="tag k">账单${r.status} · 已锁定</span>`;
+  const head=r.inList?'<span class="tag b">账单待提交 · 已在待结算清单</span>':(r.status?'<span class="tag b">账单待提交</span>':'');
+  const iss=rowIssues(c,p);
+  if(!iss.length)return head+'<span class="tag g">可发起付款申请</span>';
+  const show=iss.slice(0,3).map(x=>`<span class="tag o" title="${x.m}">${x.s}</span>`).join('');
+  return head+show+(iss.length>3?`<span class="tag o" title="${iss.slice(3).map(x=>x.m).join('；')}">+${iss.length-3}</span>`:'');
 }
 function rowsHtml(c){
   const ps=cardPersons(c);
   if(!ps.length)return '<div style="padding:16px;text-align:center;color:#9ca3af">选择执行时段并确定讲师、助教后，将自动生成课酬明细行</div>';
   const body=ps.map(p=>{
-    const r=c.rows[p.id],lk=isLocked(c,p.id),dis=lk?'disabled':'';
-    return `<tr class="${lk?'lk':''}">
-     <td><b>${p.name}</b><div class="hint">${p.phone||'<span class="tag o">手机号待补充</span>'}</div>${lk?`<div class="hint">🔒 账单${r.status}，已锁定</div>`:''}</td>
+    const r=c.rows[p.id],sub=isSubmitted(c,p.id),dis=sub?'disabled':'',need=needContract(c,p);
+    return `<tr class="${sub?'lk':''}">
+     <td><b>${p.name}</b>${p.src==='auto'?' <span class="tag k">排期带入</span>':''}<div class="hint">${p.phone||'<span class="tag o">手机号待补充</span>'}</div>${sub?`<div><span class="tag k">账单${r.status} · 已锁定</span></div>`:(r.inList?'<div><span class="tag b">已在待结算清单</span></div>':'')}</td>
      <td><span class="tag ${p.role==='lec'?'b':'g'}">${p.role==='lec'?'讲师':'助教'}</span></td>
-     <td style="max-width:200px">${rowDatesText(c,p)}</td>
-     <td><select ${dis} onchange="setRow(${c.id},'${p.id}','cat',this.value)">${opt(CATS,r.cat,'选填')}</select></td>
-     <td><input type="number" min="0" step="0.01" ${dis} placeholder="选填" value="${r.price}" oninput="setRow(${c.id},'${p.id}','price',this.value,1)"></td>
+     <td style="max-width:150px">${rowDatesText(c,p)}</td>
+     <td><select ${dis} onchange="setRow(${c.id},'${p.id}','cat',this.value)"><option value="">请选择</option>${catOpts(r.cat||'',p.role)}</select></td>
+     <td><input type="number" min="0" step="0.01" ${dis} placeholder="元/${r.unit}" value="${r.price}" oninput="setRow(${c.id},'${p.id}','price',this.value,1)"></td>
      <td><input type="number" min="0" step="0.5" ${dis} id="rq_${c.id}_${p.id}" value="${rowQty(c,p.id)}" oninput="setRow(${c.id},'${p.id}','qty',this.value,1)"></td>
      <td><select ${dis} onchange="setRow(${c.id},'${p.id}','unit',this.value)">${opt(UNITS,r.unit)}</select></td>
-     <td id="ra_${c.id}_${p.id}">—</td></tr>`}).join('');
-  return `<table><thead><tr><th>人员</th><th>角色</th><th>授课/服务日期</th><th>费用类别</th><th>课酬单价</th><th>数量</th><th>单位</th><th>总金额</th></tr></thead><tbody>${body}</tbody></table>`;
+     <td id="ra_${c.id}_${p.id}">—</td>
+     <td><select class="pc" ${dis} onchange="setRow(${c.id},'${p.id}','pc',this.value)"><option value="">${need?'请选择':'无需选择'}</option>${PAY_CONTRACTS.map(k=>`<option value="${k.no}" ${r.pc===k.no?'selected':''}>${k.no}（剩余¥${(k.total-k.used).toLocaleString()}）</option>`).join('')}</select></td>
+     </tr>`}).join('');
+  return `  <table><thead><tr><th>人员</th><th>角色</th><th>授课/服务日期</th><th>费用类别</th><th>课酬单价</th><th>数量</th><th>单位</th><th>总金额</th><th>付款合同号</th></tr></thead><tbody>${body}</tbody></table>`;
 }
 function cardHtml(c,i){
   const e=c.errs,lockedAny=cardPersons(c).some(p=>isLocked(c,p.id));
-  return `<section class="ecard" id="card_${c.id}"><div class="ehd">执行单 ${i+1}
+  return `<section class="ecard" id="card_${c.id}"><div class="ehd">执行单 ${i+1}${c.sched?` <span class="tag b">来源排期 · ${c.schedName}</span><span class="hint" style="font-weight:400">${c.method}${c.city&&c.method==='线下'?' · '+c.city:''}</span>`:''}
    <span class="del ${lockedAny?'off':''}" ${lockedAny?'title="已有课酬账单进入审批或之后状态，不可删除"':`onclick="delCard(${c.id})"`}>删除</span></div>
   <div class="g2">
    ${fld('合作内容',`<select onchange="setF(${c.id},'content',this.value)">${opt(['定制培训','公开课','咨询'],c.content)}</select>`,{req:1})}
@@ -311,20 +350,20 @@ function cardHtml(c,i){
    ${fld('执行天数',`<input type="number" min="0" step="0.5" placeholder="请输入" value="${daysVal(c)||''}" onchange="setF(${c.id},'daysManual',this.value);renderAll()">`,{req:1,err:e.days?'请填写执行天数':''})}
    ${fld('其中：免费情况',`<input type="text" placeholder="请输入" value="${c.free}" oninput="setF(${c.id},'free',this.value)">`)}
    ${fld('项目归属',`<select onchange="setF(${c.id},'owner',this.value);">${opt(OWNERS,c.owner,'请选择')}</select>`,{req:1,err:e.owner?'请选择项目归属':''})}
-   ${fld('课程名称',`<select onchange="setF(${c.id},'course',this.value);recalc()">${opt(COURSES.map(x=>x.n),c.course,'请选择')}</select>`,{req:1,err:e.course?'请选择课程名称':''})}
-   ${fld('单价',`<div class="ro" id="price_${c.id}">—</div>`,{req:1})}
+   ${fld('课程名称',c.sched?`<div class="ro">${c.course}</div>`:`<select onchange="setF(${c.id},'course',this.value);recalc()">${opt(COURSES.map(x=>x.n),c.course,'请选择')}</select>`,{req:1,err:e.course?'请选择课程名称':''})}
+   ${fld('单价',c.sched?`<input type="number" min="0" placeholder="请输入课程单价" value="${c.priceManual}" oninput="setF(${c.id},'priceManual',this.value);delete card(${c.id}).errs.price;recalc()">`:`<div class="ro" id="price_${c.id}">—</div>`,{req:1,err:e.price?'请填写单价':''})}
    ${fld('拆班比例',`<input type="number" min="0" value="${c.ratio}" oninput="setF(${c.id},'ratio',this.value)">`)}
    ${fld('单价调整额',`<input type="number" value="${c.adj}" oninput="setF(${c.id},'adj',this.value);recalc()">`,{req:1})}
    ${fld('讲师名称',pbox(c,'lec'),{req:1})}
    ${fld('助教名称',pbox(c,'ast'))}
-   ${fld('培训方式',S.sched?`<div class="ro">${c.method}${S.sched.city&&c.method==='线下'?' · '+S.sched.city:''}</div>`:`<select onchange="setF(${c.id},'method',this.value)">${opt(['线下','线上'],c.method)}</select>`)}
+   ${fld('培训方式',c.sched?`<div class="ro">${c.method}${c.city&&c.method==='线下'?' · '+c.city:''}</div>`:`<select onchange="setF(${c.id},'method',this.value)">${opt(['线下','线上'],c.method)}</select>`)}
    ${fld('调整执行金额',`<input type="number" value="${c.adjAmt}" oninput="setF(${c.id},'adjAmt',this.value);recalc()">`,{req:1})}
    ${fld('执行金额',`<div class="ro" id="amt_${c.id}">—</div><div class="errtxt" id="over_${c.id}"></div>`,{req:1})}
    ${fld('中台参与',`<input type="checkbox" ${c.mid?'checked':''} onchange="setF(${c.id},'mid',this.checked)">`)}
    ${fld('执行金额说明',`<textarea placeholder="请输入" oninput="setF(${c.id},'note',this.value)">${c.note}</textarea>`,{full:1})}
    ${fld('附件备注',`<button class="btn sm pri" onclick="toast('演示：上传附件')">上传</button>`,{full:1})}
   </div>
-  <div class="pay ${c.open?'':'shut'}"><div class="ph" onclick="togglePay(${c.id})"><b>师资课酬明细</b><span class="car">${c.open?'收起 ▴':'展开 ▾'}</span></div>
+  <div class="pay ${c.open?'':'shut'}"><div class="ph" onclick="togglePay(${c.id})"><b>师资课酬明细</b><span class="pb" id="pb_${c.id}"></span><span class="car">${c.open?'收起 ▴':'展开 ▾'}</span></div>
    ${c.open?rowsHtml(c)+`<div class="ptot"><span id="pc_${c.id}"></span><span id="ps_${c.id}"></span></div>`:''}</div>
   </section>`;
 }
@@ -335,29 +374,37 @@ function recalc(){
     const pe=$('price_'+c.id);if(pe)pe.textContent=p===null?'--':fm(p);
     const ae=$('amt_'+c.id);if(ae)ae.textContent=a===null?'--':fm(a);
     cardPersons(c).forEach(x=>{const el=$('ra_'+c.id+'_'+x.id);if(el){const v=rowAmt(c,x.id);el.textContent=v===null?'—':'¥'+v.toLocaleString()}});
+    cardPersons(c).forEach(x=>{const el=$('ck_'+c.id+'_'+x.id);if(el)el.innerHTML=checkCell(c,x)});
+    const pbEl=$('pb_'+c.id);
+    if(pbEl){const ar=applyRows().filter(y=>y.c===c&&!y.r.inList),bad=ar.filter(y=>rowIssues(y.c,y.p).length).length;
+      pbEl.className='pb '+(bad?'bad':'ok');pbEl.textContent=ar.length?(bad?`发起付款申请前，还有 ${bad} 人需补齐`:'全部满足发起付款申请条件'):''}
     const ps=$('ps_'+c.id);
     if(ps){const sum=paySum(c);ps.innerHTML=`课酬合计：<b>¥${sum.toLocaleString()}</b>`;
       const pc=$('pc_'+c.id);if(pc)pc.innerHTML=`共 ${cardPersons(c).length} 人`+((a!==null&&sum>a)?` <span class="w">· 课酬合计超过本执行单金额 ¥${fm(a)}，仅提醒，不拦截</span>`:'')}
   });
   const tot=totalNow(),left=contractLeft(),over=tot>left;
   S.cards.forEach(c=>{const o=$('over_'+c.id);if(o)o.textContent=(over&&cardAmount(c)!==null)?`执行金额合计超出合同剩余可执行金额 ¥${fm(left)}`:''});
+  const ar=applyRows().filter(y=>!y.r.inList),ready=ar.filter(y=>!rowIssues(y.c,y.p).length).length,pmOk=canInit();
   $('foot').innerHTML=`<div class="s"><span>合同金额</span><b>${fm(CONTRACT.amount)}</b></div><div class="s"><span>已执行</span><b>${fm(CONTRACT.used)}</b></div>
    <div class="s"><span>本次执行</span><b>${fm(tot)}</b></div><div class="s ${over?'bad':''}"><span>合同剩余</span><b>${fm(left-tot)}</b></div>
-   ${over?'<span class="e">本次执行金额超过合同剩余可执行金额，不能提交</span>':''}<button class="btn pri" onclick="submit()">提 交</button>`;
+   ${over?'<span class="e">本次执行金额超过合同剩余可执行金额，不能提交</span>':''}<span class="fx"></span>
+   <span class="tip2 ${pmOk?(ready===ar.length&&ar.length?'ok':''):'bad'}">${pmOk?`可发起付款申请 ${ready} / ${ar.length} 人`:'仅项目经理本人可发起付款申请'}</span>
+   <button class="btn" onclick="submit('save')" title="课酬进入课酬账单（待提交），只提醒不校验">提交执行单</button>
+   <button class="btn pri" ${pmOk?'':'disabled'} onclick="submit('apply')" title="${pmOk?'':'仅执行单上的项目经理本人可发起'}">提交并发起付款申请</button>`;
   renderWarns();
 }
 let warnsOpen=false;
 function warnList(){
   const out=[];
-  if(!S.sched)return out;
+  if(!S.hasSched)return out;
   /* 本页多份执行单之间，同人同时段重复 */
   const map={};
-  S.cards.forEach((c,i)=>{const h=hitDates(c);cardPersons(c).forEach(p=>h.forEach(d=>slotsFor(p.id,d).forEach(s=>{const k=p.id+'|'+d+'|'+s;(map[k]=map[k]||{p,d,idx:[]}).idx.push(i+1)})))});
+  S.cards.forEach((c,i)=>{const h=trainDates(c);cardPersons(c).forEach(p=>h.forEach(d=>slotsFor(p.id,d).forEach(s=>{const k=p.id+'|'+d+'|'+s;(map[k]=map[k]||{p,d,idx:[]}).idx.push(i+1)})))});
   const g={};
   Object.values(map).filter(x=>x.idx.length>1).forEach(x=>{const k=x.p.id+'|'+x.idx.join('、');(g[k]=g[k]||{p:x.p,idx:x.idx,ds:[]}).ds.push(x.d)});
   Object.values(g).forEach(x=>out.push(`${x.p.name} ${dlShort([...new Set(x.ds)].sort())} 同时出现在执行单 ${x.idx.join('、')}，仅提醒；生成账单时同人同时段会被拦截`));
   S.cards.forEach((c,i)=>{
-    const h=hitDates(c);
+    const h=trainDates(c);
     cardPersons(c).forEach(p=>{
       const mine=h.filter(d=>slotsFor(p.id,d).length);
       /* 合同下已有执行单 */
@@ -371,28 +418,25 @@ function warnList(){
   return out;
 }
 function renderWarns(){
-  const w=warnList(),show=warnsOpen?w:w.slice(0,3);
-  $('warns').innerHTML=show.map(x=>`<div class="warn">⚠ ${x}</div>`).join('')+(w.length>3?`<div><a onclick="warnsOpen=!warnsOpen;renderWarns()">${warnsOpen?'收起':'展开更多（+'+(w.length-3)+'）'}</a></div>`:'');
+  $('warns').innerHTML='';
 }
 
 /* ================= 交互 ================= */
 function card(id){return S.cards.find(c=>c.id===id)}
 function setF(id,k,v){const c=card(id);c[k]=(k==='daysManual'&&v==='')?null:v;if(c.errs[k])delete c.errs[k]}
-function setRow(id,pid,k,v,live){const c=card(id);c.rows[pid][k]=v;if(live)recalc();else renderAll()}
+function setRow(id,pid,k,v,live){const c=card(id),r=c.rows[pid];r[k]=v;if(live)recalc();else renderAll()}
 function togglePay(id){const c=card(id);c.open=!c.open;renderCards();recalc()}
 function setRange(id,k,v){
   const c=card(id);c[k]=v;delete c.errs.dates;
   if(c.from&&c.to&&c.to<c.from)toast('结束日期不能早于开始日期');
-  c.daysManual=null;autofill(c);renderAll();
+  c.daysManual=null;renderAll();
 }
-function pickSeg(id,f,t){const c=card(id);c.from=f;c.to=t;delete c.errs.dates;c.daysManual=null;autofill(c);renderAll()}
 function addCard(){
   S.cards.push(newCard());renderAll();
   setTimeout(()=>{const el=$('card_'+S.cards[S.cards.length-1].id);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},50);
 }
 function delCard(id){
-  if(S.cards.length<=1){toast('至少保留一份执行单');return}
-  S.cards=S.cards.filter(c=>c.id!==id);renderAll();
+  S.cards=S.cards.filter(c=>c.id!==id);if(!S.cards.length)S.cards=[newCard()];renderAll();toast('已删除，对应排期可重新选择');
 }
 function togglePick(cid,pid){
   const c=card(cid);
@@ -419,8 +463,8 @@ function rmP(cid,role,id){const c=card(cid);if(role==='lec')c.lec=c.lec.filter(p
 document.addEventListener('click',()=>closeDd());
 
 /* 弹窗 */
-function showModal(h){$('modal').innerHTML=h;$('mask').classList.add('on')}
-function closeModal(){$('mask').classList.remove('on')}
+function showModal(h){$('modal').className='modal';$('modal').innerHTML=h;$('mask').classList.add('on')}
+function closeModal(){$('mask').classList.remove('on');$('modal').className='modal'}
 let astCid=null;
 function openAst(cid){
   astCid=cid;closeDd();
@@ -449,6 +493,7 @@ function validate(){
     if(!(daysVal(c)>0))c.errs.days=1;
     if(!c.owner)c.errs.owner=1;
     if(!c.course)c.errs.course=1;
+    if(c.sched&&coursePrice(c)===null)c.errs.price=1;
     if(!c.lec.length)c.errs.lec=1;
     if(Object.keys(c.errs).length){ok=false;first=first||('card_'+c.id)}
   });
@@ -457,42 +502,175 @@ function validate(){
   if(first&&first!=='foot'){const el=first==='info'?$('info'):$(first);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})}
   return ok;
 }
-function submit(){
+function submit(kind){
   if(!validate()){toast(totalNow()>contractLeft()?'执行金额超过合同剩余可执行金额':'请先补全必填项');return}
-  const rows=[];S.cards.forEach(c=>cardPersons(c).forEach(p=>rows.push({c,p,locked:isSubmitted(c,p.id)})));
-  if(S.mode==='edit'){
-    const sync=rows.filter(x=>!x.locked&&x.c.rows[x.p.id].status).length,lk=rows.filter(x=>x.locked).length;
-    const added=rows.filter(x=>!x.c.rows[x.p.id].status);
-    const future=added.filter(x=>lastDate(x.c,x.p.id)>TODAY).length,noPhone=added.filter(x=>!x.p.phone).length;
-    added.forEach(x=>{x.c.rows[x.p.id].status='待提交'});
-    showModal(`<h4>保存成功</h4><ul>${added.length?`<li>新增人员生成课酬草稿 <b>${added.length}</b> 张</li>`:''}<li>同步更新待提交的课酬账单 <b>${sync}</b> 张</li><li>已进入审批、账期中或可提现的课酬账单 <b>${lk}</b> 张，不受本次修改影响，也不会重新生成</li>
-     ${future?`<li><b>${future}</b> 张新草稿最后执行日期晚于今天，执行日期到达前不能加入待结算清单</li>`:''}${noPhone?`<li><b>${noPhone}</b> 张新草稿人员缺少手机号，加入待结算清单前需补充</li>`:''}</ul>
-     <div class="ops"><button class="btn" onclick="closeModal();renderAll()">继续编辑</button><button class="btn pri" onclick="closeModal();toast('演示：跳转课酬账单')">查看课酬账单</button></div>`);
-    return;
+  if(kind==='apply'){
+    if(!canInit()){toast('仅项目经理本人可发起付款申请');return}
+    openApply();return;
   }
-  const total=rows.length,pend=rows.filter(x=>x.p.src==='auto').length,future=rows.filter(x=>lastDate(x.c,x.p.id)>TODAY).length;
-  const noPhone=rows.filter(x=>!x.p.phone).length;
-  showModal(`<h4>提交成功</h4><ul><li>共提交 <b>${S.cards.length}</b> 份执行单，生成课酬草稿 <b>${total}</b> 张</li>
-   <li>其中带入人员「待确认」<b>${pend}</b> 张，请到课酬账单确认或更换</li>
-   ${future?`<li><b>${future}</b> 张草稿最后执行日期晚于今天，执行日期到达前不能加入待结算清单</li>`:''}
-   ${noPhone?`<li><b>${noPhone}</b> 张草稿人员缺少手机号，加入待结算清单前需补充</li>`:''}</ul>
-   <div class="ops"><button class="btn" onclick="closeModal()">继续添加</button><button class="btn pri" onclick="closeModal();toast('演示：跳转课酬账单')">查看课酬草稿</button></div>`);
+  openSaveConfirm();
+}
+/* 提交执行单二次确认：说明只生成课酬账单、不发起付款审批，并列出涉及的课酬人员 */
+function openSaveConfirm(){
+  const rows=allRows().filter(x=>!isSubmitted(x.c,x.p.id));
+  const tr=rows.map(x=>{const amt=rowAmt(x.c,x.p.id);
+    return `<tr><td>${x.p.name}</td><td>${x.p.role==='lec'?'讲师':'助教'}</td><td>${S.cards.length>1?'执行单 '+(x.i+1)+' · ':''}${x.c.course||'—'}</td><td>${x.c.rows[x.p.id].cat||'<span class="hint">未填</span>'}</td><td style="text-align:right">${amt===null?'<span class="hint">未填</span>':'¥'+amt.toLocaleString()}</td></tr>`}).join('');
+  $('modal').className='modal w';
+  $('modal').innerHTML=`<h4>确认提交执行单</h4>
+   <div class="lead">提交后，系统将根据本执行单自动生成对应的<b>课酬账单</b>（状态：待提交）。<b>本次提交不会发起付款审批</b>，如需付款，请到「课酬账单」页面补齐信息后加入待结算清单，或直接发起付款申请。<br>账单将自动带入<b>最终客户名称（${CONTRACT.final}）</b>和<b>课程名称</b>（取各执行单课程），小程序按课程 / 服务客户展示。</div>
+   <div class="sec2">涉及课酬人员（共 ${rows.length} 人）</div>
+   <table class="atb"><thead><tr><th>人员</th><th>角色</th><th>课程</th><th>费用类别</th><th style="text-align:right">金额</th></tr></thead><tbody>${tr||'<tr><td colspan="5" style="text-align:center;color:#9ca3af">暂无需生成账单的人员</td></tr>'}</tbody></table>
+   ${remindHtml(allRows())}
+   <div class="ops"><button class="btn" onclick="closeModal()">返回修改</button><button class="btn pri" onclick="saveOnly()">确认提交</button></div>`;
+  $('mask').classList.add('on');
+}
+function remindHtml(rows){
+  const list=rows.filter(x=>!isSubmitted(x.c,x.p.id)).map(x=>({x,iss:rowIssues(x.c,x.p)})).filter(o=>o.iss.length);
+  if(!list.length)return '';
+  return `<div class="remind"><b>以下事项仅提醒，不影响保存</b>：需到课酬账单页补齐，加入待结算清单或发起付款申请时会逐项校验。<ul>${list.slice(0,6).map(o=>`<li>${o.x.p.name}（执行单 ${o.x.i+1}）：${o.iss.map(t=>t.s).join('、')}</li>`).join('')}${list.length>6?`<li>……另有 ${list.length-6} 人</li>`:''}</ul></div>`;
+}
+/* 仅保存执行单：全部人员生成课酬账单（待提交），不做校验 */
+function saveOnly(){
+  closeModal();
+  const rows=allRows(),added=rows.filter(x=>!x.r.status),exist=rows.filter(x=>x.r.status==='待提交'),locked=rows.filter(x=>isSubmitted(x.c,x.p.id));
+  added.forEach(x=>{x.r.status='待提交'});
+  const future=added.filter(x=>lastDate(x.c,x.p.id)>TODAY).length;
+  showModal(`<h4>${S.mode==='edit'?'保存成功':'提交成功'}</h4><ul>
+   <li>共 <b>${S.cards.length}</b> 份执行单${added.length?`，新生成课酬账单 <b>${added.length}</b> 张（状态：待提交）`:''}</li>
+   ${exist.length-added.length>0?`<li>同步更新待提交的课酬账单 <b>${exist.length-added.length}</b> 张</li>`:''}
+   ${locked.length?`<li>已进入审批、账期中或可提现的课酬账单 <b>${locked.length}</b> 张，不受本次修改影响</li>`:''}
+   ${future?`<li><b>${future}</b> 张账单最后执行日期晚于今天，执行日期到达前不能加入待结算清单或发起付款申请</li>`:''}</ul>
+   ${remindHtml(rows)}
+   <div class="ops"><button class="btn" onclick="closeModal();renderAll()">${S.mode==='edit'?'继续编辑':'继续添加'}</button><button class="btn pri" onclick="closeModal();renderAll();toast('演示：跳转课酬账单')">查看课酬账单</button></div>`);
+}
+
+/* ---------- 从排期生成执行单 ---------- */
+let GEN=new Set();
+function openGen(){GEN=new Set(freeScheds().map(s=>s.id));renderGen()}
+function gSel(id,on){on?GEN.add(id):GEN.delete(id);renderGen()}
+function renderGen(){
+  const free=freeScheds(),used=SCHEDS.filter(s=>!free.includes(s));
+  const by=id=>{const e=EXISTING.find(x=>x.sched===id);if(e)return '已生成执行单 '+e.no;const i=S.cards.findIndex(c=>c.sched===id);return i>=0?'已在本页执行单 '+(i+1)+' 中使用':''};
+  const cells=s=>`<td><b>${s.cls}</b><div class="hint">排期 ${s.id}</div></td><td>${dlShort(s.dates)}<div class="hint">共 ${s.dates.length} 天</div></td><td>${s.method}${s.city&&s.method==='线下'?' · '+s.city:''}</td><td>${namesOf('lec',s.lec)}</td><td>${namesOf('ast',s.ast)}</td>`;
+  const head='<th>培训班（课程名称）</th><th>实际培训日期</th><th>培训方式</th><th>讲师</th><th>助教</th>';
+  $('modal').className='modal w';
+  $('modal').innerHTML=`<h4>从排期生成执行单</h4>
+   <div class="lead">一个排期（培训班）生成一张执行单：带入培训班名称（作为课程名称）、讲师、助教、培训方式和实际培训日期，<b>执行日期由项目经理自行选择</b>。已用过的排期不再出现在可选列表。</div>
+   ${free.length?`<table class="atb"><thead><tr><th style="width:30px"></th>${head}</tr></thead><tbody>${free.map(s=>`<tr><td><input type="checkbox" ${GEN.has(s.id)?'checked':''} onchange="gSel('${s.id}',this.checked)"></td>${cells(s)}</tr>`).join('')}</tbody></table>`:'<div class="banner ok">该合同下的排期均已生成执行单，没有可选排期。</div>'}
+   ${used.length?`<div class="sec2">已使用的排期（不可再选）</div><table class="atb"><thead><tr>${head}<th>使用情况</th></tr></thead><tbody>${used.map(s=>`<tr class="lk">${cells(s)}<td><span class="tag k">${by(s.id)}</span></td></tr>`).join('')}</tbody></table>`:''}
+   <div class="ops"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" ${GEN.size?'':'disabled'} onclick="genConfirm()">生成 ${GEN.size} 张执行单</button></div>`;
+  $('mask').classList.add('on');
+}
+function genConfirm(){
+  const picks=SCHEDS.filter(s=>GEN.has(s.id)&&!usedSched().has(s.id));
+  const blank=c=>!c.sched&&!c.from&&!c.to&&!c.lec.length&&!c.ast.length&&!c.owner&&!c.course;
+  S.cards=S.cards.filter(c=>!blank(c));
+  picks.forEach(s=>S.cards.push(cardFromSched(s)));
+  if(picks.length&&!S.pm)S.pm=picks[0].pm;
+  closeModal();renderAll();toast('已生成 '+picks.length+' 张执行单');
+}
+
+/* ---------- 发起付款申请弹窗 ---------- */
+const APPLY={ch:'常规',reason:'',sel:new Set()};let SQ=0;
+function openApply(){
+  APPLY.ch='常规';APPLY.reason='';
+  APPLY.sel=new Set(applyRows().filter(x=>!x.r.inList).map(x=>x.k));
+  renderApply();
+}
+function aSel(k,on){on?APPLY.sel.add(k):APPLY.sel.delete(k);renderApply()}
+function aAll(on){APPLY.sel=new Set(on?applyRows().filter(x=>!x.r.inList).map(x=>x.k):[]);renderApply()}
+function aCh(v){APPLY.ch=v;renderApply()}
+function aReason(v){APPLY.reason=v;renderApply()}
+function aEval(){S.evalDone=true;toast('演示：已完成讲师评价');renderApply()}
+function applyChecks(){
+  const rows=applyRows(),sel=rows.filter(x=>APPLY.sel.has(x.k));
+  const g=[];
+  g.push({ok:canInit(),t:canInit()?`发起人：${USERS[S.user].name}（项目经理本人）`:`仅执行单上的项目经理（${S.pm||'未选择'}）可发起付款申请`});
+  g.push({ok:S.evalDone,t:S.evalDone?'本项目讲师评价已完成':'本项目尚未完成讲师评价，未评价不可提交',fix:S.evalDone?'':'<a onclick="aEval()">去评价（演示）</a>'});
+  const reasonOk=APPLY.ch==='常规'||!!APPLY.reason.trim();
+  g.push({ok:reasonOk,t:APPLY.ch==='常规'?'申请通道：常规账期':(reasonOk?'申请通道：紧急账期，已填写紧急原因':'紧急账期须填写紧急原因')});
+  g.push({ok:sel.length>0,t:sel.length?`已勾选 ${sel.length} 人`:'请至少勾选 1 人发起'});
+  /* 付款合同额度：本次已确认的金额汇总 */
+  const use={};sel.forEach(x=>{if(x.r.pc)use[x.r.pc]=(use[x.r.pc]||0)+(rowAmt(x.c,x.p.id)||0)});
+  Object.keys(use).forEach(no=>{const left=pcLeft(no),ok=use[no]<=left;g.push({ok,t:ok?`付款合同 ${no} 额度充足（本次占用 ¥${use[no].toLocaleString()}，剩余 ¥${left.toLocaleString()}）`:`付款合同 ${no} 额度不足：本次需 ¥${use[no].toLocaleString()}，剩余 ¥${left.toLocaleString()}`})});
+  const rowBad=sel.map(x=>({x,iss:rowIssues(x.c,x.p)})).filter(o=>o.iss.length);
+  const nbad=g.filter(x=>!x.ok).length+rowBad.reduce((n,o)=>n+o.iss.length,0);
+  return {rows,sel,g,rowBad,nbad};
+}
+function renderApply(){
+  const {rows,sel,g,rowBad,nbad}=applyChecks();
+  const total=sel.reduce((n,x)=>n+(rowAmt(x.c,x.p.id)||0),0),keep=rows.length-sel.length;
+  const banner=nbad?`<div class="banner bad"><b>还有 ${nbad} 项不满足条件</b>，全部通过后才能发起付款申请：<ul>${g.filter(x=>!x.ok).map(x=>`<li>${x.t}${x.fix||''}</li>`).join('')}${rowBad.map(o=>`<li>${o.x.p.name}（执行单 ${o.x.i+1}）：${o.iss.map(t=>t.s).join('、')}</li>`).join('')}</ul><div style="margin-top:4px">可以「取消勾选」未满足条件的人员（保存后进入课酬账单再处理），或点击「返回修改」补齐。</div></div>`
+    :`<div class="banner ok"><b>全部校验通过</b>，可以发起付款申请。</div>`;
+  const tr=rows.map(x=>{
+    const dis=!!x.r.inList,on=APPLY.sel.has(x.k),iss=on?rowIssues(x.c,x.p):[],amt=rowAmt(x.c,x.p.id);
+    return `<tr class="${dis?'lk':''}"><td><input type="checkbox" ${on?'checked':''} ${dis?'disabled':''} onchange="aSel('${x.k}',this.checked)"></td>
+      <td><b>${x.p.name}</b><div class="hint">执行单 ${x.i+1} · ${x.c.course||'—'}</div></td><td>${x.p.role==='lec'?'讲师':'助教'}</td>
+      <td>${x.r.cat||'<span class="hint">未选</span>'}</td><td>${amt===null?'<span class="hint">—</span>':'¥'+amt.toLocaleString()}</td>
+      <td>${dis?'<span class="tag b">已在待结算清单</span> <span class="hint">不可在此发起，请到待结算清单提交，或先移出清单</span>':(on?(iss.length?iss.map(t=>`<div class="bad">✗ ${t.m}</div>`).join(''):'<span class="tag g">✓ 全部通过</span>'):'<span class="hint">未勾选：保存后进入课酬账单（待提交）</span>')}</td></tr>`}).join('');
+  const allOn=rows.filter(x=>!x.r.inList).every(x=>APPLY.sel.has(x.k))&&rows.some(x=>!x.r.inList);
+  $('modal').className='modal w';
+  $('modal').innerHTML=`<h4>发起付款申请</h4>
+   <div class="lead">所选人员的课酬将生成<b>一张付款申请单</b>并直接进入审批（部门负责人 → 财务，整单通过 / 驳回），无需再进入待结算清单提交。未勾选的人员保存后进入课酬账单。<br>生成的课酬账单将自动带入<b>最终客户名称（${CONTRACT.final}）</b>和<b>课程名称</b>（取各执行单课程），小程序按课程 / 服务客户展示。</div>
+   ${banner}
+   <div class="sec2">申请通道</div>
+   <div class="chn"><label><input type="radio" name="ch" ${APPLY.ch==='常规'?'checked':''} onchange="aCh('常规')">常规账期（审批通过后进入账期中，到期转可提现）</label><label><input type="radio" name="ch" ${APPLY.ch==='紧急'?'checked':''} onchange="aCh('紧急')">紧急账期（通过后直接可提现）</label></div>
+   ${APPLY.ch==='紧急'?`<div class="f" style="margin-top:8px"><label class="req" style="display:block;margin-bottom:4px">紧急原因</label><input type="text" maxlength="100" placeholder="请填写紧急原因（必填）" value="${APPLY.reason.replace(/"/g,'&quot;')}" onchange="aReason(this.value)"></div>`:''}
+   <div class="sec2">发起条件检查</div>
+   <div class="gchk">${g.map(x=>`<div class="gc ${x.ok?'ok':'no'}"><i>${x.ok?'✓':'✗'}</i><span>${x.t}${x.fix||''}</span></div>`).join('')}</div>
+   <div class="sec2">选择本次发起的人员 <span class="hint" style="font-weight:400"><a style="color:var(--blue);cursor:pointer" onclick="aAll(${allOn?'false':'true'})">${allOn?'取消全选':'全选'}</a></span></div>
+   <table class="atb"><thead><tr><th style="width:30px"></th><th>人员</th><th>角色</th><th>费用类别</th><th>金额</th><th>校验结果</th></tr></thead><tbody>${tr||'<tr><td colspan="6" style="text-align:center;color:#9ca3af">暂无可发起的人员</td></tr>'}</tbody></table>
+   <div class="sumbar"><span>本次发起 <b>${sel.length}</b> 人，合计 <b>¥${total.toLocaleString()}</b></span><span>未发起 <b style="color:var(--ink)">${keep}</b> 人：保存后进入课酬账单（待提交）</span></div>
+   <div class="ops sp"><button class="btn" onclick="closeModal()">取消</button><div class="l"><button class="btn" onclick="saveOnly()">仅保存，不发起</button><button class="btn" onclick="backFix()">返回修改</button><button class="btn pri" ${nbad?'disabled':''} onclick="confirmApply()">确认发起付款申请</button></div></div>`;
+  $('mask').classList.add('on');
+}
+function backFix(){
+  const {rowBad}=applyChecks();closeModal();renderAll();
+  const f=rowBad[0];if(f){const el=$('card_'+f.x.c.id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
+}
+function confirmApply(){
+  const {rows,sel,nbad}=applyChecks();if(nbad||!sel.length)return;
+  const no='FK-SQ'+TODAY.replace(/-/g,'').slice(2)+String(++SQ).padStart(3,'0');
+  const total=sel.reduce((n,x)=>n+(rowAmt(x.c,x.p.id)||0),0);
+  rows.forEach(x=>{if(APPLY.sel.has(x.k)){x.r.status='审批中';x.r.apply=no}else if(!x.r.status)x.r.status='待提交'});
+  const rest=rows.filter(x=>!APPLY.sel.has(x.k));
+  $('modal').className='modal';
+  showModal(`<h4>付款申请单已生成</h4><ul>
+   <li>申请单号：<b>${no}</b>（${APPLY.ch}账期${APPLY.ch==='紧急'?'，紧急原因：'+APPLY.reason:''}）</li>
+   <li>包含课酬账单 <b>${sel.length}</b> 张，合计 <b>¥${total.toLocaleString()}</b>，状态：<b>审批中</b></li>
+   <li>审批链：部门负责人 → 财务（整单通过 / 驳回，在合同系统 / 钉钉完成）</li>
+   ${rest.length?`<li>其余 <b>${rest.length}</b> 人已保存为课酬账单（待提交），可到课酬账单页补齐后加入待结算清单批量发起</li>`:''}</ul>
+   ${remindHtml(rest)}
+   <div class="ops"><button class="btn" onclick="closeModal();renderAll()">${S.mode==='edit'?'继续编辑':'继续添加'}</button><button class="btn pri" onclick="closeModal();renderAll();toast('演示：跳转付款申请单 ${no}')">查看付款申请单</button></div>`);
 }
 
 /* ================= 演示状态 ================= */
+function setWho(v){S.user=v;$('curUser').textContent=USERS[v].name+' ('+USERS[v].id+')';renderAll()}
 function setDemo(v){
-  S.mode=v==='edit'?'edit':'new';S.errPm=false;S.nid=1;warnsOpen=false;
+  S.mode=v==='edit'?'edit':'new';S.errPm=false;S.nid=1;warnsOpen=false;S.evalDone=false;
   $('pageTitle').textContent=v==='edit'?'编辑执行单':'添加执行单';
-  S.sched=v==='nosched'?null:SCHED;
-  S.pm=S.sched?S.sched.pm:'';
-  S.cards=[newCard()];
-  if(v==='edit'){
-    const c=S.cards[0];c.from='2026-11-09';c.to='2026-11-12';c.owner='华东一部';c.course=COURSES[0].n;
-    autofill(c);addPerson(c,'lec','L001','pick');addPerson(c,'lec','L002','pick');
-    c.rows.L001.status='待提交';
-    c.rows.L002.status='审批中';c.rows.L002.qty=String(personDays(c,'L002'));
-    c.rows.A002.status='账期中';c.rows.A002.qty=String(personDays(c,'A002'));
+  S.hasSched=v!=='nosched';
+  S.pm=S.hasSched?SCHEDS[0].pm:'';
+  S.cards=[];
+  const fill=(c,pid,cat,price,pc)=>{const r=c.rows[pid];r.cat=cat;r.price=String(price);if(pc)r.pc=pc};
+  if(v==='nosched'){S.cards=[newCard()]}
+  else if(v==='ready'){
+    const c=cardFromSched(SCHEDS[1]);c.from='2026-11-09';c.to='2026-11-09';c.owner='华东一部';
+    fill(c,'L002','授课费',6000,'FK-2026-0381');fill(c,'A001','线下助教费',400);
+    S.cards=[c];
+  }else if(v==='edit'){
+    const c=cardFromSched(SCHEDS[0]);c.from='2026-11-09';c.to='2026-11-12';c.owner='华东一部';
+    addPerson(c,'ast','A001','pick');
+    fill(c,'L001','授课费',1000);c.rows.L001.status='待提交';
+    fill(c,'L002','授课费',2000,'FK-2026-0381');c.rows.L002.status='审批中';c.rows.L002.qty=String(personDays(c,'L002'));
+    fill(c,'A002','线下助教费',500);c.rows.A002.status='账期中';c.rows.A002.qty=String(personDays(c,'A002'));
+    fill(c,'A001','线下助教费',400);c.rows.A001.status='待提交';c.rows.A001.inList=true;
+    S.cards=[c];
+  }else{
+    /* 合同下有几个未用过的排期，就自动生成几张执行单 */
+    freeScheds().forEach(s=>S.cards.push(cardFromSched(s)));
   }
+  $('curUser').textContent=USERS[S.user].name+' ('+USERS[S.user].id+')';
   renderAll();
 }
 setDemo('new');

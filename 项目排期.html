@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>编辑排期 · 师资课酬预填（方案B）</title>
+<title>编辑排期 · 只选讲师助教</title>
 <style>
 :root{--blue:#2f6bff;--blue-bg:#eaf1ff;--ink:#1f2937;--sub:#6b7280;--line:#e5e7eb;--bg:#f2f4f7;--orange:#d97706;--orange-bg:#fff4e0;--red:#e5484d;--green:#16a34a}
 *{box-sizing:border-box}
@@ -122,7 +122,7 @@ td input[type=number]{width:84px;height:28px}td select{height:28px;width:84px;pa
 <div class="f"><label class="req">客户简称</label><input type="text" value="平安科技"></div>
 <div class="f"><label class="req">客户归属</label><select><option>金融制造组</option></select></div>
 </div>
-<div class="f"><label class="req">培训班</label><input type="text" value="线下面试"></div>
+<div class="f"><label class="req">培训班</label><input type="text" value="线下面试"><div style="font-size:12px;color:#8b93a1;margin-top:2px">培训班名称将作为执行单的「课程名称」</div></div>
 
 <h3 class="sec">培训日期与方式</h3>
 <div class="f"><label class="req">实际培训日期</label>
@@ -159,12 +159,6 @@ td input[type=number]{width:84px;height:28px}td select{height:28px;width:84px;pa
 <div class="dd" id="astDd"></div>
 </div><label class="no"><input type="checkbox" id="astNo" onchange="renderAll()">不需要</label></div></div>
 
-<h3 class="sec">师资课酬预填</h3>
-<div class="pay">
-<div id="payBody"></div>
-<div class="tot" id="payTot"></div>
-</div>
-<div class="warns" id="warns"></div>
 
 <h3 class="sec">备注</h3>
 <div class="f"><label>补充说明</label><textarea placeholder="填写现场要求等补充信息；旧表无法拆分的内容也可迁入这里"></textarea></div>
@@ -179,11 +173,12 @@ td input[type=number]{width:84px;height:28px}td select{height:28px;width:84px;pa
 <ul>
 <li>编辑时修改自动保存；讲师、助教、现场均非必填，留空只标记为「缺」，不阻断保存。</li>
 <li>讲师只能从讲师运营系统选择；助教选已有账户，或在弹窗中直接新增（姓名必填，手机号可后补）。</li>
-<li>助教/班主任统一按助教账户处理，参与课酬预填。</li>
+<li>助教/班主任统一按助教账户处理，选定后可带入执行单。</li>
+<li>一个排期只能生成一张执行单；一个排期有多位讲师分日授课时全部带入同一张执行单，项目经理在执行单手动移除未参与的人员。</li>
 <li>同一师资同一时段重复占用仅提醒，不拦截；账单阶段才强校验。</li>
 <li>选择线上时，现场安排自动按「不需要」处理。</li>
 <li>培训日期支持按区间批量添加，并合并显示；超过 14 天自动折叠。</li>
-<li>授课/服务日期默认「全部培训日·全天」，只需调整例外；之后新增的培训日期默认也算授课日。</li>
+<li>排期不填写课酬与授课例外；课酬在执行单页填写并确认。</li>
 <li>缺少手机号不影响排期；加入待结算清单前需补充。</li>
 </ul></div>
 </div>
@@ -218,21 +213,7 @@ function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clear
 function saved(){toast('已自动保存')}
 
 function persons(){return [...S.lec.map(p=>({...p,role:'讲师'})),...S.ast.map(p=>({...p,role:'助教'}))]}
-function payOf(p){
-  if(!S.pay[p.id])S.pay[p.id]={exc:{},price:'',cat:''};
-  const c=S.pay[p.id];
-  Object.keys(c.exc).forEach(d=>{if(!S.dates.includes(d))delete c.exc[d]});
-  return c;
-}
-/* 默认：每个培训日上午+下午都授课；exc 只记录例外（[]=不授课，['上午']=仅上午，['下午']=仅下午） */
-function selMap(c){const m={};S.dates.forEach(d=>{m[d]=(d in c.exc)?c.exc[d]:['上午','下午']});return m}
-function daysOf(c){const m=selMap(c);return Object.values(m).reduce((n,a)=>n+a.length*.5,0)}
 function slotsOf(s){return s==='全天'?['上午','下午']:[s]}
-function sumText(c){
-  if(!S.dates.length)return '请先添加培训日期';
-  const k=Object.keys(c.exc).length;
-  return k?`全部培训日，例外 ${k} 天`:`全部培训日·全天（${S.dates.length}天）`;
-}
 /* ===== 日期工具 ===== */
 function pd(x){return new Date(x+'T00:00:00')}
 function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -270,16 +251,11 @@ function runsIn(sub){
   return runs.map(r=>r.map(i=>S.dates[i]));
 }
 function runLabel(r){return r.length===1?r[0].slice(5):r[0].slice(5)+'~'+r[r.length-1].slice(5)}
-function excText(c){
-  const names={'不授课':[],'仅上午':[],'仅下午':[]};
-  Object.keys(c.exc).forEach(d=>{const a=c.exc[d];names[a.length===0?'不授课':(a[0]==='上午'?'仅上午':'仅下午')].push(d)});
-  return Object.keys(names).filter(k=>names[k].length).map(k=>runsIn(names[k]).map(runLabel).join('、')+' '+k).join('；');
-}
 function activePersons(){return (($('lecNo').checked)?[]:S.lec.map(p=>({...p,role:'讲师'}))).concat($('astNo').checked?[]:S.ast.map(p=>({...p,role:'助教'})))}
 function conflicts(){
   const out=[];
   activePersons().forEach(p=>{
-    const c=payOf(p),occ=OCCUPY[p.id]||[],m=selMap(c),g={};
+    const occ=OCCUPY[p.id]||[],m={},g={};S.dates.forEach(d=>{m[d]=['上午','下午']});
     S.dates.forEach(d=>occ.filter(o=>o.date===d).forEach(o=>{
       if(m[d].some(s=>slotsOf(o.slot).includes(s))){const k=o.project+'|'+o.slot;(g[k]=g[k]||{o,ds:[]}).ds.push(d)}
     }));
@@ -288,12 +264,6 @@ function conflicts(){
   return out;
 }
 let warnsOpen=false,datesOpen=false;const segOpen=new Set();
-function renderWarns(){
-  const w=conflicts();
-  const show=warnsOpen?w:w.slice(0,3);
-  $('warns').innerHTML=show.map(x=>`<div class="warn">⚠ ${x}</div>`).join('')+(w.length>3?`<div><a onclick="warnsOpen=!warnsOpen;renderWarns()">${warnsOpen?'收起':'展开更多（+'+(w.length-3)+'）'}</a></div>`:'');
-}
-
 /* ===== 培训日期 ===== */
 function addDate(){
   const f=$('dateFrom').value,t=$('dateTo').value;
@@ -348,27 +318,7 @@ function renderAll(){
   $('astChips').innerHTML=S.ast.map(p=>chip(p.name+' '+phoneTag(p)+(p.isNew?' <span class="tag g">新增</span>':''),`delAst('${p.id}')`)).join('');
   renderPay();renderSide();
 }
-function renderPay(){
-  const ps=(($('lecNo').checked)?[]:S.lec.map(p=>({...p,role:'讲师'}))).concat($('astNo').checked?[]:S.ast.map(p=>({...p,role:'助教'})));
-  if(!ps.length){$('payBody').innerHTML='<div class="payEmpty">请先在上方选择讲师或助教，将自动生成课酬预填行</div>';$('payTot').innerHTML='<span>预估合计</span><b>—</b>';$('warns').innerHTML='';return}
-  let rows='',total=0,hasPrice=false;
-  ps.forEach(p=>{
-    const c=payOf(p),d=daysOf(c),pr=parseFloat(c.price);
-    const amt=(!isNaN(pr)&&c.price!=='')?d*pr:null;if(amt!==null){total+=amt;hasPrice=true}
-    const txt=sumText(c);
-    rows+=`<tr>
-      <td><b>${p.name}</b><div class="hint">${p.phone||'<span class="tag o">手机号待补充</span>'}</div></td>
-      <td><span class="tag ${p.role==='讲师'?'b':'g'}">${p.role}</span></td>
-      <td style="position:relative"><button class="dbtn" onclick="openDates(event,'${p.id}')" title="${txt}">${txt}</button>${excText(c)?`<div class="exc" title="${excText(c)}">例外：${excText(c)}</div>`:''}</td>
-      <td><select onchange="setCat('${p.id}',this.value)"><option value="">请选择</option>${CATS.map(x=>`<option ${c.cat===x?'selected':''}>${x}</option>`).join('')}</select></td>
-      <td>${d}</td>
-      <td><input type="number" min="0" step="0.01" placeholder="选填" value="${c.price}" oninput="setPrice('${p.id}',this.value)"></td>
-      <td id="amt_${p.id}">${amt===null?'—':'¥'+amt.toLocaleString()}</td></tr>`;
-  });
-  $('payBody').innerHTML=`<table><thead><tr><th>人员</th><th>角色</th><th>授课/服务日期</th><th>费用类别</th><th>天数</th><th>单价(元/天)</th><th>预估金额</th></tr></thead><tbody>${rows}</tbody></table>`;
-  $('payTot').innerHTML=`<span>共 ${ps.length} 人</span><span>预估合计：<b id="totV">${hasPrice?'¥'+total.toLocaleString():'—'}</b></span>`;
-  renderWarns();
-}
+function renderPay(){}
 function renderSide(){
   const online=$('mode').value==='线上';
   const lec=$('lecNo').checked?'不需要':(S.lec.length?S.lec.map(p=>p.name).join('、'):'缺');
@@ -386,95 +336,13 @@ function renderSide(){
   <div class="kv"><span>助教/班主任</span><span>${ast}</span></div>
   <div class="kv"><span>现场安排</span><span>${on}</span></div>
   <div style="margin-top:8px">${miss.map(m=>`<span class="tag o" style="margin-right:6px">${m}</span>`).join('')}</div>`;
-  const ps=(($('lecNo').checked)?[]:S.lec).concat($('astNo').checked?[]:S.ast);
-  let total=0,filled=0,days=0;
-  ps.forEach(p=>{const c=payOf(p);days+=daysOf(c);const pr=parseFloat(c.price);if(!isNaN(pr)&&c.price!==''){filled++;total+=daysOf(c)*pr}});
-  const pend=ps.length;const w=conflicts().length;
-  $('paySumCard').innerHTML=`<h4>课酬预填摘要</h4>
-  <div class="kv"><span>预填人数</span><span>${ps.length} 人（单价已填 ${filled}）</span></div>
-  <div class="kv"><span>总天数</span><span>${days} 天</span></div>
-  <div class="kv"><span>预估合计</span><span><b style="color:var(--blue)">${filled?'¥'+total.toLocaleString():'—'}</b></span></div>
-  <div class="kv"><span>待确认</span><span>${pend?`${pend} 人（生成课酬草稿后需项目经理确认）`:'—'}</span></div>
+  const nl=$('lecNo').checked?0:S.lec.length,na=$('astNo').checked?0:S.ast.length,w=conflicts().length;
+  $('paySumCard').innerHTML=`<h4>人员摘要</h4>
+  <div class="kv"><span>讲师</span><span>${nl} 人</span></div>
+  <div class="kv"><span>助教/班主任</span><span>${na} 人</span></div>
+  <div class="kv"><span>课酬</span><span>不在排期填写，添加执行单时带入人员后填写</span></div>
   <div class="kv"><span>重复占用</span><span>${w?`<span class="tag o">${w} 处提醒</span>`:'无'}</span></div>`;
 }
-function refreshNumbers(id){ /* 输入单价时只局部刷新，避免输入框失焦 */
-  const p=persons().find(x=>x.id===id);if(!p)return;
-  const c=payOf(p),pr=parseFloat(c.price);
-  const el=$('amt_'+id);if(el)el.textContent=(!isNaN(pr)&&c.price!=='')?'¥'+(daysOf(c)*pr).toLocaleString():'—';
-  let total=0,has=false;
-  persons().forEach(q=>{if(q.role==='讲师'&&$('lecNo').checked)return;if(q.role==='助教'&&$('astNo').checked)return;const cc=payOf(q),v=parseFloat(cc.price);if(!isNaN(v)&&cc.price!==''){total+=daysOf(cc)*v;has=true}});
-  const t=$('totV');if(t)t.textContent=has?'¥'+total.toLocaleString():'—';
-  renderSide();
-}
-const CATS=['授课','助教','出题 / 题库','源文件','视频','打包价','其他'];
-function setCat(id,v){S.pay[id].cat=v;clearTimeout(setCat._t);setCat._t=setTimeout(saved,600)}
-function setPrice(id,v){S.pay[id].price=v;refreshNumbers(id);clearTimeout(setPrice._t);setPrice._t=setTimeout(saved,600)}
-
-/* 授课/服务日期：默认全选，只调整例外；支持按周、按范围、快捷批量操作 */
-let PP=null;
-function weekGroups(){
-  const g=[],map={};
-  S.dates.forEach(d=>{const k=addDays(d,-((pd(d).getDay()+6)%7));if(!map[k]){map[k]={key:k,dates:[]};g.push(map[k])}map[k].dates.push(d)});
-  return g;
-}
-function openDates(ev,id){
-  ev.stopPropagation();closePop();
-  if(!S.dates.length){toast('请先添加培训日期');return}
-  const p=persons().find(x=>x.id===id),c=payOf(p),m=selMap(c);
-  const draft={};S.dates.forEach(d=>draft[d]=m[d].slice());
-  const open=new Set(),wg=weekGroups();
-  wg.forEach(w=>{if(S.dates.length<=10||w.dates.some(d=>draft[d].length!==2))open.add(w.key)});
-  PP={id,draft,open};
-  const pop=document.createElement('div');pop.className='dpop';pop.id='dpop';
-  pop.onclick=e=>e.stopPropagation();
-  ev.target.parentNode.appendChild(pop);
-  pop.style.left='0';pop.style.top=(ev.target.offsetTop+30)+'px';
-  renderPop();
-}
-const SL=['上午','下午'];
-function setSlot(d,s,on){const a=new Set(PP.draft[d]);on?a.add(s):a.delete(s);PP.draft[d]=SL.filter(x=>a.has(x))}
-function daySet(d,s,on){setSlot(d,s,on);renderPop()}
-function wkSet(key,s,on){weekGroups().find(w=>w.key===key).dates.forEach(d=>setSlot(d,s,on));renderPop()}
-function toggleWk(key){PP.open.has(key)?PP.open.delete(key):PP.open.add(key);renderPop()}
-function wkAll(open){PP.open=new Set(open?weekGroups().map(w=>w.key):[]);renderPop()}
-function quick(t){
-  S.dates.forEach(d=>{
-    PP.draft[d]=t==='all'?['上午','下午']:t==='clear'?[]:t==='am'?['上午']:t==='pm'?['下午']:(isWk(d)?[]:['上午','下午']);
-  });
-  renderPop();
-}
-function renderPop(){
-  const pop=$('dpop');if(!pop||!PP)return;
-  const old=pop.querySelector('.dlist'),top=old?old.scrollTop:0;
-  const D=PP.draft;
-  const days=S.dates.reduce((n,d)=>n+D[d].length*.5,0);
-  const exc=S.dates.filter(d=>D[d].length!==2).length;
-    const wg=weekGroups();
-  const list=wg.map(w=>{
-    const open=PP.open.has(w.key);
-    const state=s=>{const n=w.dates.filter(d=>D[d].includes(s)).length;return n===w.dates.length?2:(n?1:0)};
-    const cb=s=>{const st=state(s);return `<label><input type="checkbox" ${st===2?'checked':''} ${st===1?'data-ind="1"':''} onchange="wkSet('${w.key}','${s}',this.checked)">${s}</label>`};
-    const body=open?w.dates.map(d=>`<div class="dr"><span class="dn">${d.slice(5)} 周${wd[pd(d).getDay()]}${isWk(d)?'<span class="we">周末</span>':''}</span>`+
-      SL.map(s=>`<label><input type="checkbox" ${D[d].includes(s)?'checked':''} onchange="daySet('${d}','${s}',this.checked)">${s}</label>`).join('')+`</div>`).join(''):'';
-    return `<div class="wk"><div class="wh" onclick="toggleWk('${w.key}')"><span class="car">${open?'▾':'▸'}</span><b>${w.dates[0].slice(5)} ~ ${w.dates[w.dates.length-1].slice(5)} · ${w.dates.length}天</b>
-      <span onclick="event.stopPropagation()" style="display:flex;gap:10px">${cb('上午')}${cb('下午')}</span></div>${body}</div>`;
-  }).join('');
-  pop.innerHTML=`<div class="dsum">共 ${S.dates.length} 个培训日 · 授课 ${days} 天${exc?` <span>（例外 ${exc} 天）</span>`:''}</div>
-  <div class="dq"><button class="btn sm" onclick="quick('all')">全部全天</button><button class="btn sm" onclick="quick('wd')">仅工作日</button><button class="btn sm" onclick="quick('am')">全部上午</button><button class="btn sm" onclick="quick('pm')">全部下午</button><button class="btn sm" onclick="quick('clear')">清空</button></div>
-  <div class="dlist">${list}</div>
-  <div class="ft"><span><a style="color:var(--blue);cursor:pointer" onclick="wkAll(true)">展开全部</a>　<a style="color:var(--sub);cursor:pointer" onclick="wkAll(false)">收起全部</a></span>
-  <span style="display:flex;gap:8px"><button class="btn sm" onclick="closePop()">取消</button><button class="btn sm pri" onclick="popOk()">确定</button></span></div>`;
-  pop.querySelectorAll('input[data-ind]').forEach(i=>i.indeterminate=true);
-  pop.querySelector('.dlist').scrollTop=top;
-}
-function popOk(){
-  const exc={};
-  S.dates.forEach(d=>{if(PP.draft[d].length!==2)exc[d]=PP.draft[d].slice()});
-  S.pay[PP.id].exc=exc;
-  closePop();renderAll();saved();
-}
-function closePop(){const p=$('dpop');if(p)p.remove();PP=null}
-
 /* 人员选择 */
 function delLec(id){S.lec=S.lec.filter(p=>p.id!==id);renderAll();saved()}
 function delAst(id){S.ast=S.ast.filter(p=>p.id!==id);renderAll();saved()}
@@ -509,7 +377,7 @@ function closeDd(){document.querySelectorAll('.dd').forEach(d=>d.classList.remov
   i.addEventListener('click',e=>e.stopPropagation());
   $(k==='lec'?'lecDd':'astDd').addEventListener('click',e=>e.stopPropagation());
 });
-document.addEventListener('click',()=>{closeDd();closePop()});
+document.addEventListener('click',()=>{closeDd()});
 
 /* 新增助教弹窗 */
 function openModal(){
