@@ -142,10 +142,13 @@ button,input{font:inherit}button{border:0;cursor:pointer}a{text-decoration:none;
 .ai-send{width:64px;height:40px;border-radius:12px;background:linear-gradient(100deg,var(--brand),var(--brand2));color:#fff;font-size:13px;font-weight:700;flex:none;box-shadow:0 6px 14px rgba(37,99,235,.2)}
 .ai-send:disabled{background:#ccd2dc;box-shadow:none}
 .screen.ai-screen .bottom-tabs{position:relative;flex:none;height:calc(58px + var(--safe));box-shadow:none}
-.acc-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:0 16px 14px}
+.acc-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:0 0 14px}
 .acc-actions button{height:30px;padding:0 12px;border-radius:15px;font-size:11px;font-weight:650;border:1px solid var(--line);background:#fff;color:var(--ink)}
 .acc-actions .danger{color:var(--red);border-color:#ffd4d6;background:#fff8f8}
+.acc-actions .reveal{display:inline-flex;align-items:center;gap:4px;margin-right:auto;padding:0;border:0;background:none;color:var(--brand)}.acc-actions .reveal svg{width:14px;height:14px}
 .acc-actions .primary{color:var(--brand);border-color:#c9daff;background:#f3f7ff}
+.acc-reveal{display:flex;justify-content:flex-end;padding:0 16px 10px}.acc-reveal button{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:650;color:var(--brand);background:none}.acc-reveal button svg{width:14px;height:14px}.acc-reveal .ok{font-size:10px;color:var(--green);margin-right:auto;align-self:center}
+.vf-row{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:0 6px 0 14px;height:48px;margin:2px 0 12px;background:#fff}.vf-row input{flex:1;min-width:0;border:0;outline:0;font-size:16px;letter-spacing:6px;background:transparent}.vf-row input::placeholder{letter-spacing:0;font-size:14px}.vf-row button{height:34px;padding:0 12px;border-radius:17px;font-size:12px;font-weight:650;color:var(--brand);background:#f3f7ff;white-space:nowrap}.vf-row button[disabled]{color:var(--muted);background:#f1f3f6}
 .acc-empty{text-align:center;padding:28px 16px}
 .acc-empty p{font-size:12px;color:var(--muted);line-height:1.65;margin:8px 0 16px}
 .sticky.dual{display:flex;align-items:center;gap:10px}.sticky.dual .btn{flex:1;height:48px;margin-top:0}.sticky.dual .btn+.btn{margin-top:0}.sticky.dual .btn.secondary{margin-top:0}
@@ -209,21 +212,28 @@ const initial={
   draft:{flow:false,sel:[],amount:'',method:'',accountId:'a1',invoices:[]},
   pwdDraft:{mode:'',step:'',old:'',code:'',value:'',confirm:''},
   ui:{year:'2026',incomeFilter:'全部',recordFilter:'全部',incomeFrom:'',incomeTo:'',recordFrom:'',recordTo:''},
-  showRules:false, showOrgInfo:false, balInfo:'', showServiceQr:false, showInvoicePreview:false, invPreviewIdx:0, showInvUpload:false, mp:null, showAccDelete:false, accDeleteId:'',
+  showRules:false, showOrgInfo:false, balInfo:'', showServiceQr:false, showInvoicePreview:false, invPreviewIdx:0, showInvUpload:false, mp:null, showAccDelete:false, accDeleteId:'', accReveal:{}, verifyAcc:null,
   accUI:{mode:'list',id:'',kind:'银行卡',name:'',number:'',bank:''},
   defaultAccountId:'a1',
-  accounts:[{id:'a1',kind:'银行卡',name:'齐毅',number:'6222 0210 8898 6321',bank:'招商银行北京中关村支行'},{id:'a2',kind:'支付宝',name:'齐毅',number:'qiyi***@example.com',bank:''}],
+  accounts:[{id:'a1',kind:'银行卡',name:'齐毅',number:'6222 0210 8898 6321',bank:'招商银行北京中关村支行'},{id:'a2',kind:'支付宝',name:'齐毅',number:'qiyi2021@example.com',bank:''}],
   incomes:[
     {id:'I240901',place:'北京 · 海淀',customer:'某能源集团',course:'数字化转型工作坊',dateStart:'2026-08-18',dateEnd:'2026-08-20',days:3,unitPrice:2100,other:500,otherNote:'往返交通费',role:'讲师',amount:6800,credited:'2026-10-02 16:32',available:'2026-10-19',type:'normal',status:'可提现',teacher:'贺敏'},
     {id:'I240902',place:'线上',customer:'某互联网公司',course:'AI 应用开发实战',dateStart:'2026-08-30',dateEnd:'2026-08-30',days:1,unitPrice:2400,role:'讲师',amount:2400,credited:'2026-10-03 10:08',available:'2026-10-29',type:'normal',status:'可提现',teacher:'吴启明'},
     {id:'I240903',place:'上海 · 浦东',customer:'某银行总行',course:'大模型业务落地内训',dateStart:'2026-10-24',dateEnd:'2026-10-24',days:1,unitPrice:3600,role:'讲师',amount:3600,credited:'2026-10-28 14:20',available:'当前可提现',emg:true,status:'可提现',teacher:'贺敏'},
     {id:'I240904',place:'江西 · 南昌',customer:'某云厂商',course:'云原生架构师认证班',dateStart:'2026-10-14',dateEnd:'2026-10-16',days:3,unitPrice:3000,other:200,otherNote:'外地授课住宿费',role:'讲师',amount:9200,credited:'2026-11-02 09:15',available:'2026-12-15',type:'normal',status:'未到可提现日',teacher:'吴启明'},
-    {id:'I240905',place:'上海 · 浦东',customer:'某证券公司',course:'AI 提示词工程实战',dateStart:'2026-09-10',dateEnd:'2026-09-10',days:1,unitPrice:3600,role:'讲师',amount:3600,credited:'2026-10-05 11:00',available:'2026-10-20',status:'可提现',teacher:'贺敏'},
+    {id:'I240905',place:'上海 · 浦东',customer:'某证券公司',course:'AI 提示词工程实战',dateStart:'2026-09-10',dateEnd:'2026-09-10',days:1,unitPrice:4000,role:'讲师',amount:4000,credited:'2026-10-05 11:00',available:'2026-10-20',status:'可提现',teacher:'贺敏'},
     {id:'I240906',place:'江西 · 南昌',customer:'某制造集团',course:'数字化领导力工作坊',dateStart:'2026-09-22',dateEnd:'2026-09-23',days:2,unitPrice:2500,role:'讲师',amount:5000,credited:'2026-09-28 10:00',available:'2026-10-15',status:'提现中',wid:'TX202611010088',teacher:'贺敏'},
     {id:'I240907',place:'线上',customer:'某保险公司',course:'数据治理实践',dateStart:'2026-09-25',dateEnd:'2026-09-25',days:1,unitPrice:3400,role:'讲师',amount:3400,credited:'2026-09-29 15:20',available:'2026-10-15',status:'提现中',wid:'TX202611010088',teacher:'吴启明'},
     {id:'I240801',place:'北京 · 海淀',customer:'某科技公司',course:'Python 数据分析训练营',dateStart:'2026-08-05',dateEnd:'2026-08-05',days:1,unitPrice:3200,role:'讲师',amount:3200,credited:'2026-08-12 09:30',available:'2026-08-30',status:'已提现',wid:'TX202609050118',teacher:'贺敏'},
     {id:'I240802',place:'上海 · 浦东',customer:'某汽车集团',course:'FDE 管理者认证',dateStart:'2026-07-06',dateEnd:'2026-07-13',days:6,unitPrice:3900,role:'讲师',amount:23400,credited:'2026-07-20 14:00',available:'2026-08-10',status:'已提现',wid:'TX202608100031',teacher:'吴启明'},
     {id:'I250101',place:'北京 · 海淀',customer:'某通信集团',course:'大模型应用开发',dateStart:'2025-11-10',dateEnd:'2025-11-12',days:3,unitPrice:4000,role:'讲师',amount:12000,credited:'2025-11-20 10:00',available:'2025-12-05',status:'已提现',wid:'TX202512080012',teacher:'贺敏'}
+  ],
+  /* 扣款：后台「已通过账单」发起、财务审批；列表中独立成行，显示 −¥；审批中订单冻结，已驳回不展示 */
+  deductions:[
+    {id:'KK202611-0004',ref:'I240904',amount:1500,reason:'课程取消一天，扣减对应课酬',status:'审批中',time:'2026-11-03 16:10'},
+    {id:'KK202611-0003',ref:'I240902',amount:1000,reason:'课程缩减，多付课酬',status:'审批中',time:'2026-11-03 14:30'},
+    {id:'KK202611-0002',ref:'I240905',amount:400,reason:'重复结算：部分课时已在其他订单中结算',status:'已通过',time:'2026-11-02 16:20'},
+    {id:'KK202611-0001',ref:'I240903',amount:800,reason:'金额录入有误',status:'已驳回',time:'2026-10-30 10:00'}
   ],
   records:[
     {id:'TX202611010088',type:'normal',amount:8400,method:'云账户',submit:'2026-11-01 10:20',eta:'当月月底前到账',status:'提现中',note:'',kind:'processing',orders:['I240906','I240907'],account:{kind:'银行卡',name:'齐毅',number:'6222 **** 6321',bank:'招商银行北京中关村支行'}},
@@ -237,7 +247,7 @@ const initial={
 const initialOrg=(()=>{const o=JSON.parse(JSON.stringify(initial));
   Object.assign(o,{orgMode:true,orgName:'深圳云帆企业管理咨询有限公司',orgRep:'李明',orgTeachers:[{name:'贺敏',phone:'13912346021'},{name:'吴启明',phone:'13788905537'}],
     defaultAccountId:'o1',draft:Object.assign(o.draft,{accountId:'o1',method:'invoice'}),accUI:{mode:'list',id:'',kind:'对公账户',name:'',number:'',bank:''},
-    accounts:[{id:'o1',kind:'对公账户',name:'深圳云帆企业管理咨询有限公司',number:'7559 **** 2208',bank:'招商银行深圳南山支行'}],
+    accounts:[{id:'o1',kind:'对公账户',name:'深圳云帆企业管理咨询有限公司',number:'7559 8812 3456 2208',bank:'招商银行深圳南山支行'}],
     records:[
       {id:'TX202610120031',type:'normal',amount:9200,method:'开发票',submit:'2026-10-12 10:05',eta:'当月月底前到账',status:'提现中',note:'',kind:'processing',account:{kind:'对公账户',name:'深圳云帆企业管理咨询有限公司',number:'7559 **** 2208',bank:'招商银行深圳南山支行'}},
       {id:'TX202609080066',type:'normal',amount:18600,method:'开发票',submit:'2026-09-08 09:30',eta:'已于 2026-09-27 提现成功',status:'已提现',note:'',kind:'paid',account:{kind:'对公账户',name:'深圳云帆企业管理咨询有限公司',number:'7559 **** 2208',bank:'招商银行深圳南山支行'}}
@@ -285,7 +295,9 @@ const inDateRange=(day,from,to)=>{
   if(to&&d>to)return false;
   return true;
 };
-const accText=a=>!a?'—':`${a.kind} · ${a.name} · ${a.number}${a.bank?' · '+a.bank:''}`;
+const maskName=n=>{n=String(n||'');if(!n||n.includes('*'))return n;const L=[...n];if(L.length<=1)return n;if(L.length>=8)return L.slice(0,2).join('')+'****'+L.slice(-4).join('');if(L.length===2)return L[0]+'*';return L[0]+'*'.repeat(L.length-2)+L[L.length-1]};
+const maskNum=n=>{n=String(n||'');if(!n||n.includes('*'))return n;if(n.includes('@')){const [u,d]=n.split('@');return u.slice(0,2)+'***@'+d}const g=n.replace(/\s/g,'');if(/^\d{11}$/.test(g))return g.slice(0,3)+' **** '+g.slice(-4);if(g.length>=8)return g.slice(0,4)+' **** '+g.slice(-4);return n};
+const accText=a=>!a?'—':`${a.kind} · ${maskName(a.name)} · ${maskNum(a.number)}${a.bank?' · '+a.bank:''}`;
 const CUR_YEAR='2026';
 const YEAR_OPTS=['2026','2025','总计'];
 const OSTAT_CLS={'未到可提现日':'purple','可提现':'blue','提现中':'blue','已提现':'green'};
@@ -293,20 +305,34 @@ const OSTAT_CLS={'未到可提现日':'purple','可提现':'blue','提现中':'b
 const NOW_DATE=()=>state.inWindow?'2026-11-03':'2026-11-20';
 const nextWin=d=>{const y=Number(d.slice(0,4)),m=Number(d.slice(5,7)),ny=m===12?y+1:y,nm=m===12?1:m+1;return ny+'-'+String(nm).padStart(2,'0')+'-01'};
 const inWinDay=d=>{const n=Number(String(d).slice(8,10));return n>=WIN[0]&&n<=WIN[1]};
+/* 扣款：独立条目（state.deductions）。审批中 = 订单整笔冻结：冻结只是叠加在订单状态上的标记，订单仍留在原状态（可提现 / 未到可提现日），不新增状态标签，仅不可勾选，并在说明行与详情提示卡中说明原因；已通过 = 从订单金额中扣减；已驳回不展示 */
+const dedList=x=>state.deductions.filter(d=>d.ref===x.id);
+const holdAmt=x=>Math.round(dedList(x).filter(d=>d.status==='审批中').reduce((t,d)=>t+d.amount,0)*100)/100;
+const dedDone=x=>Math.round(dedList(x).filter(d=>d.status==='已通过').reduce((t,d)=>t+d.amount,0)*100)/100;
+const netAmt=x=>Math.round((x.amount-dedDone(x))*100)/100;
+const isHold=x=>holdAmt(x)>0;
 const ost=x=>x.status==='可提现'&&!state.inWindow&&!x.emg?'未到可提现日':x.status;
+const isPickable=x=>ost(x)==='可提现'&&!isHold(x)&&netAmt(x)>0;
+const holdText=x=>'该订单有一笔 '+fmt(holdAmt(x))+' 的扣款申请正在审批'+(ost(x)==='可提现'?'，审批结束前暂不可提现':'')+'。审批通过后将扣减对应金额，审批驳回后恢复为原状态；如有疑问请联系对接的项目经理。';
+const holdTitle=x=>ost(x)==='可提现'?'订单暂不可提现':'订单有扣款申请审批中';
+/* 扣款行：展示状态——审批中显示「审批中」；已通过则跟随对应订单当前所处状态；日期取扣款通过时间（审批中取发起时间） */
+const dedOrder=d=>state.incomes.find(o=>o.id===d.ref);
+const dedStat=d=>ost(dedOrder(d));
+const dedRows=()=>state.deductions.filter(d=>d.status!=='已驳回'&&dedOrder(d)).map(d=>Object.assign({isDed:true,order:dedOrder(d),date:d.time},d));
 /* 最早可提现日：账期到期日落在窗口内取当日，否则取之后最近的窗口起始日 */
 const openDate=x=>x.status==='未到可提现日'?(inWinDay(x.available)?x.available:nextWin(x.available)):nextWin(NOW_DATE());
 const waitReason=x=>x.status==='未到可提现日'?(inWinDay(x.available)?'该订单将于 '+ymText(x.available)+' 到可提现日':'该订单将于 '+ymText(x.available)+' 到可提现日，之后需在每月 '+WIN[0]+'~'+WIN[1]+' 日提现窗口期内提现'):'该订单已到可提现日，但当前不在每月 '+WIN[0]+'~'+WIN[1]+' 日提现窗口期，下月 1 日起可提现';
 const orderYear=x=>String(x.dateStart||x.credited).slice(0,4);
-const sumAmt=l=>Math.round(l.reduce((t,x)=>t+x.amount,0)*100)/100;
+/* 订单汇总一律按扣款后的金额（原金额 − 已通过扣款） */
+const sumAmt=l=>Math.round(l.reduce((t,x)=>t+netAmt(x),0)*100)/100;
 /* 金额全部由订单汇总得出：按订单所属年份统计四类金额 */
 function yearBal(){
   const y=state.ui.year,L=y==='总计'?state.incomes:state.incomes.filter(x=>orderYear(x)===y),by=s=>L.filter(x=>ost(x)===s);
-  return {pending:sumAmt(by('未到可提现日')),avail:sumAmt(by('可提现')),availN:by('可提现').length,processing:sumAmt(by('提现中')),paid:sumAmt(by('已提现'))};
+  return {pending:sumAmt(by('未到可提现日')),frozenAvail:sumAmt(by('可提现').filter(isHold)),frozenAvailN:by('可提现').filter(isHold).length,avail:sumAmt(by('可提现').filter(x=>!isHold(x))),availN:by('可提现').filter(x=>!isHold(x)).length,processing:sumAmt(by('提现中')),paid:sumAmt(by('已提现'))};
 }
 const yearLabel=y=>y==='总计'?'总计':y+' 年';
 /* 可提现订单；窗口内全部可选，窗口外仅后台标记的订单可选（前台不展示标记） */
-const withdrawable=()=>state.incomes.filter(x=>ost(x)==='可提现');
+const withdrawable=()=>state.incomes.filter(isPickable);
 const canPick=x=>true;
 const pickable=()=>withdrawable().filter(canPick);
 const draftOrders=()=>{const L=withdrawable();return (state.draft.sel||[]).map(id=>L.find(x=>x.id===id)).filter(x=>x&&canPick(x))};
@@ -314,12 +340,12 @@ const ETA_N='当月月底前到账（以实际付款进度为准）',ETA_E='预�
 const splitInfo=l=>{const e=l.filter(x=>x.emg),n=l.filter(x=>!x.emg);return {emg:e,nor:n,n:(e.length?1:0)+(n.length?1:0)}};
 function wallet(){
   const yb=yearBal(),all=withdrawable(),pk=pickable(),allAmt=sumAmt(all),pkAmt=sumAmt(pk);
-  const yearTotal=yb.pending+yb.avail+yb.processing+yb.paid;
+  const yearTotal=yb.pending+yb.avail+yb.frozenAvail+yb.processing+yb.paid; /* 合计含扣款审批冻结的可提现订单 */
   const heroFs=fs(allAmt,[15,15,14,12,11,10]);
   const statFs=fs(Math.max(yb.avail,yb.pending,yb.processing,yb.paid),[13,13,12,11,10,9]);
   const btnTxt=pk.length?'去提现':(state.inWindow?'暂无可提现订单':'下月 1 日开放');
   const lastRec=[...state.records].sort((x,y)=>y.submit.localeCompare(x.submit))[0];
-  const lastInc=[...state.incomes].sort((x,y)=>y.credited.localeCompare(x.credited))[0];
+  const lastInc=[...state.incomes.map(x=>({k:x.credited,x})),...dedRows().map(d=>({k:d.date,x:d}))].sort((a,b)=>b.k.localeCompare(a.k))[0]?.x;
   return shell(`
     <div class="card hero">
       <div class="hero-total">
@@ -345,17 +371,48 @@ function wallet(){
     <div class="section-title"><h3>最近提现</h3><button data-action="wallet-jump" data-tab="records" data-filter="全部">全部 ${icons.chevron}</button></div>
     <div class="card list-card">${lastRec?recordRow(lastRec):`<div class="empty">${icons.empty}<div>暂无提现记录</div></div>`}</div>
     <div class="section-title"><h3>最近订单</h3><button data-action="wallet-jump" data-tab="income" data-filter="全部">全部 ${icons.chevron}</button></div>
-    <div class="card list-card">${lastInc?incomeRow(lastInc):`<div class="empty">${icons.empty}<div>暂无订单</div></div>`}</div>
+    <div class="card list-card">${lastInc?(lastInc.isDed?dedRow(lastInc):incomeRow(lastInc)):`<div class="empty">${icons.empty}<div>暂无订单</div></div>`}</div>
   `,{title:'51CTO结算中心',back:false,tabs:'wallet'});
 }
 const ymText=d=>{const m=String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);return m?m[1]+' 年 '+Number(m[2])+' 月 '+Number(m[3])+' 日':String(d||'')};
-const etaValue=x=>ost(x)==='未到可提现日'?ymText(openDate(x))+' 起可提现；之后每月 1~10 日开放':x.status==='提现中'?(x.emg?'提现中，预计 3 个工作日内付款':'提现中，当月月底前到账'):x.status==='已提现'?'已提现':'当前可提现';
-const etaLine=x=>ost(x)==='未到可提现日'?ymText(openDate(x))+' 起可提现':x.status==='提现中'?'提现中':x.status==='已提现'?'已提现':'当前可提现';
+const etaValue=x=>isHold(x)&&ost(x)!=='未到可提现日'?'扣款申请审批结束前暂不可提现':ost(x)==='可提现'&&netAmt(x)<=0?'已全额扣款，无可提现金额':ost(x)==='未到可提现日'?ymText(openDate(x))+' 起可提现；之后每月 1~10 日开放':x.status==='提现中'?(x.emg?'提现中，预计 3 个工作日内付款':'提现中，当月月底前到账'):x.status==='已提现'?'已提现':'当前可提现';
+const etaLine=x=>isHold(x)&&ost(x)!=='未到可提现日'?'扣款申请审批中，暂不可提现':ost(x)==='可提现'&&netAmt(x)<=0?'已全额扣款，无可提现金额':ost(x)==='未到可提现日'?ymText(openDate(x))+' 起可提现':x.status==='提现中'?'提现中':x.status==='已提现'?'已提现':'当前可提现';
+function dedRow(d){
+  const o=d.order,pend=d.status==='审批中',st=dedStat(d);
+  return `<button class="list-row" style="width:100%;background:none;text-align:left" data-go="/deduction/${d.id}">
+    <div class="row-icon red">${icons.receipt}</div>
+    <div class="row-main"><div class="row-title">${tag('扣款','red')} ${o.course||'结算订单'}</div><div class="row-sub">${o.customer||'—'} · 对应订单 ${periodText(o)}${state.orgMode?' · 授课：'+o.teacher:''}</div><div class="row-sub eta later">${pend?(ost(o)==='可提现'?'扣款申请审批中，对应订单暂不可提现':'扣款申请审批中'):d.time.slice(5,10)+' 扣款通过 · 订单：'+st}</div><div class="row-sub">原因：${d.reason}</div></div>
+    <div class="row-side"><div class="row-amount" style="color:var(--red)">${state.hideMoney?'−¥****':'−'+fmt(d.amount)}</div><div class="row-status">${pend?tag('审批中','orange'):tag('已扣款','')}</div></div>
+  </button>`;
+}
+function deductionDetail(id){
+  const d=state.deductions.find(i=>i.id===id),o=d&&dedOrder(d);
+  if(!d||!o)return notFound();
+  const pend=d.status==='审批中';
+  return shell(`
+    <div class="card detail-hero"><div class="eyebrow">扣款金额</div><div class="amount" style="color:var(--red)">−${fmt(d.amount)}</div><div class="status-line">${tag('扣款','red')} ${pend?tag('审批中','orange'):tag('已扣款','')}</div></div>
+    ${pend?`<div class="notice warn" style="margin:0 0 10px">${icons.info}<div><b>${holdTitle(o)}</b><br>${holdText(o)}</div></div>`:''}
+    <div class="section-title"><h3>扣款信息</h3></div>
+    <div class="card"><dl class="kv">
+      <div class="kv-row"><dt>扣款原因</dt><dd>${d.reason}</dd></div>
+      <div class="kv-row"><dt>扣款状态</dt><dd>${pend?'审批中':'已扣款'}</dd></div>
+      <div class="kv-row"><dt>${pend?'发起时间':'扣款通过时间'}</dt><dd>${d.time}</dd></div>
+      <div class="kv-row"><dt>对应订单</dt><dd><button style="color:var(--brand);font-weight:600" data-go="/income/${o.id}">${o.course||'结算订单'} ›</button></dd></div>
+      <div class="kv-row"><dt>客户名称</dt><dd>${o.customer||'—'}</dd></div>
+      <div class="kv-row"><dt>授课日期</dt><dd>${periodText(o)}</dd></div>
+      ${state.orgMode?`<div class="kv-row"><dt>实际授课人</dt><dd>${o.teacher}</dd></div>`:''}
+      <div class="kv-row"><dt>订单金额</dt><dd>${fmt(o.amount)}</dd></div>
+      <div class="kv-row"><dt>订单累计已扣款</dt><dd>${dedDone(o)>0?'−'+fmt(dedDone(o)):'—'}</dd></div>
+      <div class="kv-row"><dt>订单扣款后金额（提现时按此金额）</dt><dd>${pend?'审批通过后扣减，当前 '+fmt(netAmt(o)):fmt(netAmt(o))}</dd></div>
+      <div class="kv-row"><dt>订单当前状态</dt><dd>${ost(o)}</dd></div>
+    </dl></div>
+  `,{title:'扣款详情'});
+}
 function incomeRow(x){
   const cls=OSTAT_CLS[ost(x)]||'blue';
   return `<button class="list-row" style="width:100%;background:none;text-align:left" data-go="/income/${x.id}">
     <div class="row-icon">${icons.receipt}</div>
-    <div class="row-main"><div class="row-title">${x.course||'结算订单'}</div><div class="row-sub">${x.customer||'—'} · ${periodText(x)} · ${x.days||'—'} 天${state.orgMode?' · 授课：'+x.teacher:''}</div><div class="row-sub eta ${ost(x)==='未到可提现日'?'later':''}">${etaLine(x)}</div></div>
+    <div class="row-main"><div class="row-title">${x.course||'结算订单'}</div><div class="row-sub">${x.customer||'—'} · ${periodText(x)} · ${x.days||'—'} 天${state.orgMode?' · 授课：'+x.teacher:''}</div><div class="row-sub eta ${ost(x)==='未到可提现日'?'later':''}" ${isHold(x)&&ost(x)!=='未到可提现日'?'style="color:#c97a00"':''}>${etaLine(x)}</div>${isHold(x)&&ost(x)==='未到可提现日'?'<div class="row-sub eta" style="color:#c97a00">扣款申请审批中</div>':''}${dedDone(x)>0&&netAmt(x)>0&&(ost(x)==='可提现'||ost(x)==='未到可提现日')?`<div class="row-sub eta" style="color:var(--red)">已扣款 −${fmt(dedDone(x))}</div><div class="row-sub eta">实际可提现 ${fmt(netAmt(x))}</div>`:''}</div>
     <div class="row-side"><div class="row-amount">${mh(x.amount,'+')}</div><div class="row-status">${tag(ost(x),cls)}</div></div>
   </button>`;
 }
@@ -363,7 +420,7 @@ const monthKey=t=>t.slice(0,4)+' 年 '+Number(t.slice(5,7))+' 月';
 function groupByMonth(list,timeOf,rowFn,sumLabel,amtOf){
   const sorted=[...list].sort((x,y)=>timeOf(y).localeCompare(timeOf(x)));
   const groups=[];sorted.forEach(x=>{const k=monthKey(timeOf(x));let g=groups.find(i=>i.k===k);if(!g){g={k,items:[]};groups.push(g)}g.items.push(x)});
-  return groups.map(g=>`<div class="month-title">${g.k}<span>${g.items.length} 笔${sumLabel?` · ${sumLabel} <b class="ms">${mh(g.items.reduce((s,x)=>s+(amtOf?amtOf(x):x.amount),0))}</b>`:''}</span></div><div class="card list-card">${g.items.map(rowFn).join('')}</div>`).join('');
+  return groups.map(g=>`<div class="month-title">${g.k}<span>${g.items.length} 笔${sumLabel?` · ${sumLabel} <b class="ms">${(t=>mh(t,t<0?'−':''))(g.items.reduce((s,x)=>s+(amtOf?amtOf(x):x.amount),0))}</b>`:''}</span></div><div class="card list-card">${g.items.map(rowFn).join('')}</div>`).join('');
 }
 function filterBar(kind,list,active){
   return `<div class="filter">${list.map(f=>`<button class="${active===f?'active':''}" data-action="wallet-filter" data-kind="${kind}" data-value="${f}">${f}</button>`).join('')}</div>`;
@@ -383,17 +440,26 @@ function dateFilterBar(kind){
 }
 function income(){
   const f=state.ui.incomeFilter;
-  const list=state.incomes.filter(x=>{
+  const oList=state.incomes.filter(x=>{
     const ok=f==='全部'||(f==='可提现'&&ost(x)==='可提现')||(f==='未到可提现日'&&ost(x)==='未到可提现日');
     return ok&&inDateRange(x.dateStart||x.credited,state.ui.incomeFrom,state.ui.incomeTo);
   });
-  const pkAll=withdrawable(),pkVis=list.filter(x=>ost(x)==='可提现');
+  /* 扣款行：与订单并列展示，状态跟随对应订单；不可勾选 */
+  const dList=dedRows().filter(d=>{const st=dedStat(d);
+    const ok=f==='全部'; /* 扣款行只在「订单明细（全部）」展示，可提现 / 未到可提现日列表不展示 */
+    return ok&&inDateRange(d.date,state.ui.incomeFrom,state.ui.incomeTo)});
+  const list=oList.concat(dList);
+  const pkAll=withdrawable(),pkVis=oList.filter(isPickable);
   state.ui.pickSel=(state.ui.pickSel||[]).filter(id=>pkAll.some(x=>x.id===id));
   const ps=state.ui.pickSel,selList=pkAll.filter(x=>ps.includes(x.id)),allOn=pkVis.length>0&&pkVis.every(x=>ps.includes(x.id));
-  const rowFn=x=>ost(x)==='可提现'?`<div class="pickwrap"><button class="pk-ck ${ps.includes(x.id)?'on':''}" data-action="toggle-pick" data-id="${x.id}" aria-label="选择订单">${ps.includes(x.id)?'✓':''}</button>${incomeRow(x)}</div>`:incomeRow(x);
+  const rowFn=x=>x.isDed?dedRow(x):isPickable(x)?`<div class="pickwrap"><button class="pk-ck ${ps.includes(x.id)?'on':''}" data-action="toggle-pick" data-id="${x.id}" aria-label="选择订单">${ps.includes(x.id)?'✓':''}</button>${incomeRow(x)}</div>`:(ost(x)==='可提现'&&isHold(x))?`<div class="pickwrap"><span class="pk-ck" style="background:#f1f3f7;border-color:#e1e5ec" title="扣款审批中，暂不可提现"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#9aa5b8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>${incomeRow(x)}</div>`:incomeRow(x);
+  /* 冻结的「可提现」订单仍留在可提现订单列表：标签保持「可提现」，不可勾选（显示锁），说明行提示原因 */
+  /* 月合计口径：全部=订单原金额+扣款行；可提现=扣款后可提现金额（不含冻结，与勾选条、首页一致）；未到可提现日=扣款后金额 */
+  const sumLabel=f==='可提现'?'可提现':f==='未到可提现日'?'预计可提现':'收入';
+  const amtOf=f==='可提现'?(x=>isHold(x)?0:netAmt(x)):f==='未到可提现日'?netAmt:(x=>x.isDed?(x.status==='已通过'?-x.amount:0):x.amount);
   const html=shell(`
     ${dateFilterBar('income')}
-    ${list.length?groupByMonth(list,x=>x.dateStart||x.credited,rowFn,'收入'):`<div class="card"><div class="empty">${icons.empty}<div>暂无订单</div></div></div>`}
+    ${list.length?groupByMonth(list,x=>x.isDed?x.date:(x.dateStart||x.credited),rowFn,sumLabel,amtOf):`<div class="card"><div class="empty">${icons.empty}<div>暂无订单</div></div></div>`}
   `,{title:f==='全部'?'订单明细':f+'订单'});
   if(!pkAll.length||f==='未到可提现日')return html;
   const bar=`<div class="sticky pickbar"><button class="pb-all" data-action="pick-all" ${pkVis.length?'':'disabled'}><span class="pk-ck ${allOn?'on':''}" style="margin-left:0">${allOn?'✓':''}</span>全选</button><div class="pb-sum">已选 <b>${selList.length}</b> 笔<em>${fmt(sumAmt(selList))}</em></div><button class="btn" data-action="withdraw-selected" ${selList.length?'':'disabled'}>去提现</button></div>`;
@@ -416,6 +482,7 @@ function incomeDetail(id){
   const stCls=OSTAT_CLS[ost(x)]||'blue';
   return shell(`
     <div class="card detail-hero"><div class="eyebrow">订单金额</div><div class="amount">+${fmt(x.amount)}</div><div class="status-line">${tag(ost(x),stCls)}</div></div>
+    ${isHold(x)?`<div class="notice warn" style="margin:0 0 10px">${icons.info}<div><b>${holdTitle(x)}</b><br>${holdText(x)}</div></div>`:''}
     <div class="section-title"><h3>订单信息</h3></div>
     <div class="card"><dl class="kv">
       <div class="kv-row"><dt>客户名称</dt><dd>${x.customer||'—'}</dd></div>
@@ -426,10 +493,12 @@ function incomeDetail(id){
       <div class="kv-row"><dt>单价</dt><dd>${fmt(x.unitPrice)}</dd></div>
       ${x.other>0?`<div class="kv-row"><dt>其他费用</dt><dd>${fmt(x.other)}</dd></div><div class="kv-row"><dt>费用说明</dt><dd>${x.otherNote||'—'}</dd></div>`:''}
       <div class="kv-row"><dt>金额</dt><dd>${fmt(x.amount)}</dd></div>
+      ${dedList(x).filter(d=>d.status!=='已驳回').map(d=>`<div class="kv-row"><dt>${d.status==='审批中'?'扣款（审批中）':'已扣款'}</dt><dd><button style="color:var(--red);font-weight:600" data-go="/deduction/${d.id}">−${fmt(d.amount)} ›</button></dd></div>`).join('')}
+      ${dedDone(x)>0?`<div class="kv-row"><dt>扣款后金额（提现时按此金额）</dt><dd>${fmt(netAmt(x))}</dd></div>`:''}
       ${state.orgMode?`<div class="kv-row"><dt>实际授课人</dt><dd>${x.teacher}</dd></div>`:''}
       <div class="kv-row"><dt>订单生成时间</dt><dd>${x.credited}</dd></div>
       <div class="kv-row"><dt>预计可提时间</dt><dd>${etaValue(x)}</dd></div>
-      ${ost(x)==='未到可提现日'?`<div class="kv-row"><dt>说明</dt><dd>${waitReason(x)}</dd></div>`:''}
+      ${isHold(x)?`<div class="kv-row"><dt>${ost(x)==='未到可提现日'?'扣款冻结':'说明'}</dt><dd>${ost(x)==='可提现'?'扣款申请审批中，暂不可提现，':'扣款申请审批中，'}详见页面顶部提示</dd></div>`:''}${ost(x)==='未到可提现日'?`<div class="kv-row"><dt>说明</dt><dd>${waitReason(x)}</dd></div>`:''}
       ${x.wid?`<div class="kv-row"><dt>所属提现单</dt><dd><button style="color:var(--brand);font-weight:600" data-go="/record/${x.wid}">${x.wid} ›</button></dd></div>`:''}
     </dl></div>
   `,{title:'订单详情'});
@@ -456,7 +525,7 @@ function withdraw(){
   ];
   if(state.orgMode)methods.splice(0,methods.length,['invoice','开发票','机构账户仅支持开发票：统一开具电子发票（张数自定，合计等于提现金额），对公收款',icons.file]);
   const ordRow=x=>{const on=d.sel.includes(x.id),can=canPick(x);
-    return `<button class="ord ${on?'on':''} ${can?'':'off'}" ${can?`data-action="toggle-order" data-id="${x.id}"`:'disabled'}><span class="ck">${on?'✓':''}</span><span class="m"><b>${x.course}</b><span>${x.customer} · ${periodText(x)}${x.place?' · '+x.place:''}${state.orgMode?' · 授课：'+x.teacher:''}</span></span><span class="amt">${fmt(x.amount)}</span></button>`};
+    return `<button class="ord ${on?'on':''} ${can?'':'off'}" ${can?`data-action="toggle-order" data-id="${x.id}"`:'disabled'}><span class="ck">${on?'✓':''}</span><span class="m"><b>${x.course}</b><span>${x.customer} · ${periodText(x)}${x.place?' · '+x.place:''}${state.orgMode?' · 授课：'+x.teacher:''}${dedDone(x)>0?' · 已扣款 −'+fmt(dedDone(x)):''}</span></span><span class="amt">${fmt(netAmt(x))}</span></button>`};
   return `<section class="screen">${nav('提现')}<div class="content">
     <div class="stepper"><div class="step active"><i>1</i>提现信息</div><div class="step-line"></div><div class="step"><i>2</i>确认</div><div class="step-line"></div><div class="step"><i>3</i>密码</div></div>
     ${state.orgMode?`<div class="notice warn" style="margin:0 0 10px">${icons.info}<div>机构账户仅支持开发票、对公收款</div></div>`:''}
@@ -537,14 +606,14 @@ function confirmPage(){
   return `<section class="screen">${nav('确认提现')}<div class="content">
     <div class="stepper"><div class="step active"><i>1</i>提现信息</div><div class="step-line"></div><div class="step active"><i>2</i>确认</div><div class="step-line"></div><div class="step"><i>3</i>密码</div></div>
     <div class="card detail-hero"><div class="eyebrow">本次提现金额</div><div class="amount">${fmt(state.draft.amount)}</div><div>${tag('共 '+dsel.length+' 笔订单','blue')}${sp.n>1?' '+tag('拆分为 '+sp.n+' 张提现单','purple'):''}</div></div>
-    ${state.accounts.length>1?`<div class="section-title"><h3>选择收款账户</h3><button data-go="/account">管理账户</button></div>${state.accounts.map(acc=>`<button class="method ${a.id===acc.id?'selected':''}" data-action="choose-account" data-id="${acc.id}"><span class="method-icon">${icons.card}</span><span class="method-text"><b>${acc.kind} · ${acc.name}</b><p>${acc.number}${acc.bank?' · '+acc.bank:''}</p></span><span class="radio"></span></button>`).join('')}`:''}
+    ${state.accounts.length>1?`<div class="section-title"><h3>选择收款账户</h3><button data-go="/account">管理账户</button></div>${state.accounts.map(acc=>`<button class="method ${a.id===acc.id?'selected':''}" data-action="choose-account" data-id="${acc.id}"><span class="method-icon">${icons.card}</span><span class="method-text"><b>${acc.kind} · ${maskName(acc.name)}</b><p>${maskNum(acc.number)}${acc.bank?' · '+acc.bank:''}</p></span><span class="radio"></span></button>`).join('')}`:''}
     ${state.draft.method==='cloud'?`<div class="notice warn">${icons.info}<div>款项将打入你的云账户账号，打款后请留意短信并开通云账户；开通后款项自动转入所选收款账户。</div></div>`:''}
     ${!state.orgMode&&(state.draft.method==='cloud'||state.draft.method==='tax')?`<div class="notice">${icons.info}<div>云账户 / 劳务费代扣个税可使用银行卡或支付宝收款；不可使用对公账户。</div></div>`:''}
     <div class="section-title"><h3>提现账户</h3>${state.accounts.length>1?'':'<button data-go="/account">管理账户</button>'}</div>
     <div class="card"><dl class="kv">
       <div class="kv-row"><dt>账户类型</dt><dd>${a.kind}</dd></div>
-      <div class="kv-row"><dt>收款户名</dt><dd>${a.name}</dd></div>
-      <div class="kv-row"><dt>收款账号</dt><dd>${a.number}</dd></div>
+      <div class="kv-row"><dt>收款户名</dt><dd>${maskName(a.name)}</dd></div>
+      <div class="kv-row"><dt>收款账号</dt><dd>${maskNum(a.number)}</dd></div>
       ${a.bank?`<div class="kv-row"><dt>开户行</dt><dd>${a.bank}</dd></div>`:''}
     </dl></div>
     <div class="section-title"><h3>提现明细</h3></div>
@@ -691,16 +760,17 @@ function validateAccForm(){
 function accountListView(){
   const def=state.defaultAccountId;
   const list=state.accounts.length?state.accounts.map(a=>{
-    const isDef=a.id===def;
+    const isDef=a.id===def,shown=!!state.accReveal[a.id];
     return `<div class="card" style="padding-bottom:4px">
       <dl class="kv">
         <div class="kv-row"><dt>账户类型</dt><dd>${a.kind}${isDef?' '+tag('默认','blue'):''}</dd></div>
-        <div class="kv-row"><dt>收款户名</dt><dd>${a.name}</dd></div>
-        <div class="kv-row"><dt>收款账号</dt><dd>${a.number}</dd></div>
+        <div class="kv-row"><dt>收款户名</dt><dd>${shown?a.name:maskName(a.name)}</dd></div>
+        <div class="kv-row"><dt>收款账号</dt><dd>${shown?a.number:maskNum(a.number)}</dd></div>
         ${a.bank?`<div class="kv-row"><dt>开户行</dt><dd>${a.bank}</dd></div>`:''}
       </dl>
+
       <div class="acc-actions">
-        ${isDef?'':`<button class="primary" data-action="set-default-account" data-id="${a.id}">设为默认</button>`}
+        ${shown?`<button class="reveal" data-action="hide-account" data-id="${a.id}">${icons.eye}隐藏完整信息</button>`:`<button class="reveal" data-action="ask-reveal-account" data-id="${a.id}">${icons.eye}查看完整信息</button>`}
         <button data-action="edit-account" data-id="${a.id}">编辑</button>
         <button class="danger" data-action="ask-delete-account" data-id="${a.id}">删除</button>
       </div>
@@ -765,7 +835,7 @@ function successPage(){
 function recordRow(x){
   const cls=x.kind==='failed'?'red':x.kind==='paid'?'green':'blue';
   const icon=x.kind==='failed'?icons.close:x.kind==='paid'?icons.check:icons.wallet;
-  return `<button class="list-row" style="width:100%;background:none;text-align:left" data-go="/record/${x.id}"><div class="row-icon ${cls}">${icon}</div><div class="row-main"><div class="row-title">提现 · ${x.method}</div><div class="row-sub">${x.submit}</div><div class="row-sub eta">提现账户 ${x.account?x.account.kind+' '+x.account.number:'—'}</div>${x.kind==='failed'?'<div class="row-sub eta">金额已退回可提现余额</div>':''}</div><div class="row-side"><div class="row-amount">${mh(x.amount)}</div><div class="row-status">${tag(x.status,cls)}</div></div></button>`;
+  return `<button class="list-row" style="width:100%;background:none;text-align:left" data-go="/record/${x.id}"><div class="row-icon ${cls}">${icon}</div><div class="row-main"><div class="row-title">提现 · ${x.method}</div><div class="row-sub">${x.submit}</div><div class="row-sub eta">提现账户 ${x.account?x.account.kind+' '+maskNum(x.account.number):'—'}</div>${x.kind==='failed'?'<div class="row-sub eta">金额已退回可提现余额</div>':''}</div><div class="row-side"><div class="row-amount">${mh(x.amount)}</div><div class="row-status">${tag(x.status,cls)}</div></div></button>`;
 }
 function recordDetail(id){
   const x=state.records.find(r=>r.id===id)||state.records[0];
@@ -778,11 +848,11 @@ function recordDetail(id){
     <div class="section-title"><h3>提现账户</h3></div>
     <div class="card"><dl class="kv">
       <div class="kv-row"><dt>账户类型</dt><dd>${a.kind||'—'}</dd></div>
-      <div class="kv-row"><dt>收款户名</dt><dd>${a.name||'—'}</dd></div>
-      <div class="kv-row"><dt>收款账号</dt><dd>${a.number||'—'}</dd></div>
+      <div class="kv-row"><dt>收款户名</dt><dd>${maskName(a.name)||'—'}</dd></div>
+      <div class="kv-row"><dt>收款账号</dt><dd>${maskNum(a.number)||'—'}</dd></div>
       ${a.bank?`<div class="kv-row"><dt>开户行</dt><dd>${a.bank}</dd></div>`:''}
     </dl></div>
-    ${(x.orders&&x.orders.length)?`<div class="section-title"><h3>包含订单（${x.orders.length} 笔）</h3></div><div class="card"><dl class="kv">${x.orders.map(id=>state.incomes.find(o=>o.id===id)).filter(Boolean).map(o=>`<div class="kv-row"><dt style="color:#1f2d3d;font-weight:600">${o.course}</dt><dd><button style="color:var(--brand)" data-go="/income/${o.id}">${fmt(o.amount)} ›</button></dd></div>`).join('')}</dl></div>`:''}
+    ${(x.orders&&x.orders.length)?`<div class="section-title"><h3>包含订单（${x.orders.length} 笔）</h3></div><div class="card"><dl class="kv">${x.orders.map(id=>state.incomes.find(o=>o.id===id)).filter(Boolean).map(o=>`<div class="kv-row"><dt style="color:#1f2d3d;font-weight:600">${o.course}${dedDone(o)>0?`<span style="display:block;font-size:11px;color:var(--red);font-weight:400">已扣款 −${fmt(dedDone(o))}</span>`:''}</dt><dd><button style="color:var(--brand)" data-go="/income/${o.id}">${fmt(netAmt(o))} ›</button></dd></div>`).join('')}</dl></div>`:''}
     <div class="section-title"><h3>提现明细</h3></div>
     <div class="card"><dl class="kv">
       <div class="kv-row"><dt>提现单号</dt><dd>${x.id}</dd></div>
@@ -829,14 +899,15 @@ function rebind(){
     <div class="card"><dl class="kv"><div class="kv-row"><dt>当前手机号</dt><dd>${state.oldPhoneInvalid?'139 **** 8076':'138 **** 6612'}</dd></div></dl></div>
   `,{title:'手机号绑定'});
 }
-const AI_QUICK=['提现窗口什么时候开放？','为什么有的订单现在不能提现？','三种提现方式怎么选？','暂不付款是什么意思？','机构账户怎么提现？','我的某笔提现为什么失败？'];
+const AI_QUICK=['提现窗口什么时候开放？','为什么有的订单现在不能提现？','订单被扣款或被冻结不能提现是什么意思？','三种提现方式怎么选？','暂不付款是什么意思？','机构账户怎么提现？','我的某笔提现为什么失败？'];
 const AI_FAQ=[
+  {keys:['扣款','冻结','暂不可提现','金额变少','变少','减少','少了','被扣'],q:'订单被扣款 / 暂不可提现',a:'订单明细里会出现一行红色「扣款」，金额显示为 −¥xx，点进去可查看扣款原因、对应订单和扣款时间。扣款申请审批期间，对应订单保持原状态，但提示“扣款申请审批中，暂不可提现”，不能勾选提现；审批通过后从订单金额中扣减，订单按扣款后的金额继续（提现时只提现扣减后的金额）；审批驳回后订单恢复原状态，驳回的扣款不会展示。如有疑问请联系对接的项目经理。'},
+  {keys:['付款失败','失败','退回余额'],q:'付款失败',a:'付款失败后，金额会退回可提现余额。可核对收款账户信息后重新提现；若仍失败，建议联系对接的项目经理协助排查。'},
   {keys:['窗口','开放','几号','1~10','1-10','每月'],q:'提现窗口',a:'提现窗口为每月 1~10 日。窗口外已到可提现日的订单会显示在“未到可提现日”，下月 1 日起可提现。'},
-  {keys:['为什么','不能提现','区别','整笔','部分'],q:'订单不能提现',a:'订单需处于“可提现”状态。还没到可提现日，或已到可提现日但不在每月 1~10 日提现窗口期的订单，会显示在“未到可提现日”，到可提现日后再选择提现。提现按订单整笔进行，金额由所选订单自动计算，不能修改。'},
+  {keys:['为什么','不能提现','区别','整笔','部分'],q:'订单不能提现',a:'订单需处于“可提现”状态。还没到可提现日，或已到可提现日但不在每月 1~10 日提现窗口期的订单，会显示在“未到可提现日”，到可提现日后再选择提现。提现按订单整笔进行，金额由所选订单自动计算，不能修改。如果订单正有扣款申请在审批，也会暂时不能勾选提现，详见订单详情。'},
   {keys:['云账户','开通'],q:'云账户',a:'云账户是 51CTO 委托的第三方打款平台。选择云账户提现后，款项会先打入你的云账户账号；你需要开通云账户并绑定收款账号（即提现时选择的收款账户）。51CTO 打款后即视为已付款，未开通也不影响打款，开通后款项会自动转入你绑定的收款账户。打款后会有短信提醒你开通，如有问题财务会与你线下联系。'},
   {keys:['开发票','劳务','方式','个税','发票'],q:'提现方式',a:'个人账户可选：\n1）云账户：由第三方云账户平台打款，需开通云账户并绑定收款账号，结算时会预扣税，以实际到账为准；\n2）开发票：按开票信息开具电子发票并上传（统一开具，张数自行确定，金额合计须等于提现金额）；\n3）劳务费代扣个税：公司代扣代缴，页面展示预计个税/到账仅供参考。\n机构账户仅支持开发票 + 对公收款。云账户/劳务费可用银行卡或支付宝，不可用对公账户。'},
   {keys:['暂不付款','退回','下月'],q:'暂不付款',a:'「暂不付款」表示本月该笔提现暂不付款，金额已退回你的可提现余额。本月窗口通常已过，需在下个月提现窗口重新申请。'},
-  {keys:['付款失败','失败','退回余额'],q:'付款失败',a:'付款失败后，金额会退回可提现余额。可核对收款账户信息后重新提现；若仍失败，建议联系对接的项目经理协助排查。'},
   {keys:['到账','多久','什么时候到'],q:'到账时间',a:'一般订单提现预计当月月底前到账；“随时可提现”的订单预计提交后 3 个工作日内付款。两者混合提交时会拆成两张提现单，各自按对应时间处理。页面展示时间为预估，最终以实际付款进度为准。'},
   {keys:['机构','对公'],q:'机构账户',a:'机构账户由机构对接人登录。结算款归属机构，授课老师无个人提现入口。机构仅支持开发票，收款须为对公账户（户名为机构全称），不代扣个税。'},
   {keys:['支付宝','银行卡','收款账户','账户'],q:'收款账户',a:'个人可维护银行卡 / 支付宝，提现时选择；云账户与劳务费支持支付宝，不支持对公。机构仅支持对公账户。修改账户只影响新提现，历史提现保留账户快照。'},
@@ -906,23 +977,25 @@ const ANNO_COMMON=['公共元素',[
 const ANNO_STATUS=['订单状态口径（全站统一）',[
   ['未到可提现日','暂时不能提现的订单，包含两种情况：① 还没到可提现日；② 已到可提现日，但当前不在每月 1~10 日提现窗口期。两种都显示同一状态，并给出“最早可提现日期”'],
   ['可提现','已到可提现日且当前允许提现（窗口期内；或后台确认为“随时可提现”的订单，不受窗口期限制）'],
+  ['（扣款冻结）','订单有扣款申请正在审批（后台发起即冻结）：不是独立状态，订单仍留在原状态（可提现或未到可提现日），只是不可勾选（显示锁），说明行与详情页提示“扣款申请审批中，暂不可提现”；审批通过后扣减对应金额，驳回后恢复。讲师端不会单独收到扣款通知'],
+  ['扣款（独立成行）','扣款不在原订单上叠加，而是在订单明细里单独一行：红色「扣款」标签 + −¥金额。审批中显示「审批中」（金额暂不计入合计）；已通过的扣款显示「已扣款」（订单当前状态在说明行与详情中给出；扣款行只出现在「订单明细（全部）」中，不出现在「可提现订单」「未到可提现日订单」列表）；已驳回的不展示'],
   ['提现中','已提交提现申请、等待付款。一般订单预计当月月底前到账；“随时可提现”订单预计提交后 3 个工作日内付款'],
   ['已提现','付款成功，款项已到账（云账户打款即视为到账）']
 ]];
 const ANNO_PAGES={
 wallet:{t:'首页 · 结算中心',d:'讲师/助教登录后的第一屏，所有金额均由订单汇总得出，保证与订单明细一致。',s:[
  ['顶部金额卡片',[
-  ['结算款合计','所选年份内全部订单金额之和 = 未到可提现日 + 可提现 + 提现中 + 已提现。选“总计”时为累计，文案变为“累计结算款合计”'],
+  ['结算款合计','所选年份内全部订单金额之和（扣款后）= 未到可提现日 + 可提现 + 冻结中的可提现订单（可提现卡片下方“另有 ¥xx 冻结”）+ 提现中 + 已提现。选“总计”时为累计，文案变为“累计结算款合计”'],
   ['年份按钮「2026 年 ▾」','切换统计年份，默认当前年份，可选历史年份或“总计”；合计与下方四类金额随之联动（按订单授课日期所属年份统计）'],
   ['眼睛图标','显示/隐藏金额，隐藏时以 **** 代替，保护隐私'],
-  ['当前可提现','当前状态为“可提现”的订单金额合计（所有年份），即现在可以发起提现的金额'],
+  ['当前可提现','当前状态为“可提现”的订单金额合计（所有年份），即现在可以发起提现的金额；不含因扣款审批冻结的订单'],
   ['说明 ›','打开“可提现说明”弹窗：解释可提现、提现窗口期、随时可提现、怎么提现、什么时候到账'],
   ['去提现 按钮','进入订单明细（可提现订单）勾选后提现。无可提现订单时置灰：窗口期内显示“暂无可提现订单”，窗口期外显示“下月 1 日开放”'],
   ['提现窗口提示','仅窗口期内显示“本月提现窗口开放中，10 日 24:00 截止”；窗口期外不显示'],
   ['机构账户提示','仅机构对接人登录时显示：机构账户仅支持开发票、对公收款']]],
  ['四类金额卡片（点击进入对应列表）',[
-  ['未到可提现日','暂不能提现的订单金额合计，点击查看订单；该列表不提供“去提现”'],
-  ['可提现','可提现订单金额合计与笔数，点击进入订单列表并可勾选提现'],
+  ['未到可提现日','暂不能提现的订单金额合计（时间未到或不在提现窗口），点击查看订单；该列表不提供“去提现”'],
+  ['可提现','可提现订单金额合计与笔数，点击进入订单列表并可勾选提现；金额不含因扣款审批冻结的订单（卡片上不另设冻结提示），冻结订单仍在“可提现订单”列表中，不可勾选，说明行提示原因'],
   ['提现中','已提交、等待付款的金额，点击查看提现记录；副文案“以提现单预计时间为准”，因不同提现单预计到账时间可能不同'],
   ['已提现','已付款成功的金额，副文案随年份显示“累计 / 2026 年已提现成功”']]],
  ['最近记录',[
@@ -931,12 +1004,14 @@ wallet:{t:'首页 · 结算中心',d:'讲师/助教登录后的第一屏，所�
 income:{t:'订单明细',d:'标题随入口变化：从首页哪个入口进来，就只展示对应状态的订单（订单明细 / 可提现订单 / 未到可提现日订单），页面内不再提供状态筛选。',s:[
  ['筛选与分组',[
   ['月份筛选（全部月份）','按授课日期所在月份筛选，可选择单月或月份区间，“清除”恢复全部'],
-  ['月份分组标题','如“2026 年 10 月  3 笔 · 收入 ¥xx”：该月订单数量与金额合计，按授课日期倒序']]],
+  ['月份分组标题','如“2026 年 10 月  3 笔 · 收入 ¥xx”：该月订单数量与金额合计，按授课日期倒序。订单明细（全部）为订单原金额 + 扣款行；可提现订单列表标签为“可提现”，按扣款后金额合计且不含冻结订单；未到可提现日列表标签为“预计可提现”，按扣款后金额合计'],
+  ['冻结订单（可提现订单 / 未到可提现日订单列表内）','被扣款审批冻结的订单仍按原状态留在对应列表，标签保持原状态；可提现订单左侧勾选框换成锁、不可勾选，说明行（橙色）提示“扣款申请审批中，暂不可提现”；未到可提现日订单只能查看，无操作，日期行保留，仅提示“扣款申请审批中”。随时间滚动：账期到期后自动转入可提现，冻结结束前仍不可勾选']]],
  ['订单行',[
   ['课程名称','订单对应的课程；无名称时显示“结算订单”'],
   ['客户 · 授课日期 · 天数','客户名称、授课起止日期、授课天数；机构账户额外显示“授课：实际授课老师”'],
-  ['状态说明行','未到可提现日显示“X 年 X 月 X 日 起可提现”；提现中/已提现显示对应状态；可提现显示“当前可提现”'],
-  ['右侧金额 +','订单金额（单价 × 天数 + 其他费用），为收入，故带“+”'],
+  ['状态说明行','未到可提现日显示“X 年 X 月 X 日 起可提现”；扣款审批中的订单显示“扣款申请审批中，暂不可提现”；提现中/已提现显示对应状态；可提现显示“当前可提现”；未到可提现日的订单被冻结时，日期行保留，另起一行橙色提示“扣款申请审批中”（未到可提现日本身就不能提现，不再重复“暂不可提现”）；订单已有通过的扣款时（可提现 / 未到可提现日），另起两行显示“已扣款 −¥xx”和“实际可提现 ¥xx”，右侧订单金额仍为原金额'],
+  ['扣款行','与订单并列（仅「订单明细（全部）」展示，可提现 / 未到可提现日列表不展示），按扣款通过时间（审批中按发起时间）归入月份；左侧红色「扣款」标签 + 课程名，下方为客户、对应订单日期、「11-02 扣款通过 · 订单：可提现」类说明和扣款原因；右侧红色 −¥金额与扣款状态标签（审批中 / 已扣款，不再显示订单状态，避免与订单混淆）；无勾选框、不可提现，点击进入扣款详情；月份合计中扣减已通过的扣款'],
+  ['右侧金额 +','订单金额（单价 × 天数 + 其他费用），为收入，故带“+”；订单行始终显示订单原金额，扣款在单独的扣款行以 −¥ 展示'],
   ['状态标签','未到可提现日（紫）/ 可提现（蓝）/ 提现中（蓝）/ 已提现（绿）'],
   ['左侧勾选框','仅“可提现”订单显示。提现按订单整笔进行，不能拆分金额，可多选']]],
  ['底部悬浮栏（有可提现订单时显示；未到可提现日列表不显示）',[
@@ -955,24 +1030,36 @@ records:{t:'提现记录',d:'讲师提交过的所有提现单。一次提现如
   ['金额与状态','提现金额；状态：提现中 / 已提现 / 付款失败 / 暂不付款']]]]},
 incomeDetail:{t:'订单详情',d:'单笔订单的完整信息。',s:[
  ['顶部',[
-  ['订单金额','该订单应结算金额，带“+”'],
-  ['状态标签','未到可提现日 / 可提现 / 提现中 / 已提现']]],
+  ['订单金额','该订单应结算金额（原金额），带“+”'],
+  ['状态标签','未到可提现日 / 可提现 / 提现中 / 已提现（扣款冻结不新增状态，订单保持原状态）'],
+  ['扣款审批中提示卡（条件显示）','订单有扣款申请审批中时显示：说明暂不可提现的原因（扣款申请审批中）、审批通过 / 驳回后的结果，以及联系项目经理的提示']]],
  ['订单信息',[
   ['客户名称 / 课程名称','来自执行单/排期的客户与课程'],
   ['授课地点','从排期带入，线上课程显示“线上”'],
   ['日期 / 天数','授课起止日期与授课天数'],
   ['单价','执行单价，即每天的课酬标准'],
   ['其他费用 / 费用说明','有交通费、住宿费等其他费用时才显示，说明费用是什么；没有则不显示这两行'],
-  ['金额','订单金额 = 单价 × 天数 + 其他费用'],
+  ['金额','订单金额 = 单价 × 天数 + 其他费用（原金额）'],
+  ['已扣款 / 扣款（审批中）/ 扣款后金额（条件显示）','订单有扣款时，逐笔显示 −¥金额（红色，可点击进入扣款详情），并显示扣款后金额（订单金额保持原金额，提现时按扣款后金额）；已驳回的扣款不显示'],
   ['实际授课人','仅机构账户显示：该订单由名下哪位老师授课'],
   ['订单生成时间','订单审批通过、入账到讲师名下的时间'],
   ['预计可提时间','未到可提现日显示最早可提现日期；提现中显示预计付款时间（一般订单当月月底前，随时可提现订单 3 个工作日内）；其余为“已提现 / 当前可提现”'],
-  ['说明','仅未到可提现日显示，解释为什么现在不能提、什么时候可提'],
+  ['说明','仅未到可提现日显示，解释为什么现在不能提、什么时候可提；扣款冻结的订单说明行与顶部提示卡单独说明'],
   ['所属提现单','订单已提交提现后显示提现单号，点击跳转提现详情']]]]},
+deductDetail:{t:'扣款详情',d:'单笔扣款的完整信息：从订单明细的「扣款」行或订单详情点进来。',s:[
+ ['顶部',[
+  ['扣款金额','红色 −¥金额'],
+  ['状态标签','「扣款」+ 扣款状态：审批中（橙）/ 已扣款（灰）；对应订单的当前状态在下方“订单当前状态”中查看'],
+  ['对应订单暂不可提现提示卡（审批中显示）','说明对应订单因扣款审批中暂不可提现，以及通过 / 驳回后的结果']]],
+ ['扣款信息',[
+  ['扣款原因 / 扣款状态','项目经理填写的原因；审批中 / 已扣款'],
+  ['发起时间 / 扣款通过时间','审批中显示发起时间，已通过显示扣款通过时间（列表按此时间归月）'],
+  ['对应订单 / 客户名称 / 授课日期','点击对应订单跳转订单详情；机构账户另显示实际授课人'],
+  ['订单金额 / 累计已扣款 / 扣款后金额 / 订单当前状态','订单原金额、该订单累计已通过扣款、扣减后金额与订单当前状态']]]]},
 withdraw:{t:'提现 · 第 1 步 提现信息',d:'金额由已选订单自动汇总，不可修改。无可提现订单或未选订单时，页面显示对应空状态引导。',s:[
  ['步骤条',[['提现信息 → 确认 → 密码','提现共三步，当前高亮为所在步骤']]],
  ['提现金额',[
-  ['已选 N 笔订单 / 金额','由订单明细中勾选的订单自动汇总，按订单整笔提现，不支持部分金额'],
+  ['已选 N 笔订单 / 金额','由订单明细中勾选的订单自动汇总，按订单整笔提现，不支持部分金额；订单已被扣款的，按扣款后的金额汇总，订单项旁显示“已扣款 −¥xx”'],
   ['修改订单 ›','返回订单明细重新勾选'],
   ['拆单提示（条件显示）','所选订单需分不同付款批次时，系统自动拆成多张提现单（括号内为各单金额），便于分别付款；发票统一开具，无需拆分']]],
  ['提现方式',[
@@ -1044,11 +1131,13 @@ profile:{t:'个人中心（我的）',d:'账户资料与安全设置入口。',s
 account:{t:'收款账户管理',d:'维护提现使用的收款账户，修改只影响新提现。',s:[
  ['账户列表',[
   ['账户类型','银行卡 / 支付宝（机构为对公账户），带“默认”标签的为默认账户'],
-  ['收款户名','收款人姓名全称；机构必须为机构全称'],
-  ['收款账号','银行卡号 / 支付宝手机号或邮箱 / 对公账号'],
+  ['收款户名','收款人姓名全称；机构必须为机构全称。默认脱敏显示（如 齐*、深圳****有限公司）'],
+  ['收款账号','银行卡号 / 支付宝手机号或邮箱 / 对公账号。默认脱敏显示（如 6222 **** 6321、qi***@example.com）'],
+  ['查看完整信息','每个账户卡片操作行最左侧的按钮；点击后弹出“验证手机号”，获取并输入 6 位手机验证码，校验通过后展示完整户名与账号，可点“隐藏完整信息”收起，离开本页面自动恢复脱敏。确认提现、提现记录等其他页面一律脱敏显示'],
   ['开户行','银行卡与对公账户必填'],
-  ['设为默认 / 编辑 / 删除','默认账户会在提现时预选；至少保留 1 个账户，删除前请确认没有进行中的提现依赖']]],
+  ['编辑 / 删除','带“默认”标签的账户会在提现时预选；编辑需先通过手机验证码校验（已校验过的账户免再次校验）；至少保留 1 个账户，删除前请确认没有进行中的提现依赖']]],
  ['新增 / 编辑表单',[
+  ['新增前校验','点“新增账户”后先弹出“验证手机号”，获取并输入手机验证码，校验通过才进入新增表单；每次新增都需校验'],
   ['校验规则','银行卡 12~22 位数字；支付宝填手机号或邮箱；对公户名须与机构全称一致；账号不可重复'],
   ['保存 / 取消','保存后生效；无账户时页面提供“新增账户”']]]]},
 orgTeachers:{t:'名下讲师（机构）',d:'仅机构对接人可见。',s:[
@@ -1111,6 +1200,7 @@ function annoKey(p){
   if(p==='/wallet')return 'wallet';
   if(p==='/income')return 'income';
   if(p.startsWith('/income/'))return 'incomeDetail';
+  if(p.startsWith('/deduction/'))return 'deductDetail';
   if(p==='/withdraw')return 'withdraw';
   if(p==='/withdraw/confirm')return 'confirm';
   if(p==='/withdraw/password')return 'password';
@@ -1136,7 +1226,7 @@ function renderAnno(){
   if(pg){
     h+=`<h3 class="an-title">${pg.t}</h3><p class="an-desc">${pg.d}</p>`;
     h+=pg.s.map(s=>sec(s[0],s[1])).join('');
-    if(['wallet','income','incomeDetail','records','record'].includes(k))h+=sec(ANNO_STATUS[0],ANNO_STATUS[1]);
+    if(['wallet','income','incomeDetail','deductDetail','records','record'].includes(k))h+=sec(ANNO_STATUS[0],ANNO_STATUS[1]);
     if(['wallet','profile','service'].includes(k))h+=sec(ANNO_COMMON[0],ANNO_COMMON[1]);
   }else h+='<p class="an-desc">该页面暂无说明</p>';
   el.innerHTML=h;
@@ -1148,6 +1238,7 @@ function render(){
   else if(p==='/wallet')html=wallet();
   else if(p==='/income')html=income();
   else if(p.startsWith('/income/'))html=incomeDetail(p.split('/')[2]);
+  else if(p.startsWith('/deduction/'))html=deductionDetail(p.split('/')[2]);
   else if(p==='/withdraw')html=withdraw();
   else if(p==='/withdraw/confirm')html=confirmPage();
   else if(p==='/withdraw/password')html=passwordVerify();
@@ -1189,6 +1280,9 @@ const BAL_INFO={
     {t:'还有疑问？',d:'请联系对接的项目经理。'}
   ]}
 };
+let verifyTimer=null;
+function openVerify(id,next){state.verifyAcc={id,next,sent:false,sentOnce:false,left:0};state.showScenario=false;renderOverlay()}
+function closeVerify(){clearInterval(verifyTimer);state.verifyAcc=null;renderOverlay()}
 function renderOverlay(){
   _renderOverlay();renderAnno();
 }
@@ -1217,6 +1311,19 @@ function _renderOverlay(){
       <button class="btn secondary" data-action="close-org-info">我知道了</button></div></div>`;
     return;
   }
+  if(state.verifyAcc){
+    const v=state.verifyAcc,a=state.accounts.find(x=>x.id===v.id);
+    overlay.innerHTML=`<div class="mask" data-action="close-verify"><div class="sheet" data-stop>
+      <div class="handle"></div>
+      <h3>验证手机号</h3>
+      <p>为保护账户信息安全，${v.next==='add'?'新增收款账户':(v.next==='edit'?'编辑':'查看')+(a?a.kind:'')+'收款账户的完整信息'}前，需先校验手机验证码。验证码将发送至绑定手机号 138 **** 6612。</p>
+      <div class="vf-row"><input id="vf-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="请输入 6 位验证码" autocomplete="one-time-code"><button id="vf-send" data-action="send-verify-code"${v.sent?' disabled':''}>${v.sent?'重新获取('+v.left+'s)':'获取验证码'}</button></div>
+      <button class="btn" data-action="confirm-verify">验证并${({add:'新增',edit:'编辑',view:'查看'})[v.next]}</button>
+      <button class="btn secondary" style="margin-top:10px" data-action="close-verify">取消</button>
+      <div class="fineprint" style="margin-top:10px">演示环境：点击获取后输入任意 6 位数字即可，推荐 000000</div>
+    </div></div>`;
+    return;
+  }
   if(state.showAccDelete){
     const a=state.accounts.find(x=>x.id===state.accDeleteId);
     overlay.innerHTML=`<div class="mask" data-action="close-acc-delete"><div class="sheet" data-stop>
@@ -1225,8 +1332,8 @@ function _renderOverlay(){
       <p>删除后不可恢复；仅影响后续新提现，历史提现单保留账户快照。</p>
       <div class="card" style="margin:0 0 12px"><dl class="kv">
         <div class="kv-row"><dt>类型</dt><dd>${a?a.kind:'—'}</dd></div>
-        <div class="kv-row"><dt>户名</dt><dd>${a?a.name:'—'}</dd></div>
-        <div class="kv-row"><dt>账号</dt><dd>${a?a.number:'—'}</dd></div>
+        <div class="kv-row"><dt>户名</dt><dd>${a?maskName(a.name):'—'}</dd></div>
+        <div class="kv-row"><dt>账号</dt><dd>${a?maskNum(a.number):'—'}</dd></div>
       </dl></div>
       ${state.accounts.length<=1?`<div class="notice danger">${icons.info}<div>这是你当前唯一的收款账户，删除后将无法发起提现，需重新新增。</div></div>`:''}
       <button class="btn danger" data-action="confirm-delete-account">确认删除</button>
@@ -1385,7 +1492,7 @@ document.addEventListener('click',e=>{
     const c=document.querySelector('.content'),top=c?c.scrollTop:0,ps=state.ui.pickSel=state.ui.pickSel||[];
     if(a==='toggle-pick'){const id=el.dataset.id,i=ps.indexOf(id);if(i>=0)ps.splice(i,1);else ps.push(id)}
     else{
-      const f=state.ui.incomeFilter,vis=state.incomes.filter(x=>ost(x)==='可提现'&&(f==='全部'||f==='可提现')&&inDateRange(x.dateStart||x.credited,state.ui.incomeFrom,state.ui.incomeTo));
+      const f=state.ui.incomeFilter,vis=state.incomes.filter(x=>isPickable(x)&&(f==='全部'||f==='可提现')&&inDateRange(x.dateStart||x.credited,state.ui.incomeFrom,state.ui.incomeTo));
       if(vis.every(x=>ps.includes(x.id)))state.ui.pickSel=ps.filter(id=>!vis.some(x=>x.id===id));
       else vis.forEach(x=>{if(!ps.includes(x.id))ps.push(x.id)});
     }
@@ -1442,11 +1549,37 @@ document.addEventListener('click',e=>{
     const n=document.querySelector('.content');if(n)n.scrollTop=top;
   }
   else if(a==='start-add-account'){
-    resetAccUI('add');render();
+    openVerify('','add');
   }
   else if(a==='edit-account'){
     const acc=state.accounts.find(x=>x.id===el.dataset.id);if(!acc)return;
+    if(!state.accReveal[acc.id]){openVerify(acc.id,'edit');return}
     resetAccUI('edit',acc);render();
+  }
+  else if(a==='ask-reveal-account'){openVerify(el.dataset.id,'view')}
+  else if(a==='hide-account'){delete state.accReveal[el.dataset.id];render()}
+  else if(a==='close-verify'){closeVerify()}
+  else if(a==='send-verify-code'){
+    const v=state.verifyAcc;if(!v||v.sent)return;
+    v.sent=true;v.sentOnce=true;v.left=60;toast('验证码已发送至 138 **** 6612（演示可用 000000）');renderOverlay();
+    clearInterval(verifyTimer);verifyTimer=setInterval(()=>{
+      const x=state.verifyAcc;if(!x){clearInterval(verifyTimer);return}
+      x.left--;const b=document.getElementById('vf-send');
+      if(x.left<=0){x.sent=false;clearInterval(verifyTimer);if(b){b.disabled=false;b.textContent='重新获取'}}
+      else if(b)b.textContent='重新获取('+x.left+'s)';
+    },1000);
+  }
+  else if(a==='confirm-verify'){
+    const v=state.verifyAcc;if(!v)return;
+    const inp=document.getElementById('vf-code'),code=inp?inp.value.trim():'';
+    if(!v.sentOnce){toast('请先获取验证码');return}
+    if(!/^\d{6}$/.test(code)){toast('请输入 6 位数字验证码');return}
+    const id=v.id,next=v.next,acc=state.accounts.find(x=>x.id===id);
+    closeVerify();
+    if(next==='add'){resetAccUI('add');toast('验证通过');render();return}
+    state.accReveal[id]=true;
+    if(next==='edit'&&acc){resetAccUI('edit',acc)}
+    toast('验证通过');render();
   }
   else if(a==='cancel-acc-form'){resetAccUI('list');render()}
   else if(a==='set-default-account'){
@@ -1620,6 +1753,7 @@ document.addEventListener('change',e=>{
 });
 window.addEventListener('hashchange',()=>{
   const p=route();
+  if(!p.startsWith('/account')){state.accReveal={};if(state.verifyAcc)closeVerify()}
   if(p==='/password/setup')resetPwdDraft('setup','enter');
   else if(p==='/password/change')resetPwdDraft('change','old');
   else if(p==='/password/forgot')resetPwdDraft('forgot','sms');

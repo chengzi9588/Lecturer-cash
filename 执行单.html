@@ -165,7 +165,7 @@ const COURSES=[{n:'FDE管理者认证（定制）',price:4000},{n:'数字化领�
 const OWNERS=['华东一部','华南二部','金融制造组'];
 const PMS=['张雅淇','承艳军','李明'];
 const LECTURERS=[{id:'L001',name:'肖婷',phone:'13611110001'},{id:'L002',name:'马宇峰',phone:'13611110002'},{id:'L003',name:'王磊',phone:'13611110003'},{id:'L004',name:'李娜',phone:'',real:false},{id:'L005',name:'周明',phone:'13611110005',org:'北京云课堂教育科技有限公司',orgOk:false}];
-let ASSISTANTS=[{id:'A001',name:'刘洋',phone:'13800001111'},{id:'A002',name:'陈静',phone:'13900002222',wx:false},{id:'A003',name:'赵敏',phone:''}];
+let ASSISTANTS=[{id:'A001',name:'刘洋',phone:'13800001111'},{id:'A002',name:'陈静',phone:'13900002222',wx:false},{id:'A003',name:'赵敏',phone:'',acct:false}];
 const OCCUPY={L002:[{date:'2026-11-24',slot:'全天',project:'中国银行数字化培训'}]};
 /* 合同唯一对应的排期（一个排期只关联一个合同） */
 /* 合同下可有多个排期（培训班）：一个排期生成一张执行单；培训班名称作为执行单课程名称 */
@@ -260,12 +260,13 @@ function rowAmt(c,pid){const r=c.rows[pid];if(r.price===''||r.price===null)retur
 function cardPersons(c){return [...c.lec,...c.ast]}
 function paySum(c){return cardPersons(c).reduce((n,p)=>n+(rowAmt(c,p.id)||0),0)}
 /* 已进入审批/账期的课酬账单是独立快照：编辑执行单不影响它，也不会重新生成，所以执行单内不做锁定 */
+/* 已通过账单的扣款只能在「后台 · 课酬账单 · 已通过」入口发起，执行单页不提供扣款入口 */
 function isLocked(c,pid){return false}
 function isSubmitted(c,pid){const r=c.rows[pid];return !!(r&&r.status&&r.status!=='待提交')}
 function lastDate(c,pid){const r=c.rows[pid];if(r&&r.dates){const l=segExpand(r.dates);return l.length?l[l.length-1]:''}return c.to||''}
 function rangeDates(c){const o=[];if(!validRange(c))return o;let x=c.from,n=0;while(x<=c.to&&n<400){o.push(x);x=addDays(x,1);n++}return o}
 function catGroup(cat,role){for(const g of ROLE_GROUPS[role]||[])if(FEE_TREE[g].includes(cat))return g;return role==='lec'?'企培讲师成本':'企培助教成本'}
-/* 付款合同卡控：单次付款金额≤5000 免签；助教 / 兼职无需选择（保留填写入口）；其余须选择并确认 */
+/* 付款合同卡控：单次付款金额≤5000 免签；助教 / 兼职无需选择（保留填写入口）；其余须取得付款合同号（系统自动抓取，可更换） */
 /* 付款合同号：由系统按销售合同自动抓取（取剩余额度足够的付款合同），不再手选；抓不到则不允许提交 */
 function syncPc(){
   const used={},rows=allRows().filter(x=>!isSubmitted(x.c,x.p.id));
@@ -280,7 +281,13 @@ function syncPc(){
 }
 /* 某付款合同号在本页被分配的课酬合计 */
 function pcAssigned(no){return allRows().filter(x=>!isSubmitted(x.c,x.p.id)&&x.r.pc===no).reduce((n,x)=>n+(rowAmt(x.c,x.p.id)||0),0)}
-function needContract(c,p){const r=c.rows[p.id],amt=rowAmt(c,p.id)||0;return amt>5000&&catGroup(r.cat,p.role)==='企培讲师成本'}
+/* 付款合同号规则：出题费单次付款 <5000 元不需要；助教 / 兼职类：机构下必填、个人类非必填；其余费用类别全部需要 */
+function needContract(c,p){
+  const r=c.rows[p.id],amt=rowAmt(c,p.id)||0;
+  if(r.cat==='出题费'&&amt<5000)return false;
+  if(catGroup(r.cat,p.role)!=='企培讲师成本'){const b=findP(p.role,p.id);return !!(b&&b.org)}
+  return true;
+}
 /* 同人同时段重复（强拦截）：合同下已有执行单 + 本页其他执行单 */
 function conflictsOf(c,p){
   const out=[],mine=rowDateList(c,p.id);
@@ -288,29 +295,34 @@ function conflictsOf(c,p){
   S.cards.forEach((o,j)=>{if(o===c||!cardPersons(o).some(q=>q.id===p.id))return;const ov=mine.filter(d=>rowDateList(o,p.id).includes(d));if(ov.length)out.push(`${dlShort(ov)} 与本页执行单 ${j+1} 同人同时段重复`)});
   return out;
 }
-/* 发起付款申请前的逐项校验（s=短名，m=说明） */
+/* 发起付款申请前的逐项校验（s=短名，m=说明，hard=硬性卡点）。
+ * 硬性卡点只有 3 类：① 讲师/助教信息不完整或账号未创建 ② 付款合同号为空（按规则需要时）③ 讲师未评价（项目级，见 applyChecks）。其余均仅提醒，不拦截 */
 function rowIssues(c,p){
-  const r=c.rows[p.id],iss=[],add=(k,s,m)=>iss.push({k,s,m});
+  const r=c.rows[p.id],iss=[],add=(k,s,m,hard)=>iss.push({k,s,m,hard:!!hard});
+  const bs=findP(p.role,p.id);
+  /* ① 信息不完整 / 账号未创建（硬性） */
+  if(!p.phone)add('phone','手机号','手机号未补充，信息不完整，无法匹配收款账户',1);
+  if(bs&&bs.real===false)add('real','实名认证','讲师 / 助教未完成实名认证，信息不完整',1);
+  if(bs&&bs.wx===false)add('wx','收款小程序','收款小程序未绑定，信息不完整',1);
+  if(bs&&bs.acct===false)add('acct','账号未创建','讲师 / 助教账号未创建，请先在合同系统创建账户',1);
+  if(bs&&bs.org&&!bs.orgOk)add('org','机构账户未创建','所属机构「'+bs.org+'」尚未建立机构账户（账号未创建）',1);
+  /* ② 付款合同号为空（硬性，仅在规则要求时） */
+  if(needContract(c,p)&&!r.pc)add('pc','付款合同号为空','付款合同号为空（销售合同下无付款合同或额度不足）',1);
+  /* 以下仅提醒 */
   if(!r.cat)add('cat','费用类别','未选择费用类别');
   if(!(+r.price>0))add('price','单价','单价未填写');
   if(!(rowQty(c,p.id)>0))add('qty','数量','数量需大于 0');
   if(rowOther(c,p.id)<0)add('other','其他费用','其他费用不能为负数');
   else if(rowOther(c,p.id)>0&&!String(r.otherNote||'').trim())add('otherNote','其他费用说明','已填写其他费用，须说明费用是什么');
-  if(lastDate(c,p.id)>TODAY)add('date','执行日期','最后执行日期 '+lastDate(c,p.id)+' 晚于今天，到期前不能发起');
-  if(!p.phone)add('phone','手机号','手机号未补充，无法匹配收款账户');
-  const bs=findP(p.role,p.id);
-  if(bs&&bs.real===false)add('real','讲师实名','讲师未完成实名认证');
-  if(bs&&bs.wx===false)add('wx','收款小程序','收款小程序未绑定');
-  const base=findP(p.role,p.id);
-  if(base&&base.org&&!base.orgOk)add('org','机构账户','所属机构「'+base.org+'」尚未建立机构账户');
-  if(!r.pc)add('pc','付款合同号','未选择付款合同号（销售合同下无付款合同或额度不足），不允许提交');
-  else{const left=pcLeft(r.pc),asg=pcAssigned(r.pc);if(asg>left)add('pcover','付款合同额度','付款合同 '+r.pc+' 剩余可付款 ¥'+left.toLocaleString()+'，本页已分配 ¥'+asg.toLocaleString()+'，额度不足，请更换付款合同号')}
+  if(lastDate(c,p.id)>TODAY)add('date','执行日期','最后执行日期 '+lastDate(c,p.id)+' 晚于今天');
+  if(r.pc){const left=pcLeft(r.pc),asg=pcAssigned(r.pc);if(asg>left)add('pcover','付款合同额度','付款合同 '+r.pc+' 剩余可付款 ¥'+left.toLocaleString()+'，本页已分配 ¥'+asg.toLocaleString()+'，额度不足，建议更换付款合同号')}
   conflictsOf(c,p).forEach(m=>add('dup','时段重复',m));
   return iss;
 }
-/* 提交前强校验（任一不满足即不能提交）：手机号、实名、收款小程序、机构账户、付款合同号 */
-const BLOCK_K=['phone','real','wx','org','pc','pcover'];
-function blockIssues(c,p){return rowIssues(c,p).filter(x=>BLOCK_K.includes(x.k))}
+/* 硬性卡点（任一不满足不能发起付款申请） */
+const BLOCK_K=['phone','real','wx','acct','org','pc'];
+const INFO_K=['phone','real','wx','acct','org'];
+function blockIssues(c,p){return rowIssues(c,p).filter(x=>x.hard)}
 function allRows(){const a=[];S.cards.forEach((c,i)=>cardPersons(c).forEach(p=>a.push({c,p,i,k:c.id+':'+p.id,r:c.rows[p.id]})));return a}
 /* 可发起的行：账单尚未提交（无账单或待提交） */
 function applyRows(){return allRows().filter(x=>!isSubmitted(x.c,x.p.id))}
@@ -369,7 +381,7 @@ const pcSel=(c,p)=>{
   const r=c.rows[p.id],dis=isSubmitted(c,p.id)?'disabled':'';
   const opts=PAYC_ON?PAY_CONTRACTS.map(k=>`<option value="${k.no}" ${r.pc===k.no?'selected':''}>${k.no}</option>`).join(''):'';
   const over=r.pc&&pcAssigned(r.pc)>pcLeft(r.pc);
-  return `<select class="pc ${(!r.pc||over)?'bad':''}" ${dis} title="${r.pc?(r.pcManual?'已手动选择':'系统已按额度自动匹配，可修改'):'未选择付款合同号，不能提交'}" onchange="setPc(${c.id},'${p.id}',this.value)"><option value="">${PAYC_ON?'请选择':'无可选付款合同'}</option>${opts}</select>`;
+  return `<select class="pc ${((!r.pc&&needContract(c,p))||over)?'bad':''}" ${dis} title="${r.pc?(r.pcManual?'已手动选择':'系统已按额度自动匹配，可修改'):(needContract(c,p)?'付款合同号为空，不能发起付款申请':'按规则无需填写付款合同号（可选填）')}" onchange="setPc(${c.id},'${p.id}',this.value)"><option value="">${PAYC_ON?(needContract(c,p)?'请选择':'无需填写'):'无可选付款合同'}</option>${opts}</select>`;
 };
 const fileCell=(c,p)=>{
   const r=c.rows[p.id],n=(r.files||[]).length,sub=isSubmitted(c,p.id);
@@ -485,7 +497,7 @@ function recalc(){
     cardPersons(c).forEach(x=>{const el=$('ck_'+c.id+'_'+x.id);if(el)el.innerHTML=checkCell(c,x);const pv=$('pcv_'+c.id+'_'+x.id);if(pv&&!pv.contains(document.activeElement))pv.innerHTML=pcSel(c,x)});
     const pbEl=$('pb_'+c.id);
     if(pbEl){const ar=applyRows().filter(y=>y.c===c),bad=ar.filter(y=>blockIssues(y.c,y.p).length).length;
-      pbEl.className='pb '+(bad?'bad':'ok');pbEl.textContent=ar.length?(bad?`提交前，还有 ${bad} 人需补齐校验项`:'校验项已全部满足'):''}
+      pbEl.className='pb '+(bad?'bad':'ok');pbEl.textContent=ar.length?(bad?`发起付款申请前，还有 ${bad} 人存在卡点需处理`:'付款申请卡点已全部通过'):''}
     const ps=$('ps_'+c.id);
     if(ps){const sum=paySum(c);ps.innerHTML=`课酬合计：<b>¥${sum.toLocaleString()}</b>`;
       const pc=$('pc_'+c.id);if(pc)pc.innerHTML=`共 ${cardPersons(c).length} 人`+((a!==null&&sum>a)?` <span class="w">· 课酬合计超过本执行单金额 ¥${fm(a)}，仅提醒，不拦截</span>`:'')}
@@ -496,8 +508,8 @@ function recalc(){
   $('foot').innerHTML=`<div class="s"><span>合同金额</span><b>${fm(CONTRACT.amount)}</b></div><div class="s"><span>已执行</span><b>${fm(CONTRACT.used)}</b></div>
    <div class="s"><span>本次执行</span><b>${fm(tot)}</b></div><div class="s ${over?'bad':''}"><span>合同剩余</span><b>${fm(left-tot)}</b></div>
    ${over?'<span class="e">本次执行金额超过合同剩余可执行金额，不能提交</span>':''}<span class="fx"></span>
-   <span class="tip2 ${ready===ar.length?'ok':'bad'}">${ar.length?`提交校验通过 ${ready} / ${ar.length} 人${ready<ar.length?'，未通过不能提交':''}`:''}${pmOk?'':'（仅项目经理本人可发起付款申请）'}</span>
-   <button class="btn" onclick="submit('save')" title="手机号、实名、收款小程序、机构账户、付款合同号须全部满足">提交执行单</button>
+   <span class="tip2 ${ready===ar.length?'ok':'bad'}">${ar.length?`付款申请卡点通过 ${ready} / ${ar.length} 人${ready<ar.length?'，未通过的不能发起付款申请':''}`:''}${pmOk?'':'（仅项目经理本人可发起付款申请）'}</span>
+   <button class="btn" onclick="submit('save')" title="仅保存执行单并生成课酬账单，不做付款卡点校验">提交执行单</button>
    <button class="btn pri" ${pmOk?'':'disabled'} onclick="submit('apply')" title="${pmOk?'':'仅执行单上的项目经理本人可发起'}">提交并发起付款申请</button>`;
   renderWarns();
 }
@@ -612,8 +624,6 @@ function validate(){
 }
 function submit(kind){
   if(!validate()){toast(totalNow()>contractLeft()?'执行金额超过合同剩余可执行金额':'请先补全必填项');return}
-  const blocked=allRows().filter(x=>!isSubmitted(x.c,x.p.id)).map(x=>({x,iss:blockIssues(x.c,x.p)})).filter(o=>o.iss.length);
-  if(blocked.length){openBlock(blocked);return}
   if(kind==='apply'){
     if(!canInit()){toast('仅项目经理本人可发起付款申请');return}
     openApply();return;
@@ -624,7 +634,7 @@ function submit(kind){
 function openBlock(list){
   $('modal').className='modal w';
   $('modal').innerHTML=`<h4>还有 ${list.length} 人未满足提交条件</h4>
-   <div class="lead">以下校验项<b>任一不满足都不能提交</b>（手机号、讲师实名、收款小程序绑定、机构账户、付款合同号），请先处理。</div>
+   <div class="lead">以下校验项<b>任一不满足都不能提交</b>（手机号、机构账户、付款合同号及额度），请先处理。</div>
    <table class="atb"><thead><tr><th>人员</th><th>所在执行单</th><th>需处理事项</th></tr></thead><tbody>${list.map(o=>`<tr><td><b>${o.x.p.name}</b> <span class="tag ${o.x.p.role==='lec'?'b':'g'}">${o.x.p.role==='lec'?'讲师':'助教'}</span></td><td>执行单 ${o.x.i+1}${o.x.c.course?' · '+o.x.c.course:''}</td><td>${o.iss.map(t=>`<div class="bad" style="color:#b42318">✗ ${t.m}</div>`).join('')}</td></tr>`).join('')}</tbody></table>
    <div class="ops"><button class="btn pri" onclick="closeModal();backFixBlock()">去处理</button></div>`;
   $('mask').classList.add('on');
@@ -637,7 +647,7 @@ function openSaveConfirm(){
     return `<tr><td>${x.p.name}</td><td>${x.p.role==='lec'?'讲师':'助教'}</td><td>${S.cards.length>1?'执行单 '+(x.i+1)+' · ':''}${x.c.course||'—'}</td><td>${x.c.rows[x.p.id].cat||'<span class="hint">未填</span>'}</td><td style="text-align:right">${amt===null?'<span class="hint">未填</span>':'¥'+amt.toLocaleString()}${rowOther(x.c,x.p.id)>0?'<div class="hint">含其他费用 ¥'+rowOther(x.c,x.p.id).toLocaleString()+(x.c.rows[x.p.id].otherNote?'（'+x.c.rows[x.p.id].otherNote+'）':'')+'</div>':''}</td></tr>`}).join('');
   $('modal').className='modal w';
   $('modal').innerHTML=`<h4>确认提交执行单</h4>
-   <div class="lead">提交后，系统将根据本执行单自动生成对应的<b>课酬账单</b>（状态：待申请）。<b>本次提交不会发起付款审批</b>，如需付款：可在「课酬账单」页的“待申请”标签勾选账单后发起结算申请（相当于课酬草稿，可先补齐信息再批量发起），也可在此直接发起付款申请。<br>账单将自动带入<b>最终客户名称（${CONTRACT.final}）</b>和<b>课程名称</b>（取各执行单课程），小程序按课程 / 服务客户展示。</div>
+   <div class="lead">提交后，系统将根据本执行单自动生成对应的<b>课酬账单</b>（状态：待提交，在课酬账单页「待申请」标签下）。<b>本次提交不会发起付款审批</b>，如需付款：可在「课酬账单」页的“待申请”标签勾选账单后发起结算申请（相当于课酬草稿，可先补齐信息再批量发起），也可在此直接发起付款申请。<br>账单将自动带入<b>最终客户名称（${CONTRACT.final}）</b>和<b>课程名称</b>（取各执行单课程），小程序按课程 / 服务客户展示。</div>
    <div class="sec2">涉及课酬人员（共 ${rows.length} 人）</div>
    <table class="atb"><thead><tr><th>人员</th><th>角色</th><th>课程</th><th>费用类别</th><th style="text-align:right">金额</th></tr></thead><tbody>${tr||'<tr><td colspan="5" style="text-align:center;color:#9ca3af">暂无需生成账单的人员</td></tr>'}</tbody></table>
    ${riskHtml(risksOf(rows))}
@@ -646,9 +656,9 @@ function openSaveConfirm(){
   $('mask').classList.add('on');
 }
 function remindHtml(rows){
-  const list=rows.filter(x=>!isSubmitted(x.c,x.p.id)).map(x=>({x,iss:rowIssues(x.c,x.p)})).filter(o=>o.iss.length);
+  const list=rows.filter(x=>!isSubmitted(x.c,x.p.id)).map(x=>({x,iss:blockIssues(x.c,x.p)})).filter(o=>o.iss.length);
   if(!list.length)return '';
-  return `<div class="remind"><b>以下事项仅提醒，不影响保存</b>：需到课酬账单页补齐，发起结算申请时会逐项校验。<ul>${list.slice(0,6).map(o=>`<li>${o.x.p.name}（执行单 ${o.x.i+1}）：${o.iss.map(t=>t.s).join('、')}</li>`).join('')}${list.length>6?`<li>……另有 ${list.length-6} 人</li>`:''}</ul></div>`;
+  return `<div class="remind"><b>以下人员存在付款申请卡点，不影响保存</b>：需到课酬账单页补齐，发起付款申请前须处理（另有“讲师未评价”也会拦截）。<ul>${list.slice(0,6).map(o=>`<li>${o.x.p.name}（执行单 ${o.x.i+1}）：${o.iss.map(t=>t.s).join('、')}</li>`).join('')}${list.length>6?`<li>……另有 ${list.length-6} 人</li>`:''}</ul></div>`;
 }
 /* 仅保存执行单：全部人员生成课酬账单（待提交），不做校验 */
 function saveOnly(){
@@ -730,53 +740,61 @@ function aReason(v){APPLY.reason=v;renderApply()}
 function aEval(){S.evalDone=true;toast('演示：已完成讲师评价');renderApply()}
 function applyChecks(){
   const rows=applyRows(),sel=rows.filter(x=>APPLY.sel.has(x.k));
-  const g=[];
-  g.push({ok:canInit(),t:canInit()?`发起人：${USERS[S.user].name}（项目经理本人）`:`仅执行单上的项目经理（${S.pm||'未选择'}）可发起付款申请`});
-  g.push({ok:S.evalDone,t:S.evalDone?'本项目讲师评价已完成':'本项目尚未完成讲师评价，未评价不可提交',fix:S.evalDone?'':'<a onclick="aEval()">去评价（演示）</a>'});
-  const reasonOk=APPLY.ch==='常规'||!!APPLY.reason.trim();
-  g.push({ok:reasonOk,t:APPLY.ch==='常规'?'结算方式：常规结算':(reasonOk?'结算方式：紧急结算，已填写原因':'紧急结算须填写原因')});
-  g.push({ok:sel.length>0,t:sel.length?`已勾选 ${sel.length} 人`:'请至少勾选 1 人发起'});
-  /* 付款合同额度：本次已确认的金额汇总 */
+  /* 3 项硬性卡点 */
+  const infoBad=sel.map(x=>({x,iss:blockIssues(x.c,x.p).filter(t=>INFO_K.includes(t.k))})).filter(o=>o.iss.length);
+  const pcBad=sel.map(x=>({x,iss:blockIssues(x.c,x.p).filter(t=>t.k==='pc')})).filter(o=>o.iss.length);
+  const hard=[
+    {k:'info',ok:!infoBad.length,t:'讲师 / 助教信息不完整，或账号未创建',list:infoBad},
+    {k:'pc',ok:!pcBad.length,t:'付款合同号为空',list:pcBad},
+    {k:'eval',ok:S.evalDone,t:'讲师未评价',fix:S.evalDone?'':'<a onclick="aEval()">去评价（演示）</a>'}
+  ];
+  /* 操作条件（非业务卡点）：发起人权限、紧急原因、至少勾选 1 人 */
+  const ops=[];
+  if(!canInit())ops.push(`仅执行单上的项目经理（${S.pm||'未选择'}）可发起付款申请`);
+  if(APPLY.ch==='紧急'&&!APPLY.reason.trim())ops.push('紧急结算须填写原因');
+  if(!sel.length)ops.push('请至少勾选 1 人发起');
+  /* 仅提醒：其余校验项 + 付款合同额度 */
+  const soft=sel.map(x=>({x,iss:rowIssues(x.c,x.p).filter(t=>!t.hard)})).filter(o=>o.iss.length);
   const use={};sel.forEach(x=>{if(x.r.pc)use[x.r.pc]=(use[x.r.pc]||0)+(rowAmt(x.c,x.p.id)||0)});
-  Object.keys(use).forEach(no=>{const left=pcLeft(no),ok=use[no]<=left;g.push({ok,t:ok?`付款合同 ${no} 额度充足（本次占用 ¥${use[no].toLocaleString()}，剩余 ¥${left.toLocaleString()}）`:`付款合同 ${no} 额度不足：本次需 ¥${use[no].toLocaleString()}，剩余 ¥${left.toLocaleString()}`})});
-  const rowBad=sel.map(x=>({x,iss:rowIssues(x.c,x.p)})).filter(o=>o.iss.length);
-  const nbad=g.filter(x=>!x.ok).length+rowBad.reduce((n,o)=>n+o.iss.length,0);
-  return {rows,sel,g,rowBad,nbad};
+  const quota=Object.keys(use).filter(no=>use[no]>pcLeft(no)).map(no=>`付款合同 ${no} 额度不足：本次需 ¥${use[no].toLocaleString()}，剩余 ¥${pcLeft(no).toLocaleString()}`);
+  const nbad=hard.filter(x=>!x.ok).length+ops.length;
+  return {rows,sel,hard,ops,soft,quota,nbad};
 }
 function renderApply(){
-  const {rows,sel,g,rowBad,nbad}=applyChecks();
-  const total=sel.reduce((n,x)=>n+(rowAmt(x.c,x.p.id)||0),0),keep=rows.length-sel.length;
-  const badG=g.filter(x=>!x.ok);
-  /* 只在有问题时出现：整单问题逐条列出，个人问题在下方名单里标注 */
-  const banner=nbad?`<div class="banner bad"><b>还差 ${nbad} 项处理后才能发起</b><ul>${badG.map(x=>`<li>${x.t}${x.fix||''}</li>`).join('')}${rowBad.length?`<li>${rowBad.length} 位人员信息未补齐（见下方名单），请取消后在页面补齐，或取消勾选这些人员</li>`:''}</ul></div>`:'';
+  const {rows,sel,hard,ops,soft,quota,nbad}=applyChecks();
+  const total=sel.reduce((n,x)=>n+(rowAmt(x.c,x.p.id)||0),0),keep=rows.length-sel.length,hf=hard.some(x=>!x.ok);
+  const hardBox=hf?`<div class="banner bad" id="hardBox"><b>以下事项需先处理后方可发起付款</b>${hard.filter(h=>!h.ok).map(h=>`<div style="margin-top:6px"><b>✗ ${h.t}</b>${h.fix||''}${(h.list||[]).map(o=>`<div style="padding-left:22px;color:#7a271a">${o.x.p.name}（${o.x.p.role==='lec'?'讲师':'助教'}）${S.cards.length>1?' · 执行单 '+(o.x.i+1):''}：${o.iss.map(t=>t.m).join('；')}</div>`).join('')}${h.k==='eval'?`<div style="padding-left:22px;color:#7a271a">本项目讲师${sel.filter(x=>x.p.role==='lec').length?'（'+[...new Set(sel.filter(x=>x.p.role==='lec').map(x=>x.p.name))].join('、')+'）':''}尚未评价</div>`:''}</div>`).join('')}</div>`:'';
+  const opsBox=ops.length?`<div class="banner warn"><b>还需完成</b><ul>${ops.map(t=>`<li>${t}</li>`).join('')}</ul></div>`:'';
+  const softBox=(soft.length||quota.length)?`<div class="remind" style="margin:0 0 10px"><b>以下事项仅提醒，不影响发起</b><ul>${quota.map(t=>`<li>${t}</li>`).join('')}${soft.slice(0,6).map(o=>`<li>${o.x.p.name}：${o.iss.map(t=>t.m).join('；')}</li>`).join('')}${soft.length>6?`<li>……另有 ${soft.length-6} 人</li>`:''}</ul></div>`:'';
   const tr=rows.map(x=>{
-    const dis=false,on=APPLY.sel.has(x.k),iss=on?rowIssues(x.c,x.p):[],amt=rowAmt(x.c,x.p.id);
-    const st=(on?(iss.length?`<span class="bad" title="${iss.map(t=>t.m).join('；')}">✗ ${iss.map(t=>t.s).join('、')}</span>`:'<span style="color:var(--green)">✓</span>'):'<span class="hint">不发起，保存为账单</span>');
+    const dis=false,on=APPLY.sel.has(x.k),iss=on?rowIssues(x.c,x.p):[],amt=rowAmt(x.c,x.p.id),hi=iss.filter(t=>t.hard),si=iss.filter(t=>!t.hard);
+    const st=(on?(hi.length?`<span class="bad" title="${hi.map(t=>t.m).join('；')}">✗ ${hi.map(t=>t.s).join('、')}</span>`:(si.length?`<span style="color:var(--orange)" title="${si.map(t=>t.m).join('；')}">✓ 提醒 ${si.length}</span>`:'<span style="color:var(--green)">✓</span>')):'<span class="hint">不发起，保存为账单</span>');
     return `<tr class="${dis?'lk':''}"><td><input type="checkbox" ${on?'checked':''} ${dis?'disabled':''} onchange="aSel('${x.k}',this.checked)"></td>
       <td><b>${x.p.name}</b> <span class="tag ${x.p.role==='lec'?'b':'g'}">${x.p.role==='lec'?'讲师':'助教'}</span><div class="hint">${x.c.course||'—'}</div></td>
       <td>${rowDatesText(x.c,x.p)}</td><td>${x.r.cat||'<span class="hint">未选</span>'}</td><td style="text-align:right">${x.r.price===''?'<span class="hint">未填</span>':(+x.r.price).toLocaleString()}</td><td style="text-align:right">${rowQty(x.c,x.p.id)}</td><td>${x.r.unit}</td>
       <td style="text-align:right">${rowOther(x.c,x.p.id)>0?'¥'+rowOther(x.c,x.p.id).toLocaleString()+'<div class="hint">'+(x.r.otherNote||'<span class="bad">未说明</span>')+'</div>':'<span class="hint">—</span>'}</td>
-      <td style="text-align:right"><b>${amt===null?'<span class="hint">—</span>':'¥'+amt.toLocaleString()}</b></td><td>${x.r.pc||'<span class="hint">无需选择</span>'}</td><td>${st}</td></tr>`}).join('');
+      <td style="text-align:right"><b>${amt===null?'<span class="hint">—</span>':'¥'+amt.toLocaleString()}</b></td><td>${x.r.pc||(needContract(x.c,x.p)?'<span class="bad">为空</span>':'<span class="hint">无需填写</span>')}</td><td>${st}</td></tr>`}).join('');
   const allOn=rows.length>0&&rows.every(x=>APPLY.sel.has(x.k));
   $('modal').className='modal xw';
   $('modal').innerHTML=`<h4>发起付款申请</h4>
    <div class="sumcard"><span>本次发起 <b>${sel.length}</b> 人 · 合计 <b>¥${total.toLocaleString()}</b></span></div>
+   ${hardBox}${opsBox}
    <div class="chpick">
      <label class="${APPLY.ch==='常规'?'on':''}"><input type="radio" name="apch" ${APPLY.ch==='常规'?'checked':''} onchange="aCh('常规')"><div><b>常规结算</b><span>审批通过后，到期才可提现</span></div></label>
      <label class="urg ${APPLY.ch==='紧急'?'on':''}"><input type="radio" name="apch" ${APPLY.ch==='紧急'?'checked':''} onchange="aCh('紧急')"><div><b>紧急结算</b><span>审批通过后，可直接提现（须填写紧急结算原因）</span></div></label>
    </div>
    ${APPLY.ch==='紧急'?`<div class="f" style="margin:-4px 0 10px"><input type="text" maxlength="100" placeholder="请填写紧急结算原因（必填）" value="${APPLY.reason.replace(/"/g,'&quot;')}" onchange="aReason(this.value)" style="width:100%"></div>`:''}
    <div class="lead" style="margin:0 0 10px">每位师资将各生成一张结算单，单独走审批（项目主管 → 财务，两位财务均需通过），可单独通过、单独驳回；只包含本次提交的执行单。</div>
-   ${banner}
-   <table class="atb"><thead><tr><th style="width:30px"><input type="checkbox" ${allOn?'checked':''} onchange="aAll(this.checked)" title="全选"></th><th>人员</th><th>授课/服务日期</th><th>费用类别</th><th style="text-align:right">老师课酬单价</th><th style="text-align:right">数量</th><th>单位</th><th style="text-align:right">其他费用</th><th style="text-align:right">总金额</th><th>付款合同号</th><th>状态</th></tr></thead><tbody>${tr||'<tr><td colspan="11" style="text-align:center;color:#9ca3af">暂无可发起的人员</td></tr>'}</tbody></table>
+   <table class="atb"><thead><tr><th style="width:30px"><input type="checkbox" ${allOn?'checked':''} onchange="aAll(this.checked)" title="全选"></th><th>人员</th><th>授课/服务日期</th><th>费用类别</th><th style="text-align:right">单价</th><th style="text-align:right">数量</th><th>单位</th><th style="text-align:right">其他费用</th><th style="text-align:right">总金额</th><th>付款合同号</th><th>状态</th></tr></thead><tbody>${tr||'<tr><td colspan="11" style="text-align:center;color:#9ca3af">暂无可发起的人员</td></tr>'}</tbody></table>
+   ${softBox?`<div style="margin-top:10px">${softBox}</div>`:''}
    <div style="margin-top:10px">${riskHtml(risksOf(sel),true)}</div>
    ${keep>0?`<div class="hint" style="margin-top:8px">未勾选的 ${keep} 人不会发起，保存后进入课酬账单（待提交）。</div>`:''}
    <div class="ops" style="margin-top:16px"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" ${nbad?'disabled':''} onclick="confirmApply()">确认发起</button></div>`;
   $('mask').classList.add('on');
 }
 function backFix(){
-  const {rowBad}=applyChecks();closeModal();renderAll();
-  const f=rowBad[0];if(f){const el=$('card_'+f.x.c.id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
+  const {hard}=applyChecks();closeModal();renderAll();
+  const f=hard.flatMap(h=>h.list||[])[0];if(f){const el=$('card_'+f.x.c.id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
 }
 function confirmApply(){
   const {rows,sel,nbad}=applyChecks();if(nbad||!sel.length)return;

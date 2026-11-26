@@ -164,6 +164,7 @@ tr.clk{cursor:pointer}tr.clk:hover td{background:#f8faff}
 .rv-as.min .rail{display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:16px;font-size:13px}.rv-as .rail span{white-space:nowrap;writing-mode:vertical-rl;letter-spacing:3px;font-weight:600}.rv-as .rail em{font-style:normal;color:var(--sub);font-size:16px}
 .rv-as .rv-ti .tx{background:#fff;border:1px solid #edf0f6}.rv-as .rv-nr{flex-wrap:wrap;gap:2px 8px}.rv-as .rv-nr .k{width:auto;min-width:34px}.rv-as .rv-nr del,.rv-as .rv-nr b,.rv-as .rv-nr i{white-space:nowrap}
 .rv-sec{margin:0 0 14px}.rv-secs{font-size:12.5px;font-weight:700;color:var(--text);padding-left:8px;border-left:3px solid var(--primary);margin-bottom:6px}
+.rv-fd.dedfd .rv-kv,.rv-fd.dedfd .rv-kv.urgk{grid-template-columns:136px 1fr}
 .rv-kv{display:grid;grid-template-columns:96px 1fr;gap:8px;padding:5px 0;border-bottom:1px dashed #eef1f6;font-size:13px}.rv-kv dt{color:var(--sub)}.rv-kv dd{margin:0}
 .rv-f{display:flex;gap:10px;align-items:center;padding:5px 0;font-size:13px}.rv-f span:first-child{flex:1}
 .adoc-btn{height:36px;padding:0 14px;border:1px solid var(--primary);border-radius:8px;background:#fff;color:var(--primary);font-weight:600;cursor:pointer}.adoc-btn.on,.adoc-btn:hover{background:var(--primary);color:#fff}
@@ -347,10 +348,10 @@ tbody tr.disabled-row td{background:#fcfcfd;color:#9aa2b2}
 .arrow{color:#aab2c2}
 .lock{display:flex;align-items:center;gap:8px;color:#a46418;font-size:12px}
 .modal-mask{position:fixed;inset:0;background:rgba(15,24,43,.46);z-index:100;display:grid;place-items:center;padding:20px;animation:fade .15s}
-.modal{background:#fff;width:min(520px,100%);border-radius:13px;box-shadow:0 24px 70px rgba(0,0,0,.2);animation:pop .17s}
-.modal-head{height:58px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.modal{background:#fff;width:min(520px,100%);max-height:calc(100vh - 40px);display:flex;flex-direction:column;border-radius:13px;box-shadow:0 24px 70px rgba(0,0,0,.2);animation:pop .17s}
+.modal-head{flex:none;height:58px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
 .modal-head h3{margin:0;font-size:16px}.modal-close{border:0;background:none;font-size:22px;color:#7d8698}
-.modal-body{padding:20px}.modal-foot{padding:13px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:9px}
+.modal-body{padding:20px;overflow-y:auto;min-height:0}.modal-foot{flex:none;padding:13px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:9px}
 .form-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 24px}.stack{display:grid;gap:16px}.sel-wrap{position:relative}.sel-list{position:absolute;z-index:30;top:38px;left:0;right:0;max-height:260px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(20,30,60,.12)}.sel-opt{display:flex;gap:10px;align-items:center;padding:9px 12px;cursor:pointer}.sel-opt:hover{background:#f3f6ff}.sel-opt.disabled{opacity:.5;cursor:not-allowed}.sel-empty{padding:14px;text-align:center;color:var(--sub);font-size:12px}.input:disabled{background:#f6f7f9;color:#4a5468}
 .field{margin-bottom:16px}.field label{display:block;font-size:12px;color:#505a70;margin-bottom:7px;font-weight:600}
 .field label em{color:var(--red);font-style:normal}.field .input,.field .select,.field textarea{width:100%}
@@ -542,8 +543,13 @@ const ASSIST_CATS=FEE_TREE['企培助教成本'];
 const PART_CATS=FEE_TREE['企培其他兼职成本'];
 const UNITS=['天','小时','道','批'];
 const catOpts=(cur)=>Object.entries(FEE_TREE).map(([g,arr])=>'<optgroup label="'+g+'">'+arr.map(c=>'<option value="'+c+'" '+(c===cur?'selected':'')+'>'+c+'</option>').join('')+'</optgroup>').join('');
-/** 须确认付款合同：单次 >5000 且非助教/兼职；出题费不按类别豁免。助教/兼职及 ≤5000 无需选择但可填 */
-const contractOptional=b=>Number(b.amount)<=5000||b.role==='助教'||ASSIST_CATS.includes(b.category)||PART_CATS.includes(b.category);
+/** 付款合同号规则：出题费单次付款 <5000 元不需要；助教 / 兼职类：机构下必填、个人类非必填；其余费用类别全部需要。不需要时仍可填写 / 更换 */
+const isOrgPerson=b=>{const a=(state.accounts||[]).find(x=>x.personId===b.personId);return !!(a&&(a.orgId||a.entity==='机构'))};
+const contractOptional=b=>{
+  if(b.category==='出题费'&&Number(b.amount)<5000)return true;
+  if(b.role==='助教'||ASSIST_CATS.includes(b.category)||PART_CATS.includes(b.category))return !isOrgPerson(b);
+  return false;
+};
 const needContract=b=>!contractOptional(b);
 const PAY_CONTRACT={'企业数字化转型训练营':'B-BC-QP0926-0565','研发效能公开课':'B-BC-QP0926-0572','云原生架构师认证营':'B-BC-QP0926-0588','AI 产品经理实战班':'','战略客户定制培训':'B-BC-QP0926-0601','渠道伙伴峰会':'B-BC-QP0926-0614','金融行业大模型工作坊':'B-BC-QP0926-0620','数据分析训练营':'B-BC-QP0926-0633','安全工程师训练营':'B-BC-QP0926-0648','项目管理认证班':'B-BC-QP0926-0655'};
 function exportCsv(name,head,rows){
@@ -569,11 +575,11 @@ const EXEC_ORDERS={'企业数字化转型训练营':['ZX202610-030','ZX202610-03
 const payC=no=>PAYC.find(x=>x.no===no);
 const payOptions=pact=>PAYC.filter(x=>x.pact===pact);
 const payUsed=(no,exceptId)=>state.bills.filter(x=>x.contract===no&&x.confirmed&&x.id!==exceptId);
-const payUsedAmt=(no,exceptId)=>payUsed(no,exceptId).reduce((n,x)=>n+x.amount,0);
+const payUsedAmt=(no,exceptId)=>payUsed(no,exceptId).reduce((n,x)=>n+netAmt(x),0);
 const payOk=b=>!needContract(b)||(b.confirmed&&!contractMissing(b));
 const othMiss=b=>b.other>0&&!String(b.otherNote||'').trim();
-const bIssue=b=>b.issue||(b.status==='待提交'?(!payOk(b)?'付款合同号未关联':(othMiss(b)?'其他费用未说明':'')):'');
-const bIssues=b=>{if(b.status!=='待提交')return [];const l=[];if(b.issue)l.push(b.issue);if(!payOk(b))l.push('付款合同号未关联');if(othMiss(b))l.push('其他费用未说明');return l};
+const bIssue=b=>b.issue||(b.status==='待提交'&&!payOk(b)?'付款合同号未关联':'');
+const bIssues=b=>{if(b.status!=='待提交')return [];const l=[];if(b.issue)l.push(b.issue);if(!payOk(b))l.push('付款合同号未关联');return l};
 const ISSUE_HINT={'手机号缺失':'师资手机号缺失，请先到师资信息补充手机号','手机号重复':'手机号与其他师资重复，请核实更正','机构账户未创建':'师资所属机构账户未创建，请先创建机构账户','付款合同号未关联':'请进入账单详情，选择关联付款合同号'};
 function showIssuePop(el){
   hideIssuePop();const l=el.getAttribute('data-r').split('|'),pop=document.createElement('div');pop.id='issuePop';pop.className='ipop';
@@ -673,7 +679,7 @@ const state={
   cfg:{teacher:60,assistant:30},
   mdTab:'pay',mdSel:new Set(),mdFor:'',
   appView:{q:'',project:'',pact:'',type:'',status:'',pm:''},
-  billView:{tab:'todo',issue:'',q:'',src:'全部来源',wd:'全部提现状态',name:'',phone:'',project:'',pm:'',pact:'',contract:'',d1:'',d2:''},
+  billView:{tab:'todo',issue:'',q:'',src:'全部来源',wd:'全部提现状态',ded:'全部',pt:'全部',name:'',phone:'',project:'',pm:'',pact:'',contract:'',d1:'',d2:''},
   selectedBills:new Set(),
   bd:{app:'',bill:''},
   evaluated:new Set(),
@@ -887,12 +893,33 @@ function contractFileCard(list){
   const rows=contractFileRows(list);
   return '<section class="card"><div class="card-head"><h3>合同附件</h3><span class="muted">仅财务审批时可见 · 随结算单从合同系统同步</span></div><div class="card-body" style="padding-top:0">'+(rows.length?'<div class="table-wrap"><table><thead><tr><th>合同类型</th><th>合同号</th><th>附件</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+tag(r.type,r.type==='销售合同'?'blue':'purple')+'</td><td>'+r.no+'</td><td>'+r.files.map(f=>'<button class="link" onclick="toast(\'原型演示\',\'合同附件由合同系统同步，原型未真实存储\')">'+f.name+'</button> <span class="muted">'+fmtSize(f.size)+'</span>').join('<br>')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="muted">暂无合同附件</div>')+'</div></section>';
 }
-function appBills(a){return state.bills.filter(b=>b.appId===a.id)}
-function appAmount(a){return appBills(a).reduce((s,b)=>s+b.amount,0)}
+/* ================= 扣款（对已审批通过的结算单做减款，复用结算单） =================
+ * 结算单分「增款」（原有课酬结算）与「扣款」两类，用 a.dir 区分（缺省 = 增款）。扣款单：a.ref = 原课酬账单号，a.deductAmt = 本次扣款金额，a.reason = 扣款原因，a.files = 附件。
+ * 账单本身不新增状态：已扣款 / 审批中冻结金额均由扣款单实时汇总；订单实际金额 = 原金额 − 已通过的扣款。 */
+const isDed=a=>!!a&&a.dir==='扣款';
+const dedApps=b=>state.applications.filter(x=>isDed(x)&&x.ref===b.id);
+const dedDone=b=>Math.round(dedApps(b).filter(x=>x.status==='已通过').reduce((n,x)=>n+x.deductAmt,0)*100)/100;
+const dedHold=b=>Math.round(dedApps(b).filter(x=>x.status==='审批中').reduce((n,x)=>n+x.deductAmt,0)*100)/100;
+const netAmt=b=>Math.round((b.amount-dedDone(b))*100)/100;
+const dedRemain=b=>Math.round((b.amount-dedDone(b)-dedHold(b))*100)/100;
+const DED_OK=['账期中','可提现'];
+const canDeduct=b=>canOp()&&DED_OK.includes(b.status)&&dedRemain(b)>0;
+const dedSub=b=>{const d=dedDone(b),h=dedHold(b);return (d>0?'<div style="font-size:11.5px;font-weight:400;color:#b42318">已扣款 −'+money(d)+' · 实际 '+money(b.amount-d)+'</div>':'')+(h>0?'<div style="font-size:11.5px;font-weight:400;color:#b54708">扣款申请审批中 −'+money(h)+'（订单已冻结）</div>':'')};
+const dedBtn=b=>{
+  if(!canOp()||!b.appId||['待提交','审批中','驳回待修改'].includes(b.status))return '';
+  if(canDeduct(b))return ' <button class="link" style="color:var(--red)" onclick="openDeduct(\''+b.id+'\')">申请扣款</button>';
+  const why=!DED_OK.includes(b.status)?'订单已进入「'+b.status+'」，仅账期中、可提现的账单可申请扣款':'累计扣款（含审批中）已达订单原金额，无可扣金额';
+  return ' <button class="link" style="color:#b8bfcc;cursor:not-allowed" title="'+why+'" onclick="toast(\'不可申请扣款\',\''+why+'\',\'error\')">申请扣款</button>';
+};
+const frozenOf=pid=>state.bills.filter(b=>b.personId===pid&&b.status==='可提现'&&dedHold(b)>0).reduce((n,b)=>n+netAmt(b),0);
+const frozenNote=f=>f>0?'<div class="muted" style="font-size:11.5px;font-weight:400;color:#b54708">另有冻结 '+money(f)+'（扣款审批中）</div>':'';
+const frozenOrg=o=>(state.accounts||[]).filter(x=>x.orgId===o.id).reduce((n,x)=>n+frozenOf(x.personId),0);
+function appBills(a){return isDed(a)?state.bills.filter(b=>b.id===a.ref):state.bills.filter(b=>b.appId===a.id)}
+function appAmount(a){return isDed(a)?a.deductAmt:appBills(a).reduce((s,b)=>s+b.amount,0)}
 function appPacts(a){const l=[...new Set(appBills(a).map(b=>b.pact).filter(Boolean))];return l.length?l.join('、'):'—'}
 function appContracts(a){
   const m=new Map();
-  appBills(a).forEach(b=>{const k=b.pact||'—';if(!m.has(k))m.set(k,{pact:k,projects:new Set(),pays:new Set(),count:0,amount:0});const g=m.get(k);g.projects.add(b.project);g.count++;g.amount+=b.amount;if(b.contract&&b.contract!=='付款合同未返回')g.pays.add(b.contract)});
+  appBills(a).forEach(b=>{const k=b.pact||'—';if(!m.has(k))m.set(k,{pact:k,projects:new Set(),pays:new Set(),count:0,amount:0});const g=m.get(k);g.projects.add(b.project);g.count++;g.amount+=isDed(a)?a.deductAmt:b.amount;if(b.contract&&b.contract!=='付款合同未返回')g.pays.add(b.contract)});
   return [...m.values()].map(g=>({pact:g.pact,project:[...g.projects].join('、'),pays:[...g.pays],count:g.count,amount:g.amount}));
 }
 function appMulti(a,key){
@@ -911,20 +938,35 @@ function showAppPop(el,id){
 function appProject(a){const l=[...new Set(appBills(a).map(b=>b.project))];return l.length?l.join('、'):'—'}
 function appStatusColor(st){return st==='已驳回'?'red':st==='已通过'?'green':'orange'}
 
-const BILL_TABS=[['todo','待申请',['待提交']],['applied','审批中',['审批中']],['rejected','已驳回',['驳回待修改']],['done','已通过',['账期中','可提现','提现中','已提现']],['all','全部',null]];
+const BILL_TABS=[['todo','待申请',['待提交']],['applied','审批中',['审批中']],['rejected','已驳回',['驳回待修改']],['done','已通过',['账期中','可提现','提现中','已提现','已扣款']],['all','全部',null]];
+/* 扣款账单：每张扣款单在课酬账单页生成一条「类型 = 扣款」的账单（金额为负），挂在原订单名下，走审批中 → 已通过 / 已驳回。
+ * 为避免新增数据结构，由扣款单实时派生：状态映射 审批中→审批中、已驳回→驳回待修改（列表归入「已驳回」）、已通过→已扣款（列表归入「已通过」）。 */
+function dedRowsAll(){
+  return state.applications.filter(isDed).map(a=>{
+    const o=state.bills.find(b=>b.id===a.ref);if(!o)return null;
+    return Object.assign({},o,{id:a.id,appId:a.id,isDed:true,dedApp:a,ref:o.id,sub:a.created,files:a.files||[],
+      status:a.status==='审批中'?'审批中':a.status==='已驳回'?'驳回待修改':'已扣款'});
+  }).filter(Boolean);
+}
+const allBillRows=()=>state.bills.concat(dedRowsAll());
+/* 付款类型：取自账单所属结算单的类型（发起结算申请时选择）；待申请无、扣款账单不分 */
+const billApp=b=>b.appId?state.applications.find(x=>x.id===b.appId):null;
+const payType=b=>{if(b.isDed)return '';const a=billApp(b);return a?(a.type==='紧急'?'紧急付款':'普通付款'):''};
+const payTypeCell=b=>{if(b.isDed)return '<span class="muted">—</span>';const a=billApp(b);if(!a)return '<span class="muted">—</span>';const u=a.type==='紧急';return '<span '+(u&&a.reason?'title="紧急结算原因：'+String(a.reason).replace(/"/g,'&quot;')+'" ':'')+'>'+tag(u?'紧急付款':'普通付款',u?'orange':'blue')+'</span>'};
+const findBill=id=>allBillRows().find(x=>x.id===id);
 function billList(skipIssue){
   const v=state.billView,tab=BILL_TABS.find(t=>t[0]===v.tab);
   const issueOk=b=>skipIssue||v.tab!=='todo'||!v.issue||(v.issue==='noexec'?!b.exec:v.issue==='ok'?!bIssues(b).length:bIssues(b).map(issueGroup).includes(v.issue));
   const has=(x,k)=>!k.trim()||String(x||'').toLowerCase().includes(k.trim().toLowerCase());
   const ph=(x,k)=>{k=k.trim();if(!k)return true;x=x||'';return k.length===11?(x.slice(0,3)===k.slice(0,3)&&x.slice(-4)===k.slice(-4)):x.includes(k)};
-  return state.bills.filter(b=>(!tab[2]||tab[2].includes(b.status))&&(v.src==='全部来源'||b.source===v.src)&&(!v.wd||v.wd==='全部提现状态'||b.status===v.wd)&&has(b.id,v.q)&&has(b.name,v.name)&&ph(b.phone,v.phone)&&has(b.project,v.project)&&has(b.customer,v.customer||'')&&has(b.course,v.course||'')&&has(b.pm,v.pm)&&(state.role!=='pm'||b.pm===PM_NAME)&&has(b.pact,v.pact)&&has(b.contract,v.contract)&&(!v.d1||b.date>=v.d1)&&(!v.d2||b.date<=v.d2)&&issueOk(b)).sort((x,y)=>String(y.sub||'').localeCompare(String(x.sub||'')));
+  return allBillRows().filter(b=>(!tab[2]||tab[2].includes(b.status))&&(v.src==='全部来源'||b.source===v.src)&&(!v.wd||v.wd==='全部提现状态'||b.status===v.wd)&&has(b.id,v.q)&&has(b.name,v.name)&&ph(b.phone,v.phone)&&has(b.project,v.project)&&has(b.customer,v.customer||'')&&has(b.course,v.course||'')&&has(b.pm,v.pm)&&(state.role!=='pm'||b.pm===PM_NAME)&&has(b.pact,v.pact)&&has(b.contract,v.contract)&&(!v.d1||b.date>=v.d1)&&(!v.d2||b.date<=v.d2)&&(!v.ded||v.ded==='全部'||(v.ded==='扣款'?!!b.isDed:!b.isDed))&&(!v.pt||v.pt==='全部'||payType(b)===v.pt)&&issueOk(b)).sort((x,y)=>String(y.sub||'').localeCompare(String(x.sub||'')));
 }
 function setBillTab(t){state.billView.tab=t;state.billView.issue='';state.selectedBills.clear();if(state.pg['bills'])state.pg['bills'].page=1;render()}
-function applyBillFilter(){const v=state.billView,g=id=>document.getElementById(id).value;Object.assign(v,{q:g('billQ'),name:g('billName'),phone:g('billPhone'),project:g('billProject'),customer:g('billCustomer'),course:g('billCourse'),pm:(document.getElementById('billPm')||{value:''}).value,pact:g('billPact'),contract:g('billContract'),d1:g('billD1'),d2:g('billD2'),src:g('billSrc'),wd:g('billWd')});state.selectedBills.clear();if(state.pg['bills'])state.pg['bills'].page=1;render()}
-function resetBillFilter(){Object.assign(state.billView,{q:'',issue:'',name:'',phone:'',project:'',customer:'',course:'',pm:'',pact:'',contract:'',d1:'',d2:'',src:'全部来源',wd:'全部提现状态'});if(state.pg['bills'])state.pg['bills'].page=1;state.selectedBills.clear();render()}
+function applyBillFilter(){const v=state.billView,g=id=>document.getElementById(id).value;Object.assign(v,{name:g('billName'),phone:g('billPhone'),project:g('billProject'),customer:g('billCustomer'),course:g('billCourse'),pm:(document.getElementById('billPm')||{value:''}).value,pact:g('billPact'),d1:g('billD1'),d2:g('billD2'),wd:g('billWd'),ded:g('billDed'),pt:g('billPt')});state.selectedBills.clear();if(state.pg['bills'])state.pg['bills'].page=1;render()}
+function resetBillFilter(){Object.assign(state.billView,{q:'',issue:'',name:'',phone:'',project:'',customer:'',course:'',pm:'',pact:'',contract:'',d1:'',d2:'',src:'全部来源',wd:'全部提现状态',ded:'全部',pt:'全部'});if(state.pg['bills'])state.pg['bills'].page=1;state.selectedBills.clear();render()}
 function setIssueFilter(k){state.billView.issue=k;state.selectedBills.clear();if(state.pg['bills'])state.pg['bills'].page=1;render()}
 function exportBills(){
-  exportCsv('课酬账单明细',['课酬账单号','来源','师资','手机号','项目','客户名称','课程名称','合同号','项目经理','执行单','提交时间','培训日期','角色','费用类别','单价','数量','单位','其他费用','其他费用说明','金额','付款合同号','状态','附件数量','待处理原因'],billList().map(b=>[b.id,b.source,b.name,b.phone||'手机号缺失',b.project,b.customer||'',b.course||'',b.pact||'',b.pm,b.exec||'待关联执行单',b.sub,b.train||b.date,b.role,b.category,b.price,b.qty,b.unit,b.other||0,b.otherNote||'',b.amount,(b.contract&&b.contract!=='付款合同未返回')?b.contract:'',b.status,fileLen(b),bIssues(b).join('；')]));
+  exportCsv('课酬账单明细',['课酬账单号','款项方向','付款类型','来源','师资','手机号','项目','客户名称','课程名称','合同号','项目经理','执行单','提交时间','培训日期','角色','费用类别','单价','数量','单位','其他费用','其他费用说明','金额','已扣款金额','实际金额','付款合同号','状态','附件数量','待处理原因'],billList().map(b=>[b.id,b.isDed?'扣款':'增款',payType(b)||'—',b.isDed?'扣款申请':b.source,b.name,b.phone||'手机号缺失',b.project,b.customer||'',b.course||'',b.pact||'',b.pm,b.exec||'待关联执行单',b.sub,b.train||b.date,b.role,b.category,b.price,b.qty,b.unit,b.other||0,b.otherNote||'',b.isDed?-b.dedApp.deductAmt:b.amount,b.isDed?'':dedDone(b),b.isDed?'':netAmt(b),(b.contract&&b.contract!=='付款合同未返回')?b.contract:'',b.status,fileLen(b),bIssues(b).join('；')]));
 }
 function issueBar(){
   const base=billList(true).filter(b=>b.status==='待提交');
@@ -934,17 +976,50 @@ function issueBar(){
   const chip=(k,t,n,cls)=>'<button class="ib-chip '+(cls||'')+(v.issue===k?' on':'')+'" onclick="setIssueFilter(\''+k+'\')">'+t+(n!=null?' <b>'+n+'</b>':'')+'</button>';
   return '<div class="issue-bar"><span class="ib-chips">'+chip('','全部')+chip('ok','可申请',okN,'ok')+Object.keys(g).map(k=>chip(k,k,g[k],'warn')).join('')+(noN?chip('noexec','待关联执行单',noN,'soft'):'')+'</span></div>';
 }
+/* 课酬账单列表列顺序：待申请保持原顺序；其余标签（审批中 / 已驳回 / 已通过 / 全部）按下面顺序展示 */
+function billColKeys(todo,wdOn,showPm){
+  return todo
+    ?['name','role','status','project','customer','course'].concat(showPm?['pm']:[],['sub','train','category','price','qty','unit','amount','risk','files'])
+    :['name','role','project','customer','course'].concat(showPm?['pm']:[],['risk','train','category','price','qty','unit','amount','files','dir','pay','apv'],wdOn?['wd']:[],['sub']);
+}
+const BILL_TH=todo=>({name:'师资',role:'角色',status:'处理状态',project:todo?'项目':'项目名称',customer:'客户名称',course:'课程名称',pm:'项目经理',sub:'提交时间 ↓',train:'培训日期',category:'费用类别',price:'单价',qty:'数量',unit:'单位',amount:todo?'金额':'总金额',risk:'风险提醒',files:'附件',dir:'款项方向',pay:'付款类型',apv:'审批状态',wd:'提现状态'});
+function billCell(b,k){
+  const dash='<td class="muted">—</td>';
+  switch(k){
+    case 'name':return '<td>'+b.name+'</td>';
+    case 'role':return '<td>'+tag(b.role,b.role==='讲师'?'blue':'purple')+'</td>';
+    case 'status':return '<td onclick="event.stopPropagation()">'+(bIssues(b).length?'<span class="ps bad" data-r="'+bIssues(b).join('|')+'" onmouseenter="showIssuePop(this)" onmouseleave="hideIssuePop()" onclick="hideIssuePop();go(\'/bills/detail?id='+b.id+'\')">需处理 '+bIssues(b).length+' 项 ›</span>':'<span class="ps ok">可申请</span>')+'</td>';
+    case 'project':return '<td>'+b.project+'</td>';
+    case 'customer':return '<td>'+(b.customer||'—')+'</td>';
+    case 'course':return '<td>'+(b.course||'—')+'</td>';
+    case 'pm':return '<td>'+b.pm+'</td>';
+    case 'sub':return '<td>'+b.sub+'</td>';
+    case 'train':return '<td>'+trainHtml(b)+'</td>';
+    case 'category':return '<td>'+b.category+'</td>';
+    case 'price':return b.isDed?dash:'<td class="num">'+money(b.price)+'</td>';
+    case 'qty':return b.isDed?dash:'<td>'+b.qty+'</td>';
+    case 'unit':return b.isDed?dash:'<td>'+b.unit+'</td>';
+    case 'amount':return b.isDed?'<td class="num"><b style="color:#b42318">−'+money(b.dedApp.deductAmt)+'</b></td>':'<td class="num">'+money(b.amount)+othSub(b)+'</td>';
+    case 'risk':return b.isDed?dash:'<td>'+riskCell(b)+'</td>';
+    case 'files':return b.isDed?'<td onclick="event.stopPropagation()">'+((b.dedApp.files||[]).length?'<button class="link" onclick="dedFilesModal(\''+b.id+'\')">'+b.dedApp.files.length+' 个</button>':'<span class="muted">—</span>')+'</td>':'<td onclick="event.stopPropagation()">'+filesCell(b)+'</td>';
+    case 'dir':return '<td>'+(b.isDed?tag('扣款','red'):tag('增款','green'))+'</td>';
+    case 'pay':return '<td>'+payTypeCell(b)+'</td>';
+    case 'apv':return '<td>'+apvTag(b)+'</td>';
+    case 'wd':return '<td>'+wdTag(b)+'</td>';
+  }
+  return '';
+}
 function bills(){
-  const v=state.billView,todo=v.tab==='todo',chk=todo&&canOp(),list=billList(),pick=canPick(),showPm=state.role!=='pm';
-  const cnt=t=>state.bills.filter(b=>(state.role!=='pm'||b.pm===PM_NAME)&&(!t[2]||t[2].includes(b.status))).length;
+  const v=state.billView,todo=v.tab==='todo',wdOn=!todo&&v.tab!=='applied'&&v.tab!=='rejected' /* 审批中 / 已驳回的账单没有提现状态，不显示该列 */,chk=todo&&canOp(),list=billList(),pick=canPick(),showPm=state.role!=='pm',keys=billColKeys(todo,wdOn,showPm),TH=BILL_TH(todo);
+  const cnt=t=>allBillRows().filter(b=>(state.role!=='pm'||b.pm===PM_NAME)&&(!t[2]||t[2].includes(b.status))).length;
   const fi=(id,val,ph)=>'<label class="fl"><span>'+ph+'</span><input class="input" id="'+id+'" value="'+val+'" placeholder="请输入"></label>';
-  return '<div class="filters">'+fi('billQ',v.q,'课酬账单号')+fi('billName',v.name,'姓名')+fi('billPhone',v.phone,'手机号')+fi('billProject',v.project,'项目名称')+fi('billCustomer',v.customer||'','客户名称')+fi('billCourse',v.course||'','课程名称')+(showPm?fi('billPm',v.pm,'项目经理'):'')+fi('billPact',v.pact,'合同号')+fi('billContract',v.contract,'付款合同号')+'<label class="fl"><span>培训日期</span><span class="date-range"><input class="input" type="date" id="billD1" value="'+v.d1+'"><i>至</i><input class="input" type="date" id="billD2" value="'+v.d2+'"></span></label><label class="fl"><span>来源</span><select class="select" id="billSrc">'+['全部来源','执行单联动','手工创建'].map(o=>'<option '+(v.src===o?'selected':'')+'>'+o+'</option>').join('')+'</select></label><label class="fl"><span>提现状态</span><select class="select" id="billWd">'+['全部提现状态','账期中','可提现','提现中','已提现'].map(o=>'<option '+(v.wd===o?'selected':'')+'>'+o+'</option>').join('')+'</select></label><span class="filter-actions"><button class="fbtn query" onclick="applyBillFilter()">查询</button><button class="fbtn reset" onclick="resetBillFilter()">重置</button><button class="fbtn export" onclick="exportBills()">导出</button></span></div>'+title('课酬账单','',(canOp()?'<button class="btn primary" onclick="state.newFiles=[];go(\'/bills/new\')">手工创建账单</button>':''))+
+  return '<div class="filters">'+fi('billName',v.name,'姓名')+fi('billPhone',v.phone,'手机号')+fi('billProject',v.project,'项目名称')+fi('billCustomer',v.customer||'','客户名称')+fi('billCourse',v.course||'','课程名称')+(showPm?fi('billPm',v.pm,'项目经理'):'')+fi('billPact',v.pact,'合同号')+'<label class="fl"><span>培训日期</span><span class="date-range"><input class="input" type="date" id="billD1" value="'+v.d1+'"><i>至</i><input class="input" type="date" id="billD2" value="'+v.d2+'"></span></label><label class="fl"><span>提现状态</span><select class="select" id="billWd">'+['全部提现状态','账期中','可提现','提现中','已提现'].map(o=>'<option '+(v.wd===o?'selected':'')+'>'+o+'</option>').join('')+'</select></label><label class="fl"><span>款项方向</span><select class="select" id="billDed">'+['全部','增款','扣款'].map(o=>'<option '+((v.ded||'全部')===o?'selected':'')+'>'+o+'</option>').join('')+'</select></label><label class="fl"><span>付款类型</span><select class="select" id="billPt">'+['全部','普通付款','紧急付款'].map(o=>'<option '+((v.pt||'全部')===o?'selected':'')+'>'+o+'</option>').join('')+'</select></label><span class="filter-actions"><button class="fbtn query" onclick="applyBillFilter()">查询</button><button class="fbtn reset" onclick="resetBillFilter()">重置</button><button class="fbtn export" onclick="exportBills()">导出</button></span></div>'+title('课酬账单','',(canOp()?'<button class="btn primary" onclick="state.newFiles=[];go(\'/bills/new\')">手工创建账单</button>':''))+
   '<div class="tabs">'+BILL_TABS.map(t=>'<button class="tab '+(v.tab===t[0]?'active':'')+'" onclick="setBillTab(\''+t[0]+'\')">'+t[1]+' ('+cnt(t)+')</button>').join('')+'</div>'+(todo?issueBar():'')+
-  '<section class="card" style="border-top:0;border-radius:0 0 11px 11px"><div class="table-wrap"><table class="'+(chk?'has-check':'')+'"><thead><tr>'+(chk?'<th><input type="checkbox" class="check" '+(pick.length&&pick.every(x=>state.selectedBills.has(x.id))?'checked':'')+' onchange="toggleAllBills(this.checked)"></th>':'')+'<th>师资</th><th>角色</th>'+(todo?'<th>处理状态</th>':'')+'<th>项目</th><th>客户名称</th><th>课程名称</th>'+(showPm?'<th>项目经理</th>':'')+'<th>提交时间 ↓</th><th>培训日期</th><th>费用类别</th><th>单价</th><th>数量</th><th>单位</th><th>金额</th><th>风险提醒</th><th>附件</th>'+(todo?'':'<th>审批进度</th>')+'<th>审批状态</th><th>提现状态</th><th>操作</th></tr></thead><tbody>'+
+  '<section class="card" style="border-top:0;border-radius:0 0 11px 11px"><div class="table-wrap"><table class="'+(chk?'has-check':'')+'"><thead><tr>'+(chk?'<th><input type="checkbox" class="check" '+(pick.length&&pick.every(x=>state.selectedBills.has(x.id))?'checked':'')+' onchange="toggleAllBills(this.checked)"></th>':'')+keys.map(k=>'<th>'+TH[k]+'</th>').join('')+'<th>操作</th></tr></thead><tbody>'+
   (list.length?slicePg('bills',list).map(b=>{
     const ok=canApply(b), why=bIssues(b).join('、')||(b.status!=='待提交'?'当前状态不可申请':'选择账单');
     const app=b.appId?state.applications.find(x=>x.id===b.appId):null;
-    return '<tr class="'+(b.status==='待提交'&&bIssue(b)?'disabled-row':'')+(app?' clk':'')+'"'+(app?' onclick="bdOpen(\''+b.id+'\')"':'')+'>'+(chk?'<td><input type="checkbox" class="check" '+(ok?'':'disabled')+' '+(state.selectedBills.has(b.id)?'checked':'')+' onchange="toggleBill(\''+b.id+'\',this.checked)" title="'+why+'"></td>':'')+'<td>'+b.name+'</td><td>'+tag(b.role,b.role==='讲师'?'blue':'purple')+'</td>'+(todo?'<td>'+(bIssues(b).length?'<span class="ps bad" data-r="'+bIssues(b).join('|')+'" onmouseenter="showIssuePop(this)" onmouseleave="hideIssuePop()" onclick="hideIssuePop();go(\'/bills/detail?id='+b.id+'\')">需处理 '+bIssues(b).length+' 项 ›</span>':'<span class="ps ok">可申请</span>')+'</td>':'')+'<td>'+b.project+'</td><td>'+(b.customer||'—')+'</td><td>'+(b.course||'—')+'</td>'+(showPm?'<td>'+b.pm+'</td>':'')+'<td>'+b.sub+'</td><td>'+trainHtml(b)+'</td><td>'+b.category+'</td><td class="num">'+money(b.price)+'</td><td>'+b.qty+'</td><td>'+b.unit+'</td><td class="num">'+money(b.amount)+othSub(b)+'</td><td>'+riskCell(b)+'</td><td>'+filesCell(b)+'</td>'+(todo?'':'<td>'+(app?bdProgress(app):'—')+'</td>')+'<td>'+apvTag(b)+'</td><td>'+wdTag(b)+'</td><td onclick="event.stopPropagation()"><button class="link" onclick="go(\'/bills/detail?id='+b.id+'\')">'+(canOp()&&['待提交','驳回待修改'].includes(b.status)?'编辑':'详情')+'</button>'+(ok&&canOp()?' <button class="link" onclick="openApply([\''+b.id+'\'])">发起结算申请</button>':'')+(canOp()&&b.status==='驳回待修改'&&app?' <button class="link" onclick="resubmitBill(\''+b.id+'\')">重新提交</button>':'')+'</td></tr>'}).join(''):'<tr><td colspan="25" class="muted" style="text-align:center;height:120px">暂无符合条件的账单</td></tr>')+
+    return '<tr class="'+(b.status==='待提交'&&bIssue(b)?'disabled-row':'')+' clk"'+' onclick="bdOpen(\''+b.id+'\')"'+'>'+(chk?'<td onclick="event.stopPropagation()"><input type="checkbox" class="check" '+(ok?'':'disabled')+' '+(state.selectedBills.has(b.id)?'checked':'')+' onchange="toggleBill(\''+b.id+'\',this.checked)" title="'+why+'"></td>':'')+keys.map(k=>billCell(b,k)).join('')+'<td onclick="event.stopPropagation()">'+(b.isDed?'<button class="link" onclick="bdOpen(\''+b.id+'\')">查看</button>':canOp()&&['待提交','驳回待修改'].includes(b.status)?'<button class="link" onclick="go(\'/bills/detail?id='+b.id+'\')">'+(b.status==='驳回待修改'?'修改':'编辑')+'</button>':'<button class="link" onclick="bdOpen(\''+b.id+'\')">查看</button>')+(b.isDed?'':dedBtn(b))+(!b.isDed&&ok&&canOp()?' <button class="link" onclick="openApply([\''+b.id+'\'])">发起结算申请</button>':'')+(!b.isDed&&canOp()&&b.status==='驳回待修改'&&app?' <button class="link" onclick="resubmitBill(\''+b.id+'\')">重新提交</button>':'')+'</td></tr>'}).join(''):'<tr><td colspan="26" class="muted" style="text-align:center;height:120px">暂无符合条件的账单</td></tr>')+
   '</tbody></table></div>'+(chk?applyBar(pick,list):'')+pager('bills',list.length)+'</section><div id="bdDrWrap">'+(state.bd.bill?bdDrawerHtml(false):'')+'</div>';
 }
 function applyBar(pick,list){
@@ -975,9 +1050,10 @@ function billDetail(){
   const ro2=(k,v)=>'<div class="field"><label>'+k+'</label><div style="line-height:34px">'+v+'</div></div>';
   const fld=(k,id,v,type,ev)=>'<div class="field"><label>'+k+'</label><input class="input" id="'+id+'" type="'+(type||'text')+'" value="'+v+'" '+(ev?'oninput="'+ev+'" ':'')+(editable?'':'disabled')+'></div>';
   const rk=billRisks(b);
-  return title('课酬账单详情','',actions)+(rk.length?'<div class="notice-bar"><b>风险提醒</b>（仅提醒，不影响提交）'+riskList(rk)+'</div>':'')+(b.exec?'':'<div class="notice-bar">该账单<b>尚未关联执行单</b>：不影响发起结算申请和后续付款，但<b>最终必须关联执行单</b>，请尽快在下方「关联执行单」中补齐。</div>')+
+  const rejBar=app&&app.status==='已驳回'&&b.status==='驳回待修改'?'<div class="rv-rjb" style="margin:0 0 14px;display:flex;align-items:flex-start;gap:12px"><div style="flex:1;min-width:0"><b>该账单被驳回，请按原因修改后重新提交</b>　'+bdRejInfo(app)+'<div style="margin-top:4px">驳回原因：<b>'+app.rejectReason+'</b></div><div class="muted" style="margin-top:2px">重新提交后将从“'+((app.rejectNode==null?1:app.rejectNode)?'财务':'项目主管')+'”节点继续审批，前序已通过的节点不重复审批。</div></div><button class="btn sm" onclick="bdFromDetail(\''+b.id+'\')">查看完整审批进度</button></div>':'';
+  return title(editable?'编辑课酬账单':'课酬账单详情','',actions)+rejBar+(b.exec?'':'<div class="notice-bar">该账单<b>尚未关联执行单</b>：不影响发起结算申请和后续付款，但<b>最终必须关联执行单</b>，请尽快在下方「关联执行单」中补齐。</div>')+
   '<section class="card"><div class="card-head"><h3>基本信息</h3><span>'+billTag(b)+'</span></div><div class="info-grid">'+ro('课酬账单号',b.id)+ro('来源',b.source)+ro('师资',b.name)+ro('角色',tag(b.role,b.role==='讲师'?'blue':'purple'))+ro('手机号',b.phone||'手机号缺失')+ro('项目',b.project)+ro('最终客户名称',b.customer||'—')+ro('课程名称',b.course||'—')+ro('合同号',b.pact||'—')+ro('项目经理',b.pm)+ro('提交时间',b.sub)+ro('执行单',execTag(b))+ro('付款合同号',contractCell(b))+ro('提交批号',app?app.batchNo:'—')+'</div></section>'+execCard(b,canOp())+
-  '<section class="card"><div class="card-head"><h3>可编辑信息</h3></div><div class="card-body"><div class="form-3">'+'<div class="field"><label>费用类别</label><select class="select" id="editCat" '+(editable?'':'disabled')+'>'+catOpts(b.category)+'</select></div>'+fld('单价（元）','editPrice',b.price,'number','editAmtLive()')+fld('数量','editQty',b.qty,'number','editAmtLive()')+sel('单位','editUnit',UNITS,b.unit,"dsPaint('edit')")+fld('其他费用（元，无则不填）','editOther',b.other||'','number','editAmtLive()')+fld('其他费用说明（填写其他费用时必填）','editOtherNote',(b.otherNote||'').replace(/"/g,'&quot;'))+ro2('金额（税前，元）= 单价 × 数量 + 其他费用','<b id="editAmtShow">'+money(b.amount)+'</b>')+dsField('edit',b,editable)+fld('备注','editRemark',b.remark||'')+'</div></div></section>'+payCard(b,editable)+fileCard(b,editable);
+  '<section class="card"><div class="card-head"><h3>可编辑信息</h3></div><div class="card-body"><div class="form-3">'+'<div class="field"><label>费用类别</label><select class="select" id="editCat" '+(editable?'':'disabled')+'>'+catOpts(b.category)+'</select></div>'+fld('单价（元）','editPrice',b.price,'number','editAmtLive()')+fld('数量','editQty',b.qty,'number','editAmtLive()')+sel('单位','editUnit',UNITS,b.unit,"dsPaint('edit')")+fld('其他费用（元，无则不填）','editOther',b.other||'','number','editAmtLive()')+fld('其他费用说明（填写其他费用时必填）','editOtherNote',(b.otherNote||'').replace(/"/g,'&quot;'))+ro2('金额（税前，元）= 单价 × 数量 + 其他费用','<b id="editAmtShow">'+money(b.amount)+'</b>')+dsField('edit',b,editable)+fld('备注','editRemark',b.remark||'')+'</div></div></section>'+payCard(b,editable)+fileCard(b,editable)+'<div id="bdDrWrap">'+(state.bd.bill===b.id?bdDrawerHtml(false):'')+'</div>';
 }
 const FILE_MAX=100*1024*1024;
 const fmtSize=n=>n>=1048576?(n/1048576).toFixed(1)+' MB':n>=1024?Math.round(n/1024)+' KB':n+' B';
@@ -1038,10 +1114,10 @@ function showRvFiles(billId){
 }
 function showBillFiles(id){
   const b=state.bills.find(x=>x.id===id);
-  modal('附件 · '+id+'（'+(b.files||[]).length+' 个）',fileTable(b.files||[],id,false)+'<div class="muted" style="margin-top:10px">发起结算申请时一并同步到合同系统 / 钉钉。</div>','查看账单详情',()=>{closeModal();go('/bills/detail?id='+id)});
+  modal('附件 · '+id+'（'+(b.files||[]).length+' 个）',fileTable(b.files||[],id,false)+'<div class="muted" style="margin-top:10px">发起结算申请时一并同步到合同系统 / 钉钉。</div>','查看账单',()=>{closeModal();bdOpen(id)});
 }
 function payHintText(no,id){
-  if(!no)return '选择付款合同号后显示可付款金额';
+  if(!no)return '付款合同未返回；系统取得或手动选择付款合同号后显示可付款金额';
   const c=payC(no),u=payUsedAmt(no,id);
   return '付款总金额 '+money(c.total)+'，已关联 '+money(u)+'，剩余可付款 '+money(c.total-u);
 }
@@ -1051,8 +1127,8 @@ function payCard(b,editable){
   const opts=payOptions(b.pact),cur=b.contract&&b.contract!=='付款合同未返回'?b.contract:'';
   const sel='<select class="select" id="editPay" style="min-width:260px" onchange="selectPay(\''+b.id+'\')" '+(editable?'':'disabled')+'><option value="">'+(opt?'无需选择':'请选择付款合同号')+'</option>'+opts.map(c=>'<option value="'+c.no+'" '+(c.no===cur?'selected':'')+'>'+c.no+'</option>').join('')+'</select>';
   const btn='';
-  const headTag=opt?(cur?tag('已选择','green')+' '+tag('无需选择',''):tag('无需选择','')):(cur?tag('已选择','green'):tag('未选择','orange'));
-  const tip=opt?'按规则判断：单次付款 ≤5000 或助教/兼职无需选择付款合同号，仍可选择以占用额度；出题费不按类别豁免。':'须选择付款合同号后方可发起结算申请；选择后即占用额度，可随时更换。';
+  const headTag=opt?(cur?tag('已选择','green')+' '+tag('无需选择',''):tag('无需选择','')):(cur?tag('已关联','green'):tag('缺付款合同号','orange'));
+  const tip=opt?'按规则判断：出题费单次付款 <5000 元、个人类助教 / 兼职无需选择付款合同号，仍可更换或填写以占用额度；系统按销售合同自动抓取（取剩余额度足够的付款合同）。':'系统按销售合同自动抓取（取剩余额度足够的付款合同），项目经理可在此更换；选择即占用额度，超限拦截；需选择而未取得时（除出题费 <5000 元、个人类助教 / 兼职外的全部情况）标“付款合同未返回 / 缺付款合同号”并阻止发起。';
   return '<section class="card"><div class="card-head"><h3>关联付款合同号</h3>'+headTag+'</div><div class="card-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+sel+btn+'</div><div class="muted" id="payHint" style="margin-top:10px">'+payHintText(cur,b.id)+'</div><div class="muted" style="margin-top:8px;line-height:1.7">'+tip+'</div></div></section>';
 }
 function execCard(b,editable){
@@ -1067,7 +1143,7 @@ function linkExec(id){
   b.exec=v;toast('已关联执行单',id+' 已关联 '+v);render();
 }
 function payOverModal(b,c,used){
-  const usedAmt=used.reduce((n,x)=>n+x.amount,0),over=b.amount-(c.total-usedAmt);
+  const usedAmt=used.reduce((n,x)=>n+netAmt(x),0),over=b.amount-(c.total-usedAmt);
   modal('已超过可付款金额','<div style="background:#fff4f4;border:1px solid #f5c2c2;border-radius:8px;padding:12px 14px;margin-bottom:14px;line-height:1.8;color:#b42318">付款合同号 <b>'+c.no+'</b> 付款总金额 <b>'+money(c.total)+'</b>，已关联课酬账单合计 <b>'+money(usedAmt)+'</b>，剩余可付款 <b>'+money(c.total-usedAmt)+'</b>；本单 <b>'+money(b.amount)+'</b>，已超过 <b>'+money(over)+'</b>，无法选择该付款合同号。</div><div class="muted" style="margin-bottom:8px">已关联该付款合同号的课酬账单（'+used.length+' 张）：</div><div class="table-wrap"><table><thead><tr><th>课酬账单号</th><th>师资</th><th>执行单</th><th>项目经理</th><th>状态</th><th style="text-align:right">金额</th></tr></thead><tbody>'+used.map(x=>'<tr><td><b>'+x.id+'</b></td><td>'+x.name+'</td><td>'+(x.exec||'—')+'</td><td>'+x.pm+'</td><td>'+billTag(x)+'</td><td class="num">'+money(x.amount)+'</td></tr>').join('')+'</tbody></table></div>','知道了',closeModal);
   const m=document.querySelector('.modal');if(m)m.style.width='min(760px,100%)';
 }
@@ -1079,7 +1155,7 @@ function selectPay(id){
     const had=needContract(b);
     toast('已清除付款合同号','额度已释放'+(had?'；该账单须选择付款合同号后才能发起结算申请':''));render();return;
   }
-  const c=payC(no),used=payUsed(no,b.id),usedAmt=used.reduce((n,x)=>n+x.amount,0);
+  const c=payC(no),used=payUsed(no,b.id),usedAmt=used.reduce((n,x)=>n+netAmt(x),0);
   if(b.amount>c.total-usedAmt){payOverModal(b,c,used);render();return}
   if(b.contract!==no)recEdit(b,[{f:'付款合同号',from:b.contract||'—',to:no}]);
   b.contract=no;b.confirmed=true;
@@ -1099,7 +1175,7 @@ function saveBill(id,quiet){
   if(oth<0){toast('无法保存','其他费用不能为负数','error');return}
   if(oth>0&&!othNote){toast('无法保存','填写了其他费用，须说明费用是什么','error');return}
   const dv=dsCheck('edit');if(!dv)return;
-  if(b.confirmed&&b.contract){const nb=Object.assign({},b,{category:g('editCat'),amount:amt});if(needContract(nb)){const c=payC(b.contract),used=payUsed(b.contract,b.id);if(c&&amt>c.total-used.reduce((n,x)=>n+x.amount,0)){payOverModal(nb,c,used);return}}}
+  if(b.confirmed&&b.contract){const nb=Object.assign({},b,{category:g('editCat'),amount:amt});if(needContract(nb)){const c=payC(b.contract),used=payUsed(b.contract,b.id);if(c&&amt>c.total-used.reduce((n,x)=>n+netAmt(x),0)){payOverModal(nb,c,used);return}}}
   const nd=dsText(dv),nr=document.getElementById('editRemark').value.trim(),nn=oth>0?othNote:'';
   const df=[];const chg=(f,o,n,fmt)=>{if(String(o==null?'':o)!==String(n==null?'':n))df.push({f,from:(fmt?fmt(o):o)||'—',to:(fmt?fmt(n):n)||'—'})};
   chg('费用类别',b.category,g('editCat'));chg('单价',Number(b.price)||0,pr,money);chg('数量',Number(b.qty)||0,q);chg('单位',b.unit,g('editUnit'));
@@ -1166,9 +1242,9 @@ function syncNewPay(){
   const proj=pr;
   const price=Number(document.getElementById('newPrice')&&document.getElementById('newPrice').value)||0,qty=Number(document.getElementById('newQty')&&document.getElementById('newQty').value)||1;
   const oth0=Number(document.getElementById('newOther')&&document.getElementById('newOther').value)||0;
-  const opt=contractOptional({role:p.role,category:cat,amount:Math.round((price*qty+oth0)*100)/100});
+  const opt=contractOptional({personId:p.personId,role:p.role,category:cat,amount:Math.round((price*qty+oth0)*100)/100});
   const np=document.getElementById('newPay'),ne=document.getElementById('newExec');
-  np.innerHTML=!pr?'<option value="">选择合同后可选</option>':'<option value="">'+(opt?'无需选择（助教/兼职或≤5000）':'请选择付款合同号（可稍后选）')+'</option>'+payOptions(pactOf(pr)).map(c=>'<option value="'+c.no+'">'+c.no+'（总额 '+money(c.total)+'，剩余 '+money(c.total-payUsedAmt(c.no))+'）</option>').join('');
+  np.innerHTML=!pr?'<option value="">选择合同后可选</option>':'<option value="">'+(opt?'无需选择（按规则判断）':'请选择付款合同号（可稍后选）')+'</option>'+payOptions(pactOf(pr)).map(c=>'<option value="'+c.no+'">'+c.no+'（总额 '+money(c.total)+'，剩余 '+money(c.total-payUsedAmt(c.no))+'）</option>').join('');
   np.disabled=!pr;
   ne.innerHTML='<option value="">暂不关联（稍后在账单详情关联）</option>'+(EXEC_ORDERS[proj]||[]).map(o=>'<option>'+o+'</option>').join('');
 }
@@ -1182,7 +1258,7 @@ function createBill(apply){
   const ct=document.getElementById('newPay').value,ex0=document.getElementById('newExec').value;
   if(apply){
     if(!p.phone){toast('暂不能发起结算申请','该师资手机号缺失，请先补充后再发起','error');return}
-    if(needContract({role:p.role,category:cat,amount:amt})){
+    if(needContract({personId:p.personId,role:p.role,category:cat,amount:amt})){
       if(!ct){toast('暂不能发起结算申请','该账单需选择付款合同号，请先在“付款合同号”中选择','error');return}
       const c=payC(ct),left=c?c.total-payUsedAmt(ct):0;
       if(c&&amt>left){toast('已超过可付款金额','付款合同号 '+ct+' 剩余可付款 '+money(left)+'，本单 '+money(amt),'error');return}
@@ -1219,13 +1295,21 @@ function paintApply(){
   const needEval=evalPending(list),noEx=list.filter(b=>!b.exec),rk=list.filter(b=>billRisks(b).length);
   const tot=list.reduce((n,b)=>n+b.amount,0),projects=[...new Set(list.map(b=>b.project))];
   const opt=(v,t)=>'<option '+(ap.reason===v?'selected':'')+' value="'+v+'">'+t+'</option>';
+  const bad1=list.filter(b=>b.issue),bad2=list.filter(b=>!payOk(b)),hardFail=!!(bad1.length||bad2.length||needEval.length);
+  const hkRow=(t,rows)=>'<div style="margin:6px 0 2px;color:#b42318"><b>✗ '+t+'</b></div>'+rows.map(r=>'<div style="padding-left:22px;line-height:1.8;color:#7a271a">'+r+'</div>').join('');
+  const who=b=>'<b>'+b.name+'</b>（'+b.role+'）· '+b.project+' · '+b.id;
+  const hk=hardFail?'<div style="border:1px solid #f5c2c2;background:#fff6f5;border-radius:8px;padding:10px 14px;margin-bottom:12px"><div style="font-weight:700;margin-bottom:2px">以下事项需先处理后方可发起付款</div>'+
+    (bad1.length?hkRow('讲师 / 助教信息不完整，或账号未创建',bad1.map(b=>who(b)+'：'+b.issue)):'')+
+    (bad2.length?hkRow('付款合同号为空',bad2.map(b=>who(b)+'：'+b.category+'未关联付款合同号')):'')+
+    (needEval.length?hkRow('讲师未评价',needEval.map(p=>{const ls=[...new Set(list.filter(b=>b.project===p&&b.role==='讲师').map(b=>b.name))];return '<b>'+p+'</b>'+(ls.length?'（涉及讲师：'+ls.join('、')+'）':'')+'：尚未评价<button class="link" style="color:#b42318;margin-left:8px" onclick="doEval(\''+p+'\');paintApply()">去评价</button>'})):'')+'</div>':'';
+
   modal('发起结算申请',
    '<div class="sumline">本次发起 <b>'+list.length+'</b> 张账单（生成 '+list.length+' 张结算单），合计 <b style="color:var(--primary);font-size:17px">'+money(tot)+'</b><span class="muted">　'+projects.join('、')+'</span></div>'+
+   hk+
    '<div class="chpick"><label class="'+(ap.type==='常规'?'on':'')+'"><input type="radio" name="apType" '+(ap.type==='常规'?'checked':'')+' onchange="apType(\'常规\')"><div><b>常规结算</b><span>审批通过后进入账期，到期转可提现</span></div></label>'+
    '<label class="urg '+(ap.type==='紧急'?'on':'')+'"><input type="radio" name="apType" '+(ap.type==='紧急'?'checked':'')+' onchange="apType(\'紧急\')"><div><b>紧急结算</b><span>审批通过后直接可提现，须填写紧急结算原因</span></div></label></div>'+
    '<div class="muted" style="margin:-4px 0 12px;font-size:12.5px">常规与紧急必须分开发起：本次所选账单统一按所选方式提交。每张账单各生成一张结算单，单独审批、单独驳回。</div>'+
    (ap.type==='紧急'?'<div class="field"><label><em>*</em> 紧急结算原因</label><select class="select" onchange="apSet(\'reason\',this.value)"><option value="">请选择</option>'+opt('客户付款周期要求','客户付款周期要求')+opt('项目提前验收','项目提前验收')+opt('其他业务紧急情况','其他业务紧急情况')+'</select></div><div class="field"><label><em>*</em> 补充说明</label><textarea placeholder="请说明紧急背景与期望时间" oninput="apSet(\'note\',this.value)">'+ap.note+'</textarea></div>':'')+
-   (needEval.length?'<div class="notice-bar" style="color:#b42318;border-color:#f5c2c2;background:#fff4f4">未完成讲师评价不可发起。待评价项目：'+needEval.map(p=>'<button class="link" style="color:#b42318;margin-left:8px" onclick="doEval(\''+p+'\');paintApply()">'+p+' · 去评价</button>').join('')+'</div>':'')+
    (rk.length?'<div class="notice-bar"><b>所选账单含风险提醒</b>（仅提醒，不影响发起；审批人会看到）'+riskList(rk.map(b=>'<b>'+b.id+'</b> '+b.name+'：'+billRisks(b).join('；')))+'</div>':'')+
    (noEx.length?'<div class="notice-bar"><b>'+noEx.length+'</b> 张账单尚未关联执行单：不影响本次申请和后续付款，但最终必须关联；结算单中会标注「未关联执行单」。</div>':''),
    '确认发起',()=>{
@@ -1236,6 +1320,7 @@ function paintApply(){
     if(a.type==='紧急'&&(!a.reason||!a.note.trim())){toast('请完善信息','紧急结算原因和补充说明均为必填','error');return}
     closeModal();doApply(cur,a.type,a.type==='紧急'?a.reason+'：'+a.note.trim():'');
   });
+  const mo=document.getElementById('modalOk');if(mo&&hardFail){mo.disabled=true;mo.title='还有事项需先处理，处理后方可发起付款'}
 }
 function doApply(list,type,reason){
   let seq=state.applications.length+9;while(state.applications.some(x=>x.batchNo==='JS202611-'+String(seq).padStart(4,'0')))seq++;
@@ -1252,30 +1337,107 @@ function doApply(list,type,reason){
   toast('发起成功','共 '+list.length+' 张账单，各生成一张结算单（提交批号 '+batchNo+'），单独审批（'+type+'结算）'+(noEx?'，其中 '+noEx+' 张未关联执行单，已在结算单中标注':'')+'。点击账单可查看审批进度');if(route().startsWith('/bills/'))go('/bills');else render();
 }
 /* ---------- “审批中 / 已驳回 / 已通过”标签：审批进度列与右侧抽屉 ---------- */
+function dedProgress(a){
+  if(a.status==='已通过')return '<span class="tag green">审批通过</span>';
+  if(a.status==='已驳回'){const why=String(a.rejectReason||'').replace(/"/g,'&quot;');return '<span class="tag red">已驳回</span><div class="muted" style="font-size:12px">驳回即终结，订单冻结已解除</div>'+(why?'<div style="font-size:12px;color:#b42318;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+why+'">原因：'+why+'</div>':'')}
+  return '<b>财务审批中</b><div class="muted" style="font-size:12px">一位财务通过即可</div>';
+}
 function bdProgress(a){
   if(a.status==='已通过')return '<span class="tag green">审批通过</span>';
-  if(a.status==='已驳回')return '<span class="tag red">已驳回</span><div class="muted" style="font-size:12px">退回至“'+(a.rejectNode===0?'项目主管':'财务')+'”节点</div>';
+  if(a.status==='已驳回'){const why=String(a.rejectReason||'').replace(/"/g,'&quot;');return '<span class="tag red">已驳回</span><div class="muted" style="font-size:12px">退回至“'+(a.rejectNode===0?'项目主管':'财务')+'”节点</div>'+(why?'<div style="font-size:12px;color:#b42318;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+why+'">原因：'+why+'</div>':'')}
   return a.node?'<b>财务审批中</b><div class="muted" style="font-size:12px">'+FIN_PPL.map(p=>p+(a.fin&&a.fin[p]==='done'?' ✓':' ○')).join('　')+'</div>':'<b>项目主管审批中</b>';
 }
-function bdOpen(billId){const b=state.bills.find(x=>x.id===billId);if(!b||!b.appId)return;state.bd={app:b.appId,bill:billId};bdPaint(true)}
-function bdFromDetail(billId){const b=state.bills.find(x=>x.id===billId);state.bd={app:b.appId,bill:billId};state.billView.tab=b.status==='审批中'?'applied':b.status==='驳回待修改'?'rejected':'done';state.billView.issue='';if(state.pg['bills'])state.pg['bills'].page=1;go('/bills')}
+/* 交互规则：抽屉只“看”（账单内容 + 审批进度 + 驳回原因），整页只“改”（编辑账单）。
+ * 列表点整行 / “查看”→ 抽屉；“编辑 / 修改”→ 编辑页。编辑页内也可原地打开同一个抽屉查看完整审批进度，不再跳回列表。 */
+const bdInPage=()=>route()==='/bills/detail';
+function bdOpen(billId){const b=findBill(billId);if(!b)return;state.bd={app:b.appId||'',bill:billId};bdPaint(true)}
+function bdFromDetail(billId){bdOpen(billId)}
 function bdClose(){state.bd.bill='';bdPaint()}
-function bdPaint(first){const w=document.getElementById('bdDrWrap');if(w)w.innerHTML=state.bd.bill?bdDrawerHtml(!!first):'';const c=document.querySelector('.rv-bc.on');if(c&&c.scrollIntoView)c.scrollIntoView({inline:'center',block:'nearest'})}
-function bdPick(id){const b=state.bills.find(x=>x.id===id);if(!b)return;state.bd={app:b.appId,bill:id};bdPaint()}
-const bdList=()=>billList().filter(b=>b.appId);
+function bdPaint(first){const w=document.getElementById('bdDrWrap');if(w)w.innerHTML=state.bd.bill?bdDrawerHtml(!!first):''}
+function bdPick(id){const b=findBill(id);if(!b)return;state.bd={app:b.appId||'',bill:id};bdPaint()}
+const bdList=()=>billList();
 function bdStep(d){const l=bdList(),i=l.findIndex(b=>b.id===state.bd.bill),n=l[i+d];if(n)bdPick(n.id)}
+/* 最近一次驳回的节点 / 人 / 时间 */
+function bdRejInfo(a){const l=(a.log||[]).filter(x=>x.k==='reject').pop();return l?l.role+' '+l.who+' · '+l.at.slice(5)+' 驳回':'退回至“'+((a.rejectNode==null?1:a.rejectNode)?'财务':'项目主管')+'”节点'}
+function dedSec(b){
+  const l=dedApps(b);if(!l.length)return '';
+  return '<details class="rv-dt" open><summary>扣款记录（'+l.length+'）</summary>'+l.map(x=>'<div class="rv-r"><span class="rv-d '+(x.status==='已通过'?'ok':x.status==='已驳回'?'h':'w')+'">'+x.status+'</span><span class="tx"><b>−'+money(x.deductAmt)+'</b>　申请时间：'+x.created+'<br>扣款原因：'+x.reason+(x.status==='已驳回'&&x.rejectReason?'<br>驳回原因：'+x.rejectReason:'')+'</span></div>').join('')+'</details>';
+}
 function bdDrawerHtml(anim){
-  const a=rvApp(state.bd.app),b=a&&rvBill(a);
-  if(!a||!b)return '';
-  const list=bdList(),i=list.findIndex(x=>x.id===b.id),rej=a.status==='已驳回',canE=rej&&['pm','admin'].includes(state.role),rn=a.rejectNode==null?1:a.rejectNode;
-  const hist=(a.history||[]).length?'<div class="rv-sec"><div class="rv-secs">历史驳回记录</div>'+a.history.map(h=>'<div class="rv-r"><span class="rv-d h">V'+h.version+'</span><span class="tx"><b>'+h.rejectReason+'</b></span></div>').join('')+'</div>':'';
-  return '<div class="rv-mask" onclick="if(event.target===this)bdClose()"><aside class="rv-dr '+(anim?'anim':'')+(asMin()?' asmin':'')+'"><div class="rv-drh"><div><b>'+b.project+'</b></div><div class="nv"><button class="btn sm" '+(i>0?'':'disabled')+' onclick="bdStep(-1)" title="上一条">‹</button><span>'+(i>=0?(i+1)+' / '+list.length:'—')+'</span><button class="btn sm" '+(i>=0&&i<list.length-1?'':'disabled')+' onclick="bdStep(1)" title="下一条">›</button><button class="btn sm" onclick="bdClose()" title="关闭">×</button></div></div>'+
-   rvSummary(a,b)+
-   (rej?'<div class="rv-rjb"><b>已驳回</b>　'+a.rejectReason+'<div class="muted" style="margin-top:2px">'+(canE?'请修改后重新提交，将从“'+(rn?'财务':'项目主管')+'”节点继续审批，前序已通过的节点不重复审批。':'等待项目经理修改后重新提交')+'</div></div>':'')+
-   '<div class="rv-dbd"><div class="rv-drb">'+rvBillBody(a,b,a.from==='执行单直接发起'?'执行单直接发起':'课酬账单页发起')+hist+'</div>'+rvAside(a,false)+'</div>'+
-   '<div class="rv-drf"><div class="grow muted">'+(rej?(canE?'可编辑账单后重新提交，或放弃申请':'已驳回'):a.status==='审批中'?'审批中，账单暂不可修改':'审批已通过，账单不可修改')+'</div>'+
-   '<button class="btn" onclick="bdClose();go(\'/bills/detail?id='+b.id+'\')">'+(canE&&b.status==='驳回待修改'?'编辑账单':'账单详情')+'</button>'+
-   (canE?'<button class="btn danger" onclick="giveUpApp(\''+a.id+'\')">放弃本次申请</button><button class="btn primary" onclick="resubmitApp(\''+a.id+'\')">重新提交</button>':'')+'</div></aside></div>';
+  const vb=findBill(state.bd.bill);
+  if(!vb)return '';
+  const isV=!!vb.isDed,b=isV?state.bills.find(x=>x.id===vb.ref):vb; /* 扣款账单：抽屉展示扣款单，账单内容取原订单 */
+  if(!b)return '';
+  const real=vb.appId?rvApp(vb.appId):null,a=real||{id:'__draft__',type:'常规',status:'待提交',log:[],history:[],batchNo:'',reason:'',version:1};
+  const page=bdInPage(),list=bdList(),i=list.findIndex(x=>x.id===vb.id),rej=!!real&&a.status==='已驳回',canE=rej&&canOp()&&!isV,rn=a.rejectNode==null?1:a.rejectNode;
+  const goEdit='<button class="btn primary" onclick="bdClose();go(\'/bills/detail?id='+b.id+'\')">去'+(rej?'修改':'编辑')+'</button>';
+  let tip='',acts='';
+  if(!real){
+    tip=canOp()?'尚未发起结算申请，可编辑账单后发起':'尚未发起结算申请';
+    acts=(canOp()&&!page?goEdit:'')+(canOp()&&canApply(b)?'<button class="btn primary" onclick="bdClose();openApply([\''+b.id+'\'])">发起结算申请</button>':'');
+  }else if(rej&&isV){
+    tip='扣款申请已驳回，订单冻结已解除；如仍需扣款，请从原订单重新发起扣款申请';
+  }else if(rej){
+    tip=canE?'请先修改账单，再重新提交；也可放弃本次申请':'已驳回，等待项目经理修改后重新提交';
+    acts=canE?(page?'':goEdit)+'<button class="btn danger" onclick="giveUpApp(\''+a.id+'\')">放弃本次申请</button>':'';
+  }else if(isV)tip=a.status==='审批中'?'扣款申请审批中，订单已冻结':'扣款已通过，已从讲师账户扣减';
+  else tip=a.status==='审批中'?'审批中，账单暂不可修改':'审批已通过，账单不可修改'+(canDeduct(b)?'；如需追回多付的课酬，可申请扣款':'');
+  if(real&&!isV&&!rej&&canDeduct(b)&&!page)acts+='<button class="btn danger" onclick="bdClose();openDeduct(\''+b.id+'\')">申请扣款</button>';
+  return '<div class="rv-mask" onclick="if(event.target===this)bdClose()"><aside class="rv-dr '+(anim?'anim':'')+(real&&asMin()?' asmin':'')+'"'+(real?'':' style="width:min(760px,94vw)"')+'><div class="rv-drh"><div style="display:flex;align-items:center;gap:8px"><b>'+b.project+'</b>'+tag('只读查看','')+'</div><div class="nv">'+(page?'':'<button class="btn sm" '+(i>0?'':'disabled')+' onclick="bdStep(-1)" title="上一条">‹</button><span>'+(i>=0?(i+1)+' / '+list.length:'—')+'</span><button class="btn sm" '+(i>=0&&i<list.length-1?'':'disabled')+' onclick="bdStep(1)" title="下一条">›</button>')+'<button class="btn sm" onclick="bdClose()" title="关闭">×</button></div></div>'+
+   (real?rvSummary(a,b):'<div class="rv-sm"><div class="l1">'+tag('待提交','')+'</div></div>')+
+   (rej?'<div class="rv-rjb"><b>已驳回</b>　'+bdRejInfo(a)+'<div style="margin-top:4px">驳回原因：<b>'+a.rejectReason+'</b></div><div class="muted" style="margin-top:2px">'+(isV?'驳回即终结，订单冻结已解除；如仍需扣款，请从原订单重新发起扣款申请。':canE?'请修改后重新提交，将从“'+(rn?'财务':'项目主管')+'”节点继续审批，前序已通过的节点不重复审批。':'等待项目经理修改后重新提交')+'</div></div>':'')+
+   (!isV&&dedHold(b)>0?'<div class="rv-rjb" style="background:#fff8ec;border-color:#f3d9a4;color:#8a5a00"><b>订单已冻结</b>　有 '+money(dedHold(b))+' 的扣款申请正在审批，审批结束前讲师暂不可提现该订单；通过后从讲师账户扣减，驳回后自动解除冻结。</div>':'')+
+   '<div class="rv-dbd"><div class="rv-drb">'+rvBillBody(a,b,real?(a.from==='执行单直接发起'?'执行单直接发起':'课酬账单页发起'):'')+(isV?'':dedSec(b))+'</div>'+(real?rvAside(a,false):'')+'</div>'+
+   '<div class="rv-drf"><div class="grow muted">'+tip+'</div>'+acts+'</div></aside></div>';
+}
+/* ================= 申请扣款（对已审批通过的账单减款，项目经理在课酬账单页发起） =================
+ * 唯一入口：课酬账单页「已通过」账单；仅账期中 / 可提现可扣，提现中 / 已提现不可扣。可全额扣、可多次发起，累计（含审批中）不超过订单原金额。
+ * 发起即冻结订单（讲师端暂不可提现并提示原因）；复用结算单、类型标「扣款」，课酬审核页只需一位财务通过，通过即从讲师账户扣减并释放付款合同额度；驳回即解除冻结；不单独通知讲师。 */
+function openDeduct(id){
+  const b=state.bills.find(x=>x.id===id);if(!b||!canOp())return;
+  if(!DED_OK.includes(b.status)){toast('不可申请扣款','仅账期中、可提现的账单可申请扣款','error');return}
+  if(dedRemain(b)<=0){toast('不可申请扣款','累计扣款（含审批中）已达订单原金额，无可扣金额','error');return}
+  state.dd={id,amt:'',reason:'',files:[]};paintDeduct();
+}
+function dedSet(k,v){
+  state.dd[k]=v;
+  if(k==='amt'){const b=state.bills.find(x=>x.id===state.dd.id),el=document.getElementById('dedAfter'),n=Number(v)||0;if(el)el.innerHTML=n>0?money(Math.max(0,b.amount-dedDone(b)-n)):'—'}
+}
+function dedUpload(input){addFiles(state.dd.files,input);paintDeduct()}
+function dedDelFile(i){state.dd.files.splice(i,1);paintDeduct()}
+function paintDeduct(){
+  const _mb=document.querySelector('.modal-body'),_st=_mb?_mb.scrollTop:0;
+  const d=state.dd,b=state.bills.find(x=>x.id===d.id),rem=dedRemain(b),n=Number(d.amt)||0;
+  const kvx=(k,v,span,hl)=>'<div class="info-item" style="grid-column:span '+span+(hl?';background:#f3f7ff;border-left:3px solid var(--primary)':'')+'"><div class="k">'+k+'</div><div class="v" style="'+(hl?'font-size:18px;font-weight:700;color:#1f4fd8':'')+'">'+v+'</div></div>';
+  const files=d.files.length?'<div class="table-wrap"><table><thead><tr><th>文件名</th><th>大小</th><th>操作</th></tr></thead><tbody>'+d.files.map((f,i)=>'<tr><td>'+f.name+'</td><td>'+fmtSize(f.size)+'</td><td><button class="link" onclick="dedDelFile('+i+')" style="color:var(--red)">删除</button></td></tr>').join('')+'</tbody></table></div>':'';
+  modal('申请扣款 · '+b.name+' · '+b.category,
+   '<div class="info-grid" style="margin-bottom:12px">'+kvx(b.role||'讲师',b.name,2,true)+kvx('费用类别',b.category,1)+kvx('培训日期',trainHtml(b),1)+kvx('项目名称',b.project,2)+kvx('课程名称',b.course||'—',2)+kvx('订单原金额','<b>'+money(b.amount)+'</b>',1)+kvx('累计已扣款',money(dedDone(b)),1)+kvx('扣款审批中',money(dedHold(b)),1)+kvx('本次最多可扣','<b style="color:var(--red)">'+money(rem)+'</b>',1)+'</div>'+
+   '<div class="field"><label><em>*</em> 扣款金额（元）</label><div style="display:flex;gap:8px;align-items:center"><input class="input" type="number" step="0.01" min="0" max="'+rem+'" value="'+d.amt+'" placeholder="不超过 '+rem+'" oninput="dedSet(\'amt\',this.value)" style="flex:1"><button class="btn" onclick="dedSet(\'amt\','+rem+');paintDeduct()">全额扣除</button></div></div>'+
+   '<div class="field"><label><em>*</em> 扣款原因</label><textarea placeholder="请写清楚扣款原因，财务审批时可见" oninput="dedSet(\'reason\',this.value)">'+d.reason+'</textarea></div>'+
+   '<div class="field"><label>附件</label>'+files+'<label class="btn" style="cursor:pointer;margin-top:8px;display:inline-block">上传附件<input type="file" multiple style="display:none" onchange="dedUpload(this)"></label></div>'+
+   '<div class="notice-bar"><b>提交后：</b>① 该订单<b>立即冻结</b>，讲师端暂不可提现，并向讲师提示原因（不单独发送通知）；② 课酬审核页<b>一位财务通过</b>即从讲师账户扣减，并释放对应付款合同额度（销售合同可执行金额、课酬成本占比不调整）；③ 审批驳回后冻结自动解除，如仍需扣款请重新发起。</div>',
+   '提交扣款申请',()=>doDeduct());
+  const mm=document.querySelector('.modal');if(mm)mm.style.width='min(860px,100%)';
+  const nb=document.querySelector('.modal-body');if(nb)nb.scrollTop=_st;
+}
+function doDeduct(){
+  const d=state.dd,b=state.bills.find(x=>x.id===d.id),amt=Math.round((Number(d.amt)||0)*100)/100,rs=(d.reason||'').trim();
+  if(!DED_OK.includes(b.status)){toast('不可申请扣款','订单状态已变化，仅账期中、可提现的账单可申请扣款','error');return}
+  if(!(amt>0)){toast('请填写扣款金额','扣款金额须大于 0','error');return}
+  if(amt>dedRemain(b)){toast('扣款金额超限','累计扣款（含审批中）不得超过订单原金额，本次最多可扣 '+money(dedRemain(b)),'error');return}
+  if(!rs){toast('请填写扣款原因','扣款原因为必填','error');return}
+  let seq=state.applications.filter(isDed).length+1,id;do{id='KK202611-'+String(seq++).padStart(4,'0')}while(state.applications.some(x=>x.id===id));
+  const at='2026-11-03 19:20';
+  state.applications.unshift({id,dir:'扣款',ref:b.id,deductAmt:amt,from:'课酬账单页发起',version:1,type:'常规',status:'审批中',node:1,owner:PM_NAME,created:at,arrive:at,reason:rs,files:d.files.slice(),rejectReason:'',history:[],fin:{'胡世超':'wait','周敏':'wait'},log:[{k:'submit',who:PM_NAME,role:'项目经理',at,text:'发起扣款申请：扣款 '+money(amt)+'；原因：'+rs}]});
+  closeModal();state.billView.tab='applied';state.billView.issue='';state.selectedBills.clear();if(state.pg['bills'])state.pg['bills'].page=1;state.bd={app:id,bill:id};
+  toast('扣款申请已提交',id+' 已提交财务审批，订单已冻结（讲师端暂不可提现）；审批通过后从讲师账户扣减 '+money(amt));render();
+}
+/* 扣款审批通过 → 扣减讲师（机构）账户余额；撤销审批时回滚 */
+function dedAcct(a,s){
+  const b=rvBill(a);if(!b||(s>0&&a.acctApplied)||(s<0&&!a.acctApplied))return;
+  const ac=(state.accounts||[]).find(x=>x.personId===b.personId),t=ac&&ac.orgId?(state.orgs||[]).find(o=>o.id===ac.orgId):ac;
+  if(t){const k=b.status==='账期中'?'pending':'available';t[k]=Math.max(0,(t[k]||0)-s*a.deductAmt)}
+  a.acctApplied=s>0;
 }
 /* 放弃本次申请：这张账单回到“待申请”，本结算单作废；需要再付款时重新勾选发起 */
 function giveUpApp(id){
@@ -1289,7 +1451,7 @@ function resubmitBill(billId,fromDetail){
   const b=state.bills.find(x=>x.id===billId),a=b&&state.applications.find(x=>x.id===b.appId);
   if(!b||!a||b.status!=='驳回待修改'||!canOp()){toast('无法重新提交','该账单当前不是“已驳回”状态','error');return}
   const rn=a.rejectNode==null?1:a.rejectNode;
-  modal('重新提交审批','<p class="modal-note"><b>'+b.name+' · '+b.category+'（'+b.id+'）</b>将重新提交，从“'+(rn?'财务':'项目主管')+'”节点继续审批，前序已通过的节点不重复审批。</p><div class="infobox">驳回原因：'+a.rejectReason+'</div>'+(fromDetail?'<p class="modal-note">当前页面已填写的修改会先保存，并记入审批记录中的“修改记录”。</p>':'<p class="modal-note">如需先修改账单内容，请点「编辑」进入编辑页后点「保存并重新提交」。</p>'),'确认重新提交',()=>{
+  modal('重新提交审批','<p class="modal-note"><b>'+b.name+' · '+b.category+'（'+b.id+'）</b>将重新提交，从“'+(rn?'财务':'项目主管')+'”节点继续审批，前序已通过的节点不重复审批。</p><div class="infobox">驳回原因：'+a.rejectReason+'</div>'+(fromDetail?'<p class="modal-note">当前页面已填写的修改会先保存，并记入审批记录中的“修改记录”。</p>':'<p class="modal-note">如需先修改账单内容，请点「修改」进入编辑页后点「保存并重新提交」。</p>'),'确认重新提交',()=>{
     if(fromDetail){const mr=document.getElementById('modalRoot'),h0=mr.innerHTML;if(!saveBill(billId,true)){if(mr.innerHTML===h0)closeModal();return}}
     closeModal();resubmitApp(a.id);
     if(fromDetail){state.billView.tab='applied';if(state.pg['bills'])state.pg['bills'].page=1;go('/bills')}
@@ -1315,14 +1477,14 @@ function accounts(kind){
   const isT=kind==='teacher', word=isT?'讲师':'助教';
   const rows=state.accounts.filter(a=>a.roles.includes(word));
   return '<div class="filters"><label class="fl"><span>姓名</span><input class="input" placeholder="请输入"></label><label class="fl"><span>手机号</span><input class="input" placeholder="请输入"></label><label class="fl"><span>微信绑定</span><select class="select"><option>全部绑定状态</option><option>已绑定</option><option>未绑定</option></select></label><span class="filter-actions"><button class="fbtn query">查询</button><button class="fbtn reset">重置</button><button class="fbtn export" onclick="exportAccounts(\''+kind+'\')">导出</button></span></div>'+title(word+'账户','',(canOp()?'<button class="btn primary" onclick="go(\'/accounts/new?from='+kind+'\')">添加'+word+'</button>':''))+
-  '<section class="card"><div class="table-wrap"><table><thead><tr><th>'+word+'姓名</th><th>手机号</th><th>角色</th><th>合作主体</th><th>账期（天）</th><th>微信绑定</th><th>收款账户</th><th>可提现</th><th>提现中</th><th>操作</th></tr></thead><tbody>'+slicePg('acc_'+kind,rows).map(a=>'<tr><td><b>'+a.name+'</b>'+(a.sysName&&a.sysName!==a.name?'<div class="muted" style="font-size:12px">系统名称：'+a.sysName+'</div>':'')+'</td><td>'+(a.phone||'—')+'</td><td>'+a.roles+'</td><td>'+(a.orgId?tag('机构','blue')+' '+orgName(a.orgId):(a.entity||(a.roles==='讲师'?'个人':'—')))+'</td><td>'+(a.orgId?'<span class="muted">随机构账户</span>':termText(a))+'</td><td>'+(a.orgId?'<span class="muted">由机构账户登录</span>':tag(a.wechat,a.wechat==='已绑定'?'green':'orange'))+'</td><td>'+(a.orgId?'<span class="muted">归属机构</span>':tag(a.bank,a.bank==='已完善'?'green':''))+'</td><td class="num">'+(a.orgId?'—':money(a.available))+'</td><td class="num">'+(a.orgId?'—':money(a.frozen))+'</td><td><button class="link" onclick="go(\'/accounts/detail?id='+a.id+'&from='+kind+'\')">查看详情</button></td></tr>').join('')+'</tbody></table></div>'+pager('acc_'+kind,rows.length)+'</section>';
+  '<section class="card"><div class="table-wrap"><table><thead><tr><th>'+word+'姓名</th><th>手机号</th><th>角色</th><th>合作主体</th><th>账期（天）</th><th>微信绑定</th><th>收款账户</th><th>可提现</th><th>提现中</th><th>操作</th></tr></thead><tbody>'+slicePg('acc_'+kind,rows).map(a=>'<tr><td><b>'+a.name+'</b>'+(a.sysName&&a.sysName!==a.name?'<div class="muted" style="font-size:12px">系统名称：'+a.sysName+'</div>':'')+'</td><td>'+(a.phone||'—')+'</td><td>'+a.roles+'</td><td>'+(a.orgId?tag('机构','blue')+' '+orgName(a.orgId):(a.entity||(a.roles==='讲师'?'个人':'—')))+'</td><td>'+(a.orgId?'<span class="muted">随机构账户</span>':termText(a))+'</td><td>'+(a.orgId?'<span class="muted">由机构账户登录</span>':tag(a.wechat,a.wechat==='已绑定'?'green':'orange'))+'</td><td>'+(a.orgId?'<span class="muted">归属机构</span>':tag(a.bank,a.bank==='已完善'?'green':''))+'</td><td class="num">'+(a.orgId?'—':money(a.available-frozenOf(a.personId))+frozenNote(frozenOf(a.personId)))+'</td><td class="num">'+(a.orgId?'—':money(a.frozen))+'</td><td><button class="link" onclick="go(\'/accounts/detail?id='+a.id+'&from='+kind+'\')">查看详情</button></td></tr>').join('')+'</tbody></table></div>'+pager('acc_'+kind,rows.length)+'</section>';
 }
 function orgTeachers(id){return state.accounts.filter(a=>a.orgId===id)}
 function orgList(){
   const rows=state.orgs;
   return '<div class="filters"><label class="fl"><span>机构名称</span><input class="input" placeholder="请输入"></label><label class="fl"><span>机构对接人</span><input class="input" placeholder="请输入"></label><label class="fl"><span>微信绑定</span><select class="select"><option>全部绑定状态</option><option>已绑定</option><option>未绑定</option></select></label><span class="filter-actions"><button class="fbtn query">查询</button><button class="fbtn reset">重置</button><button class="fbtn export" onclick="exportOrgs()">导出</button></span></div>'+
   title('机构账户','一个机构只对应一个小程序账号，机构下的多位授课讲师不单独生成账号；机构仅可开具发票，不代扣个税',(canOp()?'<button class="btn primary" onclick="go(\'/accounts/org/new\')">添加机构账户</button>':''))+
-  '<section class="card"><div class="table-wrap"><table><thead><tr><th>机构名称</th><th>统一社会信用代码</th><th>机构对接人</th><th>对接人手机号</th><th>授课讲师</th><th>账期（天）</th><th>微信绑定</th><th>对公账户</th><th>可提现</th><th>提现中</th><th>操作</th></tr></thead><tbody>'+slicePg('acc_org',rows).map(o=>'<tr><td><b>'+o.orgName+'</b>'+(o.sysName&&o.sysName!==o.orgName?'<div class="muted" style="font-size:12px">系统名称：'+o.sysName+'</div>':'')+'</td><td>'+o.code+'</td><td>'+o.rep+'</td><td>'+o.phone+'</td><td>'+orgTeachers(o.id).length+' 位</td><td>'+termText(o)+'</td><td>'+tag(o.wechat,o.wechat==='已绑定'?'green':'orange')+'</td><td>'+tag(o.bank,o.bank==='已完善'?'green':'')+'</td><td class="num">'+money(o.available)+'</td><td class="num">'+money(o.frozen)+'</td><td><button class="link" onclick="go(\'/accounts/org/detail?id='+o.id+'\')">查看详情</button></td></tr>').join('')+'</tbody></table></div>'+pager('acc_org',rows.length)+'</section>';
+  '<section class="card"><div class="table-wrap"><table><thead><tr><th>机构名称</th><th>统一社会信用代码</th><th>机构对接人</th><th>对接人手机号</th><th>授课讲师</th><th>账期（天）</th><th>微信绑定</th><th>对公账户</th><th>可提现</th><th>提现中</th><th>操作</th></tr></thead><tbody>'+slicePg('acc_org',rows).map(o=>'<tr><td><b>'+o.orgName+'</b>'+(o.sysName&&o.sysName!==o.orgName?'<div class="muted" style="font-size:12px">系统名称：'+o.sysName+'</div>':'')+'</td><td>'+o.code+'</td><td>'+o.rep+'</td><td>'+o.phone+'</td><td>'+orgTeachers(o.id).length+' 位</td><td>'+termText(o)+'</td><td>'+tag(o.wechat,o.wechat==='已绑定'?'green':'orange')+'</td><td>'+tag(o.bank,o.bank==='已完善'?'green':'')+'</td><td class="num">'+money(o.available-frozenOrg(o))+frozenNote(frozenOrg(o))+'</td><td class="num">'+money(o.frozen)+'</td><td><button class="link" onclick="go(\'/accounts/org/detail?id='+o.id+'\')">查看详情</button></td></tr>').join('')+'</tbody></table></div>'+pager('acc_org',rows.length)+'</section>';
 }
 function exportOrgs(){exportCsv('机构账户',['机构名称','统一社会信用代码','机构对接人','对接人手机号','授课讲师数','账期（天）','微信绑定','对公账户','可提现','提现中'],state.orgs.map(o=>[o.orgName,o.code,o.rep,o.phone,orgTeachers(o.id).length,o.termDays||termDefault(o),o.wechat,o.bank,o.available,o.frozen]))}
 function orgNew(){
@@ -1359,11 +1521,12 @@ function accHeroHtml(initial,name,sysName,tagsHtml,rightHtml){
   return '<section class="card"><div class="acc-hero"><div class="acc-hero-main"><div class="acc-avatar">'+initial+'</div><div><div class="acc-hero-title">'+name+'</div>'+(sysName&&sysName!==name?'<div class="acc-hero-sub">讲师系统名称：'+sysName+'</div>':'')+'</div></div><div class="acc-hero-sep"></div>'+tagsHtml+(rightHtml?'<div class="acc-hero-right">'+rightHtml+'</div>':'')+'</div></section>';
 }
 function accKpisHtml(x){
+  const fz=x.orgName?frozenOrg(x):frozenOf(x.personId);
   const total=(x.available||0)+(x.pending||0)+(x.frozen||0)+(x.paid||0);
   return '<div class="acc-kpis">'+
-    '<div class="acc-kpi total"><div class="k"><span>账户累计金额</span></div><div class="v">'+money(total)+'</div><div class="s">累计已提现 '+money(x.paid||0)+'</div></div>'+
+    '<div class="acc-kpi total"><div class="k"><span>账户累计金额</span></div><div class="v">'+money(total)+'</div><div class="s">累计已提现 '+money(x.paid||0)+(fz>0?' · 含冻结 '+money(fz):'')+'</div></div>'+
     '<div class="acc-kpi"><div class="k"><span>账期中</span>'+tag('未到期','purple')+'</div><div class="v">'+money(x.pending||0)+'</div><div class="s">到期后自动转入可提现</div></div>'+
-    '<div class="acc-kpi"><div class="k"><span>可提现</span>'+tag('可发起','green')+'</div><div class="v">'+money(x.available||0)+'</div><div class="s">普通每月 1~10 日 · 紧急随时</div></div>'+
+    '<div class="acc-kpi"><div class="k"><span>可提现</span>'+tag('可发起','green')+'</div><div class="v">'+money((x.available||0)-fz)+'</div><div class="s">普通每月 1~10 日 · 紧急随时'+(fz>0?'<br><span style="color:#b54708">另有 '+money(fz)+' 因扣款申请冻结，暂不可提现（不计入可提现）</span>':'')+'</div></div>'+
     '<div class="acc-kpi"><div class="k"><span>提现中</span>'+tag('打款中','orange')+'</div><div class="v">'+money(x.frozen||0)+'</div><div class="s">已发起提现，待打款确认</div></div>'+
   '</div>';
 }
@@ -1375,7 +1538,7 @@ function accBillStatusTag(s){
   return tag(s,s==='可提现'||s==='已提现'?'green':s==='提现中'||s==='审批中'?'orange':s==='账期中'?'blue':'');
 }
 function accBillsCard(titleText,subText,list,showName){
-  const rows=list.map(b=>'<tr><td><button class="link" onclick="go(\'/bills/detail?id='+b.id+'\')">'+b.id+'</button></td>'+(showName?'<td><b>'+b.name+'</b></td>':'')+'<td>'+b.project+'</td><td>'+b.customer+'</td><td>'+b.course+'</td><td>'+b.pact+'</td><td>'+tag(b.role,b.role==='讲师'?'blue':'purple')+'</td><td>'+(b.date||'—')+'</td><td>'+accBillStatusTag(b.status)+'</td><td class="num" style="text-align:right">'+money(b.amount)+'</td></tr>').join('');
+  const rows=list.map(b=>'<tr><td><button class="link" onclick="go(\'/bills/detail?id='+b.id+'\')">'+b.id+'</button></td>'+(showName?'<td><b>'+b.name+'</b></td>':'')+'<td>'+b.project+'</td><td>'+b.customer+'</td><td>'+b.course+'</td><td>'+b.pact+'</td><td>'+tag(b.role,b.role==='讲师'?'blue':'purple')+'</td><td>'+(b.date||'—')+'</td><td>'+accBillStatusTag(b.status)+'</td><td class="num" style="text-align:right">'+money(netAmt(b))+dedSub(b)+'</td></tr>').join('');
   return '<section class="card"><div class="card-head"><h3>'+titleText+'</h3>'+(subText?'<span class="muted">'+subText+'</span>':'')+'</div><div class="table-wrap"><table class="no-stick"><thead><tr><th>课酬账单</th>'+(showName?'<th>讲师姓名</th>':'')+'<th>项目</th><th>客户名称</th><th>课程名称</th><th>合同号</th><th>角色</th><th>培训日期</th><th>状态</th><th style="text-align:right">金额</th></tr></thead><tbody>'+(rows||'<tr><td colspan="'+(showName?10:9)+'" class="muted" style="text-align:center;padding:28px">暂无关联课酬账单</td></tr>')+'</tbody></table></div></section>';
 }
 function orgDetail(){
@@ -1481,8 +1644,8 @@ function accountDetail(){
   if(a.orgId){
     const og=state.orgs.find(o=>o.id===a.orgId)||{};
     const orgCur=og.id?(og.termDays||termDefault(og)):'—';
-    const sumBy=fn=>myBills.filter(fn).reduce((s,b)=>s+b.amount,0);
-    const bWait=sumBy(b=>b.status==='待提交'||b.status==='审批中'),bTerm=sumBy(b=>b.status==='账期中'),bAvail=sumBy(b=>b.status==='可提现'),bDone=sumBy(b=>b.status==='提现中'||b.status==='已提现'),bTotal=myBills.reduce((s,b)=>s+b.amount,0);
+    const sumBy=fn=>myBills.filter(fn).reduce((s,b)=>s+netAmt(b),0);
+    const bWait=sumBy(b=>b.status==='待提交'||b.status==='审批中'),bTerm=sumBy(b=>b.status==='账期中'),bAvail=sumBy(b=>b.status==='可提现'),bDone=sumBy(b=>b.status==='提现中'||b.status==='已提现'),bTotal=myBills.reduce((s,b)=>s+netAmt(b),0);
     return title('讲师详情',a.name,'<button class="btn" onclick="go(\'/accounts/teacher\')">返回列表</button>')+
       accHeroHtml(a.name.slice(0,1),a.name,a.sysName,tag(a.roles,'blue')+tag('合作主体：机构','blue')+tag('所属机构：'+(og.orgName||'—'),'')+tag('不单独生成小程序账号',''),'<button class="btn primary" onclick="go(\'/accounts/org/detail?id='+og.id+'\')">查看所属机构账户</button>')+
       '<div class="acc-kpis">'+
@@ -1544,12 +1707,12 @@ function wdBar(){
     '<div class="filters-more'+(f.more?' open':'')+'">'+FS('wfRole','角色',f.role,F_ROLE)+FS('wfTtype','讲师类型',f.ttype,F_TTYPE)+FS('wfMethod','提现方式',f.method,[['','全部'],['云账户','云账户'],['开发票','开发票'],['劳务费','劳务费']])+FI('wfPay',f.pay,'付款单号','付款单号','wdQuery()')+FS('wfProject','项目',f.project,fProjOpts(state.withdrawals))+FAMT('wfMin','wfMax',f,'min','max')+'<label class="fl"><span>提交时间</span><span class="date-range"><input type="date" class="input" id="wfFrom" value="'+fAttr(f.from)+'"><i>~</i><input type="date" class="input" id="wfTo" value="'+fAttr(f.to)+'"></span></label>'+FPROXY('wfProxy',f)+'</div></div>';
 }
 function withdrawals(){
-  return wdBar()+title('提现单','普通与紧急提现分开管理；普通提现预计当月月底前付款，紧急（随时可提现）提现预计提交后 3 个工作日内付款；后台保留分摊关系，讲师端不展示。','')+
+  return wdBar()+title('提现单','普通与紧急提现分开管理；普通提现预计当月月底前付款，紧急（随时可提现）提现预计提交后 3 个工作日内付款；提现单由讲师所选订单整笔构成，后台可查看所含订单 / 课酬账单用于对账（讲师端提现详情同样展示“包含订单”）。','')+
   wdTabs()+'<section class="card" style="border-top:0;border-radius:0 0 11px 11px"><div class="table-wrap"><table><thead><tr><th>提现单号</th><th>类型</th><th>讲师</th><th>角色</th><th>讲师类型</th><th>手机号</th><th>收款人</th><th>合同号</th><th>提现方式</th><th>金额</th><th>提交时间</th><th>预计付款时限</th><th>付款单</th><th>状态</th><th>操作</th></tr></thead><tbody>'+slicePg('wd',wdRows()).map(w=>'<tr><td><b>'+w.id+'</b></td><td>'+tag(w.kind,w.kind==='紧急'?'orange':'blue')+'</td><td>'+w.name+'</td><td>'+tag(teacherInfo(w).role,teacherInfo(w).role==='讲师'?'blue':'purple')+'</td><td>'+teacherInfo(w).type+'</td><td>'+teacherInfo(w).phone+'</td><td>'+payeeCell(w)+'</td><td>'+wPactCell(w)+'</td><td>'+w.method+'</td><td class="num">'+money(w.amount)+'</td><td>'+w.date+'</td><td>'+(w.kind==='紧急'?tag('3 个工作日内','orange'):'<span class="muted">当月月底前</span>')+'</td><td>'+w.payment+'</td><td>'+tag(w.status,w.status==='已到账'?'green':w.status.includes('失败')?'red':w.deferred?'':'orange')+'</td><td><button class="link" onclick="showAllocation(\''+w.id+'\')">查看构成</button></td></tr>').join('')+(wdRows().length?'':'<tr><td colspan="15" class="muted" style="text-align:center;height:100px">没有符合筛选条件的提现单</td></tr>')+'</tbody></table></div>'+pager('wd',wdRows().length)+'</section>';
 }
 function showAllocation(id){
   const w=state.withdrawals.find(x=>x.id===id);
-  modal('提现单构成 · '+id,'<p class="modal-note"><b>后台可见：</b>这笔提现由以下课酬账单构成（按先进先出拆分），一张提现单可能跨多个合同，用于对账和核对合同号；收款人与讲师不一致时标「代收」，付款前请核对。讲师端只看到提现金额、方式和付款状态。</p>'+allocTable(w),'知道了',closeModal);document.querySelector('.modal').style.width='min(760px,100%)';
+  modal('提现单构成 · '+id,'<p class="modal-note"><b>该提现单包含的课酬账单（订单）：</b>由讲师所选订单整笔构成，一张提现单可能跨多个合同，用于对账和核对合同号；收款人与讲师不一致时标「代收」，付款前请核对。讲师端提现详情同样展示“包含订单”。</p>'+allocTable(w),'知道了',closeModal);document.querySelector('.modal').style.width='min(760px,100%)';
 }
 
 const pyKind=p=>p.kind||'月度';
@@ -1914,7 +2077,7 @@ function cfOpen(id){
     '<h4>收款信息</h4><div class="info-grid">'+kv('收款人',payeeCell(w))+kv('付款方式',w.method)+kv('收款账号',w.bank)+kv('付款单号',w.payment+(p&&p.eak&&p.eak!=='—'?'<br><span class="muted">易快报 '+p.eak+'</span>':''))+'</div>'+(cfIsProxy(w)?'<div class="cf-warn">收款人（'+w.payee+'）与讲师 / 助教（'+w.name+'）不一致，请核对代收授权后再确认。</div>':'')+
     (g==='failed'?'<h4>付款失败信息</h4><div class="info-grid">'+kv('失败原因',w.failReason||'—')+kv('审批状态',w.status==='付款失败'?'审批通过':'合同系统 / 钉钉审批中')+kv('内部备注',w.internal||'—')+'</div>':'')+
     (g==='paused'?'<h4>暂不付款信息</h4><div class="info-grid">'+kv('原因',w.pauseReason||'—')+kv('处理结果','款项已退回讲师提现余额，下月提现窗口可重新申请')+'</div>':'')+
-    '<h4>提现单构成</h4>'+alloc+
+    '<h4>包含订单（课酬账单）</h4>'+alloc+
     '<h4>操作日志</h4><div class="cf-log">'+log.map(l=>'<div><i></i><b>'+l[1]+'</b><span>'+l[0]+' · '+l[2]+'</span></div>').join('')+'</div>'+
     '</div>'+(can&&g==='pending'?'<div class="cf-df"><button class="btn danger" onclick="closeModal();openRefund(\''+w.id+'\')">确认付款失败</button><button class="btn primary" onclick="closeModal();confirmOne(\''+w.id+'\')">确认付款成功</button></div>':'')+'</aside></div>';
 }
@@ -1942,9 +2105,9 @@ function settings(){
   return title('系统配置','账期、窗口、出款日与审批角色配置。修改仅影响后续新数据。','<button class="btn primary" onclick="toast(\'配置已保存\',\'新配置将应用于后续新建账单\')">保存配置</button>')+
   '<div class="stack"><section class="card"><div class="card-head"><h3>账期与提现</h3></div><div class="card-body"><div class="form-3"><div class="field"><label>讲师默认账期（天）</label><input class="input" type="number" min="0" value="'+state.cfg.teacher+'" onchange="state.cfg.teacher=Number(this.value)||0"><div class="muted" style="margin-top:5px">最后执行日 + N 天，到期即显示可提现；可在讲师账户中配置特殊账期</div></div><div class="field"><label>助教默认账期（天）</label><input class="input" type="number" min="0" value="'+state.cfg.assistant+'" onchange="state.cfg.assistant=Number(this.value)||0"><div class="muted" style="margin-top:5px">口径同上；账期优先级：紧急 &gt; 讲师特殊 &gt; 角色默认</div></div><div class="field"><label>正常提现窗口（财务可自行配置）</label><div style="display:flex;gap:8px"><input class="input" value="每月 1 日"><span style="line-height:34px">至</span><input class="input" value="每月 10 日"></div></div><div class="field"><label>讲师端到账提示</label><input class="input" value="一般订单当月月底前到账；随时可提现订单预计 3 个工作日内付款"></div></div></div></section>'+
   '<section class="card"><div class="card-head"><h3>月度付款</h3></div><div class="card-body"><div class="form-3"><div class="field"><label>月度付款单生成日</label><input class="input" value="每月 11 日"></div><div class="field"><label>月度账单经办人</label><select class="select"><option>张佳（月度账单经办人）</option></select></div><div class="field"><label>生成方式</label><div class="muted">自动按云账户、开发票、劳务费分别生成三张，不包含紧急提现单。</div></div><div class="field"><label>预计付款日</label><input class="input" value="月度：当月月底前（对外不承诺 21 号）；紧急：提交后 3 个工作日内" disabled></div><div class="field"><label>未确认提醒（月底前 N 天）</label><input class="input" type="number" min="1" max="15" value="'+state.cf.remind+'" onchange="state.cf.remind=Number(this.value)||5"><div class="muted" style="margin-top:5px">月底前 N 天起，若月度付款单或紧急提现仍有未确认提现单，在付款确认页顶部提醒经办人；超过月底则红色告警</div></div></div></div></section></div>'+
-  '<section class="card"><div class="card-head"><h3>审批链路</h3></div><div class="table-wrap"><table><thead><tr><th>业务通道</th><th>审批位置</th><th>审批节点</th><th>说明</th></tr></thead><tbody><tr><td>'+tag('常规结算','blue')+'</td><td>合同系统</td><td>项目主管 → 财务（两位财务均需通过）</td><td>整单审批，在“课酬审核”页完成，钉钉仅作审批入口；驳回后从驳回节点继续</td></tr><tr><td>'+tag('紧急结算','orange')+'</td><td>合同系统</td><td>项目主管 → 财务（两位财务均需通过）</td><td>与常规同一条链，驳回后从驳回节点继续</td></tr><tr><td>'+tag('付款失败','red')+'</td><td>合同系统 / 钉钉</td><td>财务</td><td>经办人在本系统提交失败结果，审批在合同系统 / 钉钉，本系统仅同步；内部备注不对讲师展示</td></tr></tbody></table></div></section>'+
+  '<section class="card"><div class="card-head"><h3>审批链路</h3></div><div class="table-wrap"><table><thead><tr><th>业务通道</th><th>审批位置</th><th>审批节点</th><th>说明</th></tr></thead><tbody><tr><td>'+tag('常规结算','blue')+'</td><td>合同系统</td><td>项目主管 → 财务（两位财务均需通过）</td><td>以单张结算单为单位审批，在“课酬审核”页完成，钉钉仅作审批入口；驳回后从驳回节点继续</td></tr><tr><td>'+tag('紧急结算','orange')+'</td><td>合同系统</td><td>项目主管 → 财务（两位财务均需通过）</td><td>与常规同一条链，驳回后从驳回节点继续</td></tr><tr><td>'+tag('付款失败','red')+'</td><td>合同系统 / 钉钉</td><td>财务</td><td>经办人在本系统提交失败结果，审批在合同系统 / 钉钉，本系统仅同步；内部备注不对讲师展示</td></tr></tbody></table></div></section>'+
   '<section class="card"><div class="card-head"><h3>数据与账户规则</h3></div><div class="card-body"><div class="info-grid"><div class="info-item"><div class="k">手机号约束</div><div class="v">与讲师 / 助教账户严格一对一</div></div><div class="info-item"><div class="k">首次入账</div><div class="v">发送小程序登录邀请</div></div></div></div></section>'+
-  '<section class="card"><div class="card-head"><h3>课酬账单字典与付款合同规则</h3></div><div class="card-body"><div class="info-grid"><div class="info-item"><div class="k">费用类别（一级 / 二级）</div><div class="v">'+Object.entries(FEE_TREE).map(([g,arr])=>'<div style="margin-bottom:6px"><b>'+g+'</b>：'+arr.join('、')+'</div>').join('')+'</div></div><div class="info-item"><div class="k">计量单位</div><div class="v">'+UNITS.join('、')+'</div></div><div class="info-item"><div class="k">付款合同卡控</div><div class="v">单次付款金额 ≤5000 免签；助教 / 兼职无需选择但保留填写位；出题费不按类别豁免；其余须选择付款合同号</div></div><div class="info-item"><div class="k">付款合同号关联</div><div class="v">归属销售合同，项目经理在课酬账单页选择，提交前可改；选择即占额度（按课酬账单金额），超过付款总金额直接拦截</div></div><div class="info-item"><div class="k">风险提醒规则（预设，仅提醒不拦截，规则待讨论）</div><div class="v">单价高于该讲师同类费用历史最高；服务日期跨度超过 31 天；执行天数与服务天数不一致；课酬合计超过执行金额。在执行单提交弹窗、课酬账单发起弹窗、审批抽屉展示</div></div><div class="info-item"><div class="k">发起结算申请前提</div><div class="v">须选择付款合同号的账单已选择；讲师评价须在发起结算申请前完成；未关联执行单仅提醒，最终须补关联</div></div><div class="info-item"><div class="k">账期优先级</div><div class="v">紧急 &gt; 讲师特殊 &gt; 角色默认</div></div><div class="info-item"><div class="k">到期口径</div><div class="v">整张执行单按最后执行日 + N 天整体到期，到期即显示可提现</div></div></div></div></section>';
+  '<section class="card"><div class="card-head"><h3>课酬账单字典与付款合同规则</h3></div><div class="card-body"><div class="info-grid"><div class="info-item"><div class="k">费用类别（一级 / 二级）</div><div class="v">'+Object.entries(FEE_TREE).map(([g,arr])=>'<div style="margin-bottom:6px"><b>'+g+'</b>：'+arr.join('、')+'</div>').join('')+'</div></div><div class="info-item"><div class="k">计量单位</div><div class="v">'+UNITS.join('、')+'</div></div><div class="info-item"><div class="k">付款合同卡控</div><div class="v">出题费单次付款 &lt;5000 元不需要付款合同号；其他费用类别全部需要；助教 / 兼职类：机构下必填、个人类非必填；无需填写时仍保留填写 / 更换入口</div></div><div class="info-item"><div class="k">付款合同号关联</div><div class="v">归属销售合同，由系统自动抓取（取剩余额度足够的付款合同），项目经理可在课酬账单页更换（手选优先保留）；抓取 / 选择即占额度（按课酬账单金额汇总），合计超过付款总金额直接拦截；需选择而未取得时不允许提交 / 发起</div></div><div class="info-item"><div class="k">风险提醒规则（预设，仅提醒不拦截，规则待讨论）</div><div class="v">单价高于该讲师同类费用历史最高；服务日期跨度或执行时段超过 31 天；执行天数与服务天数不一致（含按天计费数量 ≠ 服务天数）；课酬合计超过执行金额。在执行单提交弹窗、发起付款申请弹窗、课酬账单列表、课酬审核抽屉展示（账单详情页不展示）</div></div><div class="info-item"><div class="k">发起结算申请前提</div><div class="v">须选付款合同号的账单已取得付款合同号且额度足够；讲师评价须在发起前完成；最后执行日期不晚于今天；同人同时段不重复（强校验拦截）；未关联执行单的账单可提交（二次确认并标注），最终须补关联；常规与紧急分开发起</div></div><div class="info-item"><div class="k">账期优先级</div><div class="v">紧急 &gt; 讲师特殊 &gt; 角色默认</div></div><div class="info-item"><div class="k">到期口径</div><div class="v">整张执行单按最后执行日 + N 天整体到期，到期即显示可提现</div></div></div></div></section>';
 }
 
 /* ===== 页面说明抽屉：按当前页面展示字段含义、操作规则与角色权限，随路由与角色自动切换 ===== */
@@ -1955,17 +2118,20 @@ const ADOC_STATUS=['课酬账单状态流转',[
   ['驳回待修改','审批被驳回，项目经理可修改账单后重新提交'],
   ['账期中','审批通过，已入讲师账户，按账期天数倒计时，到期自动转为可提现'],
   ['可提现','账期已到（紧急结算为审批通过即可），讲师在小程序提现窗口内可发起提现'],
+  ['（扣款冻结）','账期中 / 可提现的账单有扣款单审批中时，整笔订单冻结：讲师端显示“暂不可提现”并提示原因；不是独立状态，由扣款单实时推导，审批通过后按实际金额继续，驳回后恢复'],
   ['提现中','讲师已提交提现，进入提现单与付款流程'],
   ['已提现','提现单付款成功、款项已到账，账单终态']
 ]];
 const ADOC_PAGES={
 bills:{t:'课酬账单',d:'所有师资课酬账单的总台账，来源于执行单联动生成或手工创建。项目经理在这里勾选“待申请”的账单，直接发起结算申请；审批中 / 已驳回的账单点击可在右侧抽屉查看审批进度、驳回原因并重新提交。',
- roles:{lead:'无权访问',pm:'仅看到自己负责项目的账单；可查看、导出、勾选发起结算申请、手工创建、修改和删除（待申请）',operator:'无权访问',finance:'全量只读，可查看、导出；不能修改、不能发起结算申请',admin:'全部项目全部数据，拥有项目经理的全部操作'},
+ roles:{lead:'无权访问',pm:'仅看到自己负责项目的账单；可查看、导出、勾选发起结算申请、手工创建、修改和删除（待申请）；对已通过且账期中 / 可提现的账单申请扣款',operator:'无权访问',finance:'全量只读，可查看、导出；不能修改、不能发起结算申请、不能申请扣款',admin:'全部项目全部数据，拥有项目经理的全部操作'},
  s:[['筛选与标签',[
-  ['筛选条件','课酬账单号、姓名、手机号（11 位按前 3 后 4 匹配）、项目、客户、课程、项目经理（项目经理角色不显示）、合同号、付款合同号、培训日期区间、来源、提现状态（账期中 / 可提现 / 提现中 / 已提现）'],
+  ['筛选条件','姓名、手机号（11 位按前 3 后 4 匹配）、项目、客户、课程、项目经理（项目经理角色不显示）、合同号、培训日期区间、提现状态（账期中 / 可提现 / 提现中 / 已提现）、款项方向（全部 / 增款 / 扣款）、付款类型（全部 / 普通付款 / 紧急付款）'],
   ['来源','执行单联动生成 / 手工创建'],
-  ['待申请 / 审批中 / 已驳回 / 已通过 / 全部','按账单状态分组：待申请=待提交；审批中=审批中；已驳回=驳回待修改；已通过=账期中+可提现+提现中+已提现；括号为数量'],
-  ['待提交页顶部“处理状态”条','可申请 = 信息齐全可直接提交；其余为需处理的问题分类（如机构账户未创建、手机号缺失、付款合同未选等）及“待关联执行单”，点击筛选对应账单']]],
+  ['待申请 / 审批中 / 已驳回 / 已通过 / 全部','按账单状态分组：待申请=待提交；审批中=审批中；已驳回=驳回待修改；已通过=账期中+可提现+提现中+已提现；括号为数量。扣款账单也在这些标签里：发起扣款后进入“审批中”，财务通过后进入“已通过”，被驳回进入“已驳回”'],
+  ['付款类型（普通付款 / 紧急付款）','审批中 / 已驳回 / 已通过 / 全部标签显示（待申请不显示，因为发起时才选择）：取自该账单所属结算单的类型，紧急付款为橙色标签（鼠标悬停显示紧急结算原因），普通付款为蓝色标签；扣款账单显示“—”。紧急付款的账单通过后无账期，提现状态直接是“可提现”；可按付款类型筛选，导出含该列'],
+  ['款项方向（增款 / 扣款）','每条账单标明款项方向：增款=原课酬账单（绿色标签）；扣款=对已通过账单发起的扣款账单（红色标签）。扣款账单与原订单并列在列表中：金额显示为 −¥xx，单价 / 数量 / 单位 / 风险提醒显示“—”，只能查看（不能编辑、不能再次发起扣款）；原订单仍保持“已通过”和原提现状态。点击扣款账单，抽屉显示扣款单（扣款原因、扣款金额、扣款后订单实际金额、附件、审批记录）'],
+  ['待提交页顶部“处理状态”条','可申请 = 信息齐全可直接提交；其余为需处理的问题分类（如机构账户未创建、手机号缺失、付款合同未返回等）及“待关联执行单”，点击筛选对应账单']]],
  ['列表字段',[
   ['处理状态（待申请页）','“可申请”或“需处理 N 项”，鼠标悬停显示原因，点击进入详情处理；有问题的账单不能勾选'],
   ['师资 / 角色','收款师资姓名，角色紧随其后（讲师或助教）；手机号不在列表展示，可作为筛选条件，详情页查看'],
@@ -1975,28 +2141,30 @@ bills:{t:'课酬账单',d:'所有师资课酬账单的总台账，来源于执�
   ['培训日期','实际授课日期'],
   ['费用类别','一级：企培讲师成本/助教成本/其他兼职成本；二级如授课费、出题费等'],
   ['单价 × 数量 / 单位 / 金额','金额（税前）= 单价 × 数量 + 其他费用；单价对应执行单的“老师课酬单价”；含其他费用时，金额下方小字显示“含其他费用 ¥xx”，鼠标悬停可看费用说明'],
-  ['风险提醒','仅提醒不拦截：单价高于该讲师同类别历史最高、服务日期超 31 天、执行天数与服务天数不一致、课酬合计超过执行金额'],
+  ['风险提醒','仅提醒不拦截：单价高于该讲师同类别历史最高、服务日期跨度或执行时段超 31 天、执行天数与服务天数不一致（含按天计费数量 ≠ 服务天数）、课酬合计超过执行金额'],
   ['附件','付款金额证明等材料，点数字查看/下载'],
   ['审批进度（非待申请页）','已发起后显示：项目主管审批中 / 财务审批中（两位财务各自状态）/ 已驳回（退回节点）/ 审批通过；点击账单行从右侧抽屉查看详情'],
   ['审批状态 / 提现状态','审批状态：待申请 / 审批中 / 已驳回 / 已通过；提现状态：审批通过后的账期中 / 可提现 / 提现中 / 已提现，未通过审批的账单显示“—”，可作为筛选条件']]],
  ['操作',[
   ['勾选 / 全选','只能勾选“可申请”的账单；勾选后上方出现已选条数与金额合计'],
-  ['发起结算申请（待申请标签）','勾选账单后，在表格下方的操作栏点“发起结算申请”；在弹窗里选择“常规结算”或“紧急结算”（紧急须填原因）。待申请账单不区分常规/紧急，常规与紧急必须分开发起，同一次发起不能混合；发起后每张账单各生成一张结算单，单独审批、单独驳回，同次发起共用一个提交批号'],
+  ['发起结算申请（待申请标签）','勾选账单后，在表格下方的操作栏点“发起结算申请”；在弹窗里选择“常规结算”或“紧急结算”（紧急须填原因）。待申请账单不区分常规/紧急，常规与紧急必须分开发起，同一次发起不能混合；发起后每张账单各生成一张结算单，单独审批、单独驳回，同次发起共用一个提交批号。发起前只有 3 项硬性卡点，在发起弹窗顶部逐项展示（✓ / ✗，任一不满足不能提交）：① 讲师 / 助教信息不完整（手机号缺失 / 重复），或讲师 / 助教账号未创建（机构账户未创建）；② 付款合同号为空（出题费单次付款 <5000 元不需要，助教 / 兼职机构下必填、个人类非必填，其余类别全部需要）；③ 项目讲师未评价（可在弹窗内直接去评价）。其余校验（单价高于历史最高、日期超长、天数不符、超执行金额、无执行单等）均只提醒、不拦截'],
   ['点击账单行（审批中 / 已驳回 / 已通过标签）','右侧抽屉：审批进度、驳回原因、提交批号；账单被驳回时可在抽屉内编辑账单、重新提交（从驳回节点继续），或放弃本次申请（账单回到待申请）；‹ › 在当前标签的账单间切换'],
+  ['申请扣款（已通过标签 · 操作列 / 抽屉底部）','仅项目经理 / 管理员，且只能从这里发起（执行单、手工创建、待申请均无入口）。仅<b>账期中 / 可提现</b>的账单可点（提现中 / 已提现、剩余可扣额为 0 时为灰色并提示原因；待申请 / 审批中 / 已驳回的账单不显示）。弹窗顶部显示：人员姓名（突出显示，标签随人员角色显示为“讲师”或“助教”）、费用类别、培训日期、项目名称、课程名称、订单原金额、累计已扣款、扣款审批中、本次最多可扣；弹窗填写：扣款金额（必填，≤ 剩余可扣额，可“全额扣除”，累计含审批中不得超过账单原金额，可多次发起）、扣款原因（必填，手工填写）、附件（可传）。提交后：课酬账单页的“审批中”标签立即生成一条类型为“扣款”的账单（金额 −¥xx，原订单保持已通过）；订单立即冻结，讲师端提示不可提现原因（不单独通知讲师）；进入课酬审核页，仅财务一位通过即可；通过即从讲师账户扣减并释放付款合同额度（销售合同可执行金额、课酬成本占比不调整）；驳回后冻结自动解除'],
+  ['抽屉 · 订单已冻结条 / 扣款记录','（原订单抽屉）有扣款单审批中时抽屉顶部显示“订单已冻结”；有扣款记录的订单，在“附件”下方显示可折叠的“扣款记录”模块（默认展开，标题括号内只显示笔数），每笔只显示扣减状态（审批中 / 已通过 / 已驳回）、扣款金额、申请时间、扣款原因、驳回原因（仅已驳回）'],
   ['导出','按当前筛选导出完整字段 Excel'],
   ['手工创建账单（页面操作）','无执行单场景下手工新增，客户名称、课程名称必填']]],
  ADOC_STATUS]},
 billDetail:{t:'课酬账单详情',d:'单张账单的完整信息，可在待提交/驳回待修改时修改。',
  roles:{lead:'无权访问',pm:'可查看；账单为待提交或驳回待修改时可编辑、保存、删除、发起结算申请、关联执行单',operator:'无权访问',finance:'只读查看',admin:'同项目经理，可编辑'},
  s:[['顶部提醒',[
-  ['风险提醒','单价高于历史最高等规则命中时展示，仅提醒不影响提交'],
+  ['发起前校验提示','最后执行日期晚于今天不能发起；同一师资同一时段重复，保存时仅提醒，发起结算申请前强校验拦截'],
   ['未关联执行单提示','不影响发起结算申请与付款，但最终必须关联执行单，请尽快补齐']]],
  ['基本信息（只读）',[
   ['课酬账单号 / 来源 / 师资 / 角色 / 手机号','系统生成的单号及师资信息'],
   ['项目 / 最终客户名称 / 课程名称 / 合同号','业务归属信息'],
   ['项目经理 / 提交时间','账单负责人与生成时间'],
   ['执行单','已关联显示执行单号，否则标“待关联执行单”'],
-  ['付款合同号','系统自动抓取的付款合同号；需选择而未返回时标“付款合同未返回”并阻止提交'],
+  ['付款合同号','系统按销售合同自动抓取（取剩余额度足够的付款合同），项目经理可在此更换；选择即占用额度，超限拦截；需选择而未取得时标“付款合同未返回 / 缺付款合同号”并阻止发起'],
   ['提交批号','同一次发起结算申请的账单共用一个批号，仅用于关联查看；已发起后可点“查看审批进度”，回到账单页在右侧抽屉查看']]],
  ['可编辑信息',[
   ['费用类别 / 单价 / 数量 / 单位','可修改；金额实时 = 单价 × 数量 + 其他费用'],
@@ -2017,7 +2185,7 @@ billNew:{t:'手工创建课酬账单',d:'没有执行单的结算场景，由项
   ['其他费用 / 其他费用说明（选填）','额外费用金额及说明；填了金额必须写说明'],
   ['培训日期（支持多段）','可添加多个日期段（开始~结束，结束不填为单日）；单位为“天”时，按所有日期段的天数合计自动填入「数量」，仍可手动修改；日期段不可重叠'],
   ['附件（非必填）','可上传付款金额证明等，创建后也可补传']]],
- ['按钮',[['保存账单','生成待提交账单，进入详情页'],['保存并发起结算申请','保存后直接弹出“发起结算申请”，选择常规 / 紧急结算方式并确认发起；需要付款合同号的账单须先选好付款合同号，手机号缺失的师资不可发起'],['返回列表','放弃本次填写']]]]},
+ ['按钮',[['保存账单','生成待提交账单，进入详情页'],['保存并发起结算申请','保存后直接弹出“发起结算申请”，选择常规 / 紧急结算方式并确认发起；需要付款合同号的账单须已取得付款合同号（系统自动抓取，可更换），手机号缺失的师资不可发起'],['返回列表','放弃本次填写']]]]},
 accountsList:{t:'讲师 / 助教账户',d:'讲师、助教的结算账户台账，一个手机号对应一个账户。',
  roles:{lead:'无权访问',pm:'查看、导出、添加账户',operator:'无权访问',finance:'查看、导出，并维护讲师特殊账期',admin:'全部'},
  s:[['筛选',[['姓名 / 手机号 / 微信绑定','按绑定状态查找；可导出']]],
@@ -2028,14 +2196,15 @@ accountsList:{t:'讲师 / 助教账户',d:'讲师、助教的结算账户台账�
   ['账期（天）','讲师特殊账期或角色默认账期；机构讲师随机构账户'],
   ['微信绑定','已绑定 / 未绑定（未绑定可重新发送邀请）'],
   ['收款账户','讲师在小程序填写的收款账户是否已完善'],
-  ['可提现 / 提现中','账户当前可提现金额与提现中金额；机构下讲师显示“—”，金额归属机构']]]]},
+  ['可提现 / 提现中','账户当前可提现金额与提现中金额；可提现不含扣款审批冻结的订单，下方小字提示“另有冻结 ¥xx”；机构下讲师显示“—”，金额归属机构']]]]},
 accountDetail:{t:'讲师 / 助教账户详情',d:'单个账户的资金、资料与账单。',
  roles:{lead:'无权访问',pm:'查看',operator:'无权访问',finance:'查看，并可维护讲师特殊账期',admin:'全部'},
  s:[['资金看板',[
-  ['账户累计金额','账期中 + 可提现 + 提现中 + 已提现'],
+  ['账户累计金额','账期中 + 可提现 + 提现中 + 已提现（均按扣款后的实际金额；其中含扣款审批冻结的金额，卡片下方小字提示）'],
   ['账期中','审批通过但未到期的金额，到期自动转可提现'],
-  ['可提现','当前可发起提现的金额（普通每月 1~10 日；紧急款随时）'],
+  ['可提现','当前可发起提现的金额（普通每月 1~10 日；紧急款随时）；可提现金额不含因扣款审批冻结的订单，冻结金额在其下方小字单独提示“另有冻结 ¥xx（扣款审批中）”，与讲师端口径一致'],
   ['提现中','已发起提现、待付款确认的金额']]],
+ ['金额口径',[['扣款后的实际金额','账户各项金额均按扣款通过后的实际金额统计；账单列表金额列同样显示已扣款与实际金额']]],
  ['资料与设置',[
   ['基本信息','姓名、手机号、身份证、合作主体、讲师类型等'],
   ['账期与结算归属','当前生效账期（默认值或特殊账期）；特殊账期仅财务/管理员可维护；机构讲师显示所属机构'],
@@ -2058,7 +2227,7 @@ orgList:{t:'机构账户',d:'机构合作主体的结算账户。一个机构只
   ['授课讲师','机构名下授课讲师人数'],
   ['账期（天）','机构账期，随机构账户'],
   ['微信绑定 / 对公账户','对接人是否已绑定微信；对公收款账户是否已由对接人在小程序填写'],
-  ['可提现 / 提现中','机构账户资金']]]]},
+  ['可提现 / 提现中','机构账户资金；可提现不含扣款审批冻结的订单，下方小字提示“另有冻结 ¥xx”']]]]},
 orgNew:{t:'添加机构账户',d:'机构提供资料后由运营在后台录入。',
  roles:{lead:'无权访问',pm:'可创建',operator:'无权访问',finance:'无权访问',admin:'可创建'},
  s:[['填写项',[
@@ -2075,7 +2244,7 @@ orgDetail:{t:'机构账户详情',d:'机构的资金、资料及名下讲师。'
   ['更换对接人','由讲师运营修改手机号，旧微信自动解绑，余额与历史流水不变'],
   ['名下授课讲师','机构名下授课讲师及其账单'],
   ['重新发送邀请','对接人微信未绑定时可重发']]]]},
-withdrawals:{t:'提现单',d:'讲师在小程序提交提现后生成的提现单，分普通与紧急两类，小程序前台不出现这两个词。同一次提现含两种款项时会拆成两张提现单。',
+withdrawals:{t:'提现单',d:'讲师在小程序提交提现后生成的提现单，分普通与紧急两类（小程序侧紧急称“随时可提现”订单）。提现按订单整笔提交；所选订单分属不同付款批次（普通 / 随时可提现）时，系统自动拆成多张提现单。',
  roles:{lead:'无权访问',pm:'无权访问',operator:'查看、筛选、导出、查看构成',finance:'查看、筛选、导出、查看构成',admin:'全部'},
  s:[['页签与筛选',[
   ['全部 / 普通提现 / 紧急提现','普通：每月 1~10 日窗口内提现，预计当月月底前付款；紧急（讲师端称“随时可提现”）：无账期无窗口，预计提交后 3 个工作日内付款'],
@@ -2091,7 +2260,7 @@ withdrawals:{t:'提现单',d:'讲师在小程序提交提现后生成的提现�
   ['预计付款时限','普通：当月月底前；紧急：3 个工作日内（需优先处理）'],
   ['付款单','所属付款单号：普通进入每月 11 号生成的月度付款单；紧急每笔单独一张紧急付款单'],
   ['状态','提现中 / 已到账 / 失败待审批 / 付款失败 / 暂不付款（已退回余额）'],
-  ['查看构成','弹窗展示该提现单由哪些课酬账单按先进先出拆分构成，用于对账；讲师端不展示']]]]},
+  ['查看构成','弹窗展示该提现单包含的课酬账单（订单），提现单由讲师所选订单整笔构成，用于对账；讲师端提现详情同样展示“包含订单”']]]]},
 payments:{t:'付款单',d:'给财务付款用的批次单据，经办人按付款单到易快报发起付款。',
  roles:{lead:'无权访问',pm:'无权访问',operator:'查看列表与详情，可标记已提交易快报、暂不付款、修改备注',finance:'查看列表与详情（只读）',admin:'全部'},
  s:[['类型',[
@@ -2150,18 +2319,20 @@ settings:{t:'系统配置',d:'账期、提现窗口、月度付款与审批规�
   ['审批链路','常规：项目主管 → 财务（两位财务均需通过）；紧急：同链路但通过后直接可提现；付款失败审批仅需财务'],
   ['数据与账户规则','手机号与账户一对一、首次入账发邀请等'],
   ['课酬账单字典与付款合同规则','费用类别一级/二级字典，以及哪些账单需要选择付款合同号']]]]},
-review:{t:'课酬审核',d:'项目主管、财务在这里审批结算单，只有这一页：每位师资一张结算单，一行一张，单独通过、单独驳回；点击一行从右侧弹出详情与审批进度。审批在本系统（合同系统）内直接完成，钉钉只是审批入口。',
- roles:{lead:'审批本部门项目经理提交的结算单：同意、驳回、批量同意、批量驳回',pm:'无权访问（可在“课酬账单”页“审批中 / 已驳回”标签点击账单，查看审批进度与驳回原因）',operator:'无权访问',finance:'项目主管通过后进入财务节点；同一节点两位财务均需通过；可同意、驳回、批量处理',admin:'只读查看全部审批中与已审批结算单，不能审批'},
+review:{t:'课酬审核',d:'项目主管、财务在这里审批结算单（含已通过账单的扣款单），只有这一页：每位师资一张结算单，一行一张，单独通过、单独驳回；点击一行从右侧弹出详情与审批进度。审批在本系统（合同系统）内直接完成，钉钉只是审批入口。',
+ roles:{lead:'审批本部门项目经理提交的结算单：同意、驳回、批量同意、批量驳回；看不到扣款单（扣款单只经财务）',pm:'无权访问（可在“课酬账单”页“审批中 / 已驳回”标签点击账单，查看审批进度与驳回原因）',operator:'无权访问',finance:'项目主管通过后进入财务节点；同一节点两位财务均需通过；可同意、驳回、批量处理；扣款单直接进入财务节点，一位财务通过即可',admin:'只读查看全部审批中与已审批结算单，不能审批'},
  s:[['标签与筛选',[
   ['待我审批 / 已审批','待我审批=轮到我且尚未处理；已审批=我处理过的（含通过、驳回）；财务与管理员另有“全部”，括号为数量'],
-  ['搜索','师资、项目、提交人（发起结算申请的项目经理）、提交批号'],
-  ['快捷筛选','全部 / 紧急，数字为当前标签下的数量'],
+  ['搜索','师资、项目、提交人（发起结算申请的项目经理）、提交批号；输入“增款”或“扣款”可按结算单类型搜索'],
+  ['快捷筛选','全部 / 紧急 / 增款 / 扣款，数字为当前标签下的数量；“扣款”筛选仅财务、管理员可见'],
   ['提交批号','同一次发起的结算单共用一个批号，只用于关联查看和搜索，不作为审批单位']]],
  ['结算单列表',[
   ['师资 / 项目 / 课程 / 客户名称 / 培训日期','一行一张结算单（一位师资一张账单）；师资后带角色，被驳回后重新提交的带版本号（V2…），已审批标签里会标出已通过 / 已驳回；项目、课程、客户名称各占一列；点击一行从右侧弹出抽屉'],
   ['费用类别 / 单价 / 天数 / 金额','费用类别、单价、天数（数量 + 单位）、金额（含其他费用时下方小字提示）'],
   ['附件','点击数量弹出附件列表，每个文件可预览、下载；抽屉的“附件”里同样可预览、下载'],
   ['付款类型','紧急付款 / 普通付款，位于提交时间后面；紧急付款通过后账单直接可提现，普通付款进入账期'],
+  ['款项方向（增款 / 扣款）/ 付款类型','列表列顺序：师资、角色、项目名称、客户名称、课程名称、风险提醒、培训日期、费用类别、单价、数量、单位、总金额、附件、款项方向、付款类型、审批状态、提交人、提交时间、操作。款项方向：增款=原结算申请产生的结算单（绿色标签）；扣款=已通过账单发起的扣款申请（红色标签）；付款类型：紧急付款（橙色）/ 普通付款（蓝色），扣款单显示“—”；审批状态：审批中 / 已通过 / 已驳回（重新提交的显示版本号）。扣款单金额显示为“−¥xx”；复用结算单、不新增状态'],
+  ['扣款单审批','只经财务一节点，两位财务一位通过即可，项目主管看不到；抽屉展示扣款原因、本次扣款金额、扣款后订单实际金额、此前累计已扣款、扣款附件（可预览 / 下载）、原订单信息；通过即从账户扣减并释放付款合同额度，6 秒内可撤销（撤销后账户回滚）；驳回须填原因，驳回即终结并解除订单冻结，需重新发起'],
   ['默认排序','待审批：紧急单在前，其次按提交时间从早到晚'],
   ['同意 / 驳回（行内）','直接对该结算单审批；同意后 6 秒内可撤销；驳回必须选类型并填写原因']]],
  ['风险',[
@@ -2352,9 +2523,10 @@ function rvSplit(){
 const rvShort=t=>t.includes('单价')?'单价偏高':t.includes('跨度')?'日期超长':t.includes('不一致')?'天数不符':t.includes('超过')?'超执行金额':'提醒';
 function rvContracts(a){
   const by={};appBills(a).forEach(b=>{if(b.contract&&b.contract!=='付款合同未返回'){const g=by[b.contract]||(by[b.contract]={no:b.contract,amt:0,n:0});g.amt+=b.amount;g.n++}});
-  return Object.values(by).map(g=>{const c=payC(g.no)||{total:0};const used=state.bills.filter(x=>x.contract===g.no&&x.confirmed&&x.appId!==a.id).reduce((s,x)=>s+x.amount,0);return Object.assign(g,{total:c.total,remain:c.total-used,over:g.amt>c.total-used})});
+  return Object.values(by).map(g=>{const c=payC(g.no)||{total:0};const used=state.bills.filter(x=>x.contract===g.no&&x.confirmed&&x.appId!==a.id).reduce((s,x)=>s+netAmt(x),0);return Object.assign(g,{total:c.total,remain:c.total-used,over:g.amt>c.total-used})});
 }
 function rvRisks(a){
+  if(isDed(a)){const b0=rvBill(a);return b0&&Math.round((b0.amount-dedApps(b0).filter(x=>x.status==='已通过'&&x.id!==a.id).reduce((n,x)=>n+x.deductAmt,0)-a.deductAmt)*100)<=0?[{lv:'i',text:'本次为全额扣除，扣款后订单实际金额为 0'}]:[]}
   const out=[];
   rvContracts(a).forEach(c=>{if(c.over)out.push({lv:'h',text:'付款合同额度不足',basis:c.no+' 剩余 '+money(c.remain)+'，本次 '+money(c.amt)+'，缺口 '+money(c.amt-c.remain)})});
   appBills(a).forEach(b=>{billRisks(b).forEach(t=>out.push({lv:'w',text:t,bill:b.id,short:rvShort(t)}));if(!b.exec)out.push({lv:'i',text:'账单尚未关联执行单',bill:b.id,short:'无执行单'})});
@@ -2375,6 +2547,7 @@ function rvStat(a){
 function rvCan(a){
   const m=rvMe();
   if(!m)return {ok:false,why:'超级管理员为只读查看，审批由项目主管、财务处理'};
+  if(isDed(a)){if(a.status==='已通过')return {ok:false,why:'该扣款单已审批完成'};if(a.status==='已驳回')return {ok:false,why:'已驳回，订单冻结已解除'};if(m.node!==1)return {ok:false,why:'扣款单由财务审批'};return {ok:true}}
   if(a.status==='已通过')return {ok:false,why:'该结算单已审批完成'};
   if(a.status==='已驳回')return {ok:false,why:'已驳回，等待项目经理修改后，从“'+(rvStat(a).rn?'财务':'项目主管')+'”节点继续'};
   if(a.node!==m.node)return {ok:false,why:m.node===0?'你已通过，当前在财务节点':'当前在项目主管节点，尚未轮到财务'};
@@ -2393,8 +2566,8 @@ function rvTabs(){
   return state.role==='lead'?[['todo','待我审批'],['done','已审批']]:state.role==='finance'?[['todo','待我审批'],['done','已审批'],['all','全部']]:[['todo','审批中'],['all','全部']];
 }
 function rvScope(){ // 当前角色能看到的全部结算单
-  if(state.role==='lead')return state.applications;
-  if(state.role==='finance')return state.applications.filter(rvLeadPassed);
+  if(state.role==='lead')return state.applications.filter(a=>!isDed(a));   // 扣款单只走财务，项目主管不参与
+  if(state.role==='finance')return state.applications.filter(a=>isDed(a)||rvLeadPassed(a));
   return state.applications;
 }
 const rvAmt=a=>appAmount(a);
@@ -2404,9 +2577,9 @@ function rvBase(){
     if(R.tab==='todo')return rvKind(a)==='todo';
     if(R.tab==='done')return rvKind(a)==='done';
     return true;
-  }).filter(a=>!R.q.trim()||(a.id+(a.batchNo||'')+((rvBill(a)||{}).name||'')+appProject(a)+a.owner).toLowerCase().includes(R.q.trim().toLowerCase()));
+  }).filter(a=>!R.q.trim()||(a.id+(a.batchNo||'')+((rvBill(a)||{}).name||'')+appProject(a)+a.owner+(isDed(a)?'扣款':'增款')).toLowerCase().includes(R.q.trim().toLowerCase()));
 }
-function rvChipOk(a,c){return c==='all'||(c==='urgent'&&a.type==='紧急')||(c==='risk'&&rvLevel(a)!=='ok'&&rvLevel(a)!=='i')||(c==='clean'&&rvLevel(a)==='ok'&&a.type==='常规')}
+function rvChipOk(a,c){return c==='all'||(c==='add'&&!isDed(a))||(c==='ded'&&isDed(a))||(c==='urgent'&&a.type==='紧急')||(c==='risk'&&rvLevel(a)!=='ok'&&rvLevel(a)!=='i')||(c==='clean'&&rvLevel(a)==='ok'&&a.type==='常规')}
 function rvSortFn(){
   const R=state.rv,d=R.sort.dir==='asc'?1:-1;
   const key={amount:a=>rvAmt(a),time:a=>String(a.created),risk:a=>({h:3,w:2,i:1,ok:0})[rvLevel(a)]}[R.sort.k];
@@ -2452,19 +2625,22 @@ function review(){
   R.checked=new Set([...R.checked].filter(id=>sel.some(x=>x.id===id)));
   const picked=sel.filter(x=>R.checked.has(x.id)),hiN=picked.filter(x=>rvCnt(x).h).length;
   const pageSel=rows.filter(x=>m&&rvCan(x).ok),allOn=pageSel.length&&pageSel.every(x=>R.checked.has(x.id));
-  const chips=[['all','全部'],['urgent','紧急']];
+  const chips=[['all','全部'],['urgent','紧急'],['add','增款'],['ded','扣款']].filter(c=>!(c[0]==='ded'&&state.role==='lead'));
   const sh=(k,l)=>`<th class="sort ${k==='amount'?'num':''}" onclick="rvSortBy('${k}')">${l}${R.sort.k===k?'<em>'+(R.sort.dir==='desc'?'↓':'↑')+'</em>':''}</th>`;
-  const showCk=!!m&&R.tab==='todo',cols=showCk?16:15;
+  const showCk=!!m&&R.tab==='todo',cols=showCk?20:19;
   const body=rows.map(x=>{
     const b=rvBill(x),can=m&&rvCan(x).ok;
     return `<tr class="rv-or ${R.checked.has(x.id)?'chk':''} ${R.drawerApp===x.id?'on':''}" data-id="${x.id}" onclick="rvDrawer('${x.id}','${b.id}')">${showCk?`<td class="ck" onclick="event.stopPropagation()">${can?`<input type="checkbox" class="check" ${R.checked.has(x.id)?'checked':''} onchange="rvCheck('${x.id}',this.checked)">`:''}</td>`:''}
-      <td style="white-space:nowrap"><b>${b.name}</b> <span class="tag ${b.role==='讲师'?'blue':'purple'}">${b.role}</span>${x.version>1?' <span class="tag purple">V'+x.version+'</span>':''}${x.status==='已通过'?' <span class="tag green">已通过</span>':x.status==='已驳回'?' <span class="tag red">已驳回</span>':''}</td>
-      <td>${b.project}</td><td>${b.course||'—'}</td><td>${b.customer||'—'}</td>
-      <td style="white-space:nowrap">${trainHtml(b)}</td><td style="white-space:nowrap">${b.category}</td><td class="num">${money(b.price)}</td><td style="white-space:nowrap">${b.qty} ${b.unit}</td><td class="num"><b>${money(b.amount)}</b>${othSub(b)}</td>
-      <td onclick="event.stopPropagation()">${(b.files||[]).length?`<button class="link" onclick="showRvFiles('${b.id}')">${b.files.length} 个</button>`:'<span class="muted">—</span>'}</td>
-      <td>${x.type==='紧急'?'<span class="tag orange">紧急付款</span>':'<span class="tag">普通付款</span>'}</td>
-      <td>${x.owner}</td><td style="white-space:nowrap">${x.created.slice(5)}</td>
+      <td style="white-space:nowrap"><b>${b.name}</b></td>
+      <td><span class="tag ${b.role==='讲师'?'blue':'purple'}">${b.role}</span></td>
+      <td>${b.project}</td><td>${b.customer||'—'}</td><td>${b.course||'—'}</td>
       <td>${rvDots(x)}</td>
+      <td style="white-space:nowrap">${trainHtml(b)}</td><td style="white-space:nowrap">${b.category}</td>${isDed(x)?'<td class="num muted">—</td><td class="muted">—</td><td class="muted">—</td>':`<td class="num">${money(b.price)}</td><td>${b.qty}</td><td>${b.unit}</td>`}<td class="num">${isDed(x)?`<b style="color:#b42318">−${money(x.deductAmt)}</b>`:`<b>${money(b.amount)}</b>${othSub(b)}`}</td>
+      <td onclick="event.stopPropagation()">${isDed(x)?((x.files||[]).length?`<button class="link" onclick="dedFilesModal('${x.id}')">${x.files.length} 个</button>`:'<span class="muted">—</span>'):(b.files||[]).length?`<button class="link" onclick="showRvFiles('${b.id}')">${b.files.length} 个</button>`:'<span class="muted">—</span>'}</td>
+      <td style="white-space:nowrap">${isDed(x)?'<span class="tag red">扣款</span>':'<span class="tag green">增款</span>'}</td>
+      <td style="white-space:nowrap">${isDed(x)?'<span class="muted">—</span>':x.type==='紧急'?'<span class="tag orange">紧急付款</span>':'<span class="tag blue">普通付款</span>'}</td>
+      <td style="white-space:nowrap">${x.status==='已通过'?'<span class="tag green">已通过</span>':x.status==='已驳回'?'<span class="tag red">已驳回</span>':'<span class="tag orange">审批中</span>'}${x.version>1?' <span class="tag purple">V'+x.version+'</span>':''}</td>
+      <td>${x.owner}</td><td style="white-space:nowrap">${x.created.slice(5)}</td>
       <td onclick="event.stopPropagation()" style="white-space:nowrap">${can?`<button class="btn sm green" onclick="rvPass('${x.id}')">同意</button> <button class="btn sm danger" onclick="rvReject('${x.id}')">驳回</button>`:'<span class="muted">—</span>'}</td></tr>`;
   }).join('');
   const bar=`<div class="rv-lbar">${showCk?`<label style="display:flex;gap:6px;align-items:center;font-size:13px;cursor:pointer"><input type="checkbox" class="check" ${allOn?'checked':''} ${pageSel.length?'':'disabled'} onchange="rvCheckPage(this.checked)"> 本页全选</label>
@@ -2473,13 +2649,23 @@ function review(){
     <span class="hint">${picked.length?'已选合计 '+money(picked.reduce((s,x)=>s+rvAmt(x),0))+(hiN?'　其中 '+hiN+' 张含高风险提示，请自行判断':''):''}</span>`:`<span class="hint">${m?'':'超级管理员为只读查看，不能审批'}</span>`}
     <span class="grow"></span><div class="rv-pg"><span>共 ${list.length} 张　每页 ${R.size} 条</span><button class="btn sm" ${R.page>1?'':'disabled'} onclick="rvPage(${R.page-1})">‹</button><span>${R.page} / ${pages}</span><button class="btn sm" ${R.page<pages?'':'disabled'} onclick="rvPage(${R.page+1})">›</button></div></div>`;
   return `<div class="rv-lp"><div class="rv-lh">${tabs.map(t=>`<button class="tb ${R.tab===t[0]?'on':''}" onclick="rvTab('${t[0]}')">${t[1]}<i>${rvScope().filter(x=>t[0]==='all'||rvKind(x)===t[0]).length}</i></button>`).join('')}<span class="sp"></span>
-    <input class="input rv-s" id="rvQ" value="${R.q}" placeholder="搜索师资 / 项目 / 提交人 / 提交批号" oninput="clearTimeout(window.__rvT);const v=this.value;window.__rvT=setTimeout(()=>rvSearch(v),250)"></div>
+    <input class="input rv-s" id="rvQ" value="${R.q}" placeholder="搜索师资 / 项目 / 提交人 / 提交批号 / 增款 / 扣款" oninput="clearTimeout(window.__rvT);const v=this.value;window.__rvT=setTimeout(()=>rvSearch(v),250)"></div>
     <div class="rv-lc">${chips.map(c=>`<button class="cb ${R.chip===c[0]?'on':''}" onclick="rvChip('${c[0]}')">${c[1]} ${cnt(c[0])}</button>`).join('')}</div>
-    <div class="rv-tw" id="rvTW"><table class="rv-lt"><thead><tr>${showCk?'<th class="ck"></th>':''}<th>师资</th><th>项目</th><th>课程</th><th>客户名称</th><th>培训日期</th><th>费用类别</th><th class="num">单价</th><th>天数</th>${sh('amount','金额')}<th>附件</th><th>付款类型</th><th>提交人</th>${sh('time','提交时间')}${sh('risk','风险')}<th>操作</th></tr></thead>
+    <div class="rv-tw" id="rvTW"><table class="rv-lt"><thead><tr>${showCk?'<th class="ck"></th>':''}<th>师资</th><th>角色</th><th>项目名称</th><th>客户名称</th><th>课程名称</th>${sh('risk','风险提醒')}<th>培训日期</th><th>费用类别</th><th class="num">单价</th><th>数量</th><th>单位</th>${sh('amount','总金额')}<th>附件</th><th>款项方向</th><th>付款类型</th><th>审批状态</th><th>提交人</th>${sh('time','提交时间')}<th>操作</th></tr></thead>
     <tbody>${body||`<tr><td colspan="${cols}" style="text-align:center;padding:60px 0;color:var(--sub)">${R.tab==='todo'&&!R.q&&R.chip==='all'?'待审批已全部处理完':'没有符合条件的结算单'}</td></tr>`}</tbody></table></div>${bar}</div><div id="rvDrWrap">${R.drawer?rvDrawerHtml(rvApp(R.drawerApp),false):''}</div>`;
 }
 function rvSortedBills(a){const ord=b=>billRisks(b).length?0:!b.exec?1:2;return appBills(a).slice().sort((x,y)=>ord(x)-ord(y)||x.id.localeCompare(y.id))}
+function rvTimelineDed(a){
+  const it=(st,t,sub,tx)=>`<div class="rv-ti ${st}"><div class="t">${t}</div>${sub?`<div class="s">${sub}</div>`:''}${tx||''}</div>`;
+  let h=a.log.map(l=>{const act={submit:'提交申请',pass:'审批通过',reject:'驳回',sys:'系统处理'}[l.k];return it(l.k==='reject'?'rej':'done',(l.k==='sys'?'合同系统':l.role)+' · '+act,(l.k==='sys'?'':l.who+' · ')+l.at.slice(5),l.text?`<div class="tx">${l.text}</div>`:'')}).join('');
+  if(a.status==='审批中'){
+    h+=it('cur','财务 · 待审批','任一位财务通过即可',`<div>${FIN_PPL.map(p=>`<span class="rv-pp cur">${p} 待处理</span>`).join('')}</div>`);
+    h+=it('','审批完成','从讲师账户扣减 '+money(a.deductAmt)+'，释放付款合同额度');
+  }else if(a.status==='已驳回')h+=it('','申请结束','订单冻结已解除；如仍需扣款，请项目经理重新发起扣款申请');
+  return `<div class="rv-tl">${h}</div>`;
+}
 function rvTimeline(a,withEdits){
+  if(isDed(a))return rvTimelineDed(a);
   let sn=0;
   const s=rvStat(a),it=(st,t,sub,tx)=>`<div class="rv-ti ${st}"><div class="t">${t}</div>${sub?`<div class="s">${sub}</div>`:''}${tx||''}</div>`;
   let h=a.log.map(l=>{
@@ -2519,7 +2705,7 @@ function rvStepper(a){
 }
 function rvSummary(a,b,bills,extra){
   const stTag=a.status==='已通过'?tag('已通过','green'):a.status==='已驳回'?tag('已驳回','red'):tag('审批中','orange');
-  return `<div class="rv-sm"><div class="l1">${tag(a.type+'结算',a.type==='紧急'?'orange':'blue')}${stTag}${a.version>1?tag('V'+a.version,'purple'):''}</div>
+  return `<div class="rv-sm"><div class="l1">${isDed(a)?tag('扣款','red'):tag('增款','green')+tag(a.type+'结算',a.type==='紧急'?'orange':'blue')}${stTag}${a.version>1?tag('V'+a.version,'purple'):''}</div>
   </div>`;
 }
 /* 抽屉右列：审批记录（时间线，含重新提交节点下的“修改了 N 处”）；可折叠成最右侧窄条，折叠状态在切换账单时保持；窄屏默认折叠 */
@@ -2551,7 +2737,7 @@ function rvEditNode(a,v){
   return `<details class="rv-ne"><summary>本次提交修改了 <b>${r.n}</b> 处　<span>查看明细</span></summary>${r.html}</details>`;
 }
 function rvBillBody(a,b,src){
-  const rk=billRisks(b);
+  const D=isDed(a),rk=D?[]:billRisks(b);
   /* 师资历史合作：该师资除本单外已发生的每一次合作单价（不含待提交 / 驳回待修改），按培训日期倒序；同类别的用于判断本次是否高于历史最高 */
   const hist=state.bills.filter(x=>x.personId===b.personId&&x.id!==b.id&&x.price>0&&!['待提交','驳回待修改'].includes(x.status)).sort((p,q)=>String(q.date).localeCompare(String(p.date))||String(q.id).localeCompare(String(p.id)));
   const same=hist.filter(x=>x.category===b.category),mx=same.length?Math.max(...same.map(x=>x.price)):0;
@@ -2563,11 +2749,16 @@ function rvBillBody(a,b,src){
   const cf=['finance','admin'].includes(state.role)?contractFileRows(appBills(a)):[];
   const risk=(ordR.length?ordR.map(r=>`<div class="rv-r"><span class="rv-d ${r.lv}">${{h:'高风险',w:'提醒',i:'提示'}[r.lv]}</span><span class="tx"><b>${r.text}</b>${r.basis?'　<em>'+r.basis+'</em>':''}</span></div>`).join(''):'')
     +rk.map(t=>`<div class="rv-r"><span class="rv-d w">提醒</span><span class="tx"><b>${t}</b></span></div>`).join('')
-    +(!b.exec?'<div class="rv-r"><span class="rv-d i">提示</span><span class="tx"><b>尚未关联执行单</b>　<em>不影响付款，但最终必须关联</em></span></div>':'');
+    +(!b.exec&&!D?'<div class="rv-r"><span class="rv-d i">提示</span><span class="tx"><b>尚未关联执行单</b>　<em>不影响付款，但最终必须关联</em></span></div>':'');
   const files=(b.files||[]);
+  const doneOthers=D?dedApps(b).filter(x=>x.status==='已通过'&&x.id!==a.id).reduce((n,x)=>n+x.deductAmt,0):0,after=D?Math.max(0,Math.round((b.amount-doneOthers-a.deductAmt)*100)/100):0;
+  const dedBox=D?`<div class="rv-rk" style="background:#fff6f5;border-color:#f5c2c2"><div class="rv-r"><span class="rv-d h">扣款</span><span class="tx"><b>本次扣款 ${money(a.deductAmt)}</b>　${a.status==='已通过'?'已从讲师账户扣减':a.status==='已驳回'?'已驳回，订单冻结已解除':'审批中，订单已冻结，讲师端暂不可提现'}</span></div></div>
+   <div class="rv-fd dedfd" style="margin-bottom:12px"><div class="rv-kv full urgk"><dt>扣款原因</dt><dd>${a.reason||'—'}</dd></div>${kv('本次扣款金额','<b style="color:#b42318">−'+money(a.deductAmt)+'</b>')}${kv('扣款后订单实际金额','<b>'+money(after)+'</b>'+(after===0?' <span class="tag red">全额扣除</span>':''))}${kv('此前已扣款累计',money(doneOthers))}</div>
+   <details class="rv-dt" open><summary>扣款附件（${(a.files||[]).length}）</summary>${(a.files||[]).map((f,i)=>`<div class="rv-f"><span>${f.name}</span><span class="muted">${fmtSize(f.size)}</span><button class="link" onclick="dedPv('${a.id}',${i})">预览</button><button class="link" onclick="dedDl('${a.id}',${i})">下载</button></div>`).join('')||'<div class="muted">无附件</div>'}</details>
+   <div class="rv-secs" style="margin:14px 0 8px">原订单信息</div>`:'';
   return `
-   ${risk?`<div class="rv-rk">${risk}</div>`:'<div class="rv-clean" style="margin:0 0 12px">✓ 该账单未发现风险</div>'}
-   <div class="rv-hl"><div class="a"><span class="k">讲师 / 助教</span><b class="pj">${b.name} <span class="tag ${b.role==='讲师'?'blue':'purple'}">${b.role}</span></b><em>${b.phone||'手机号缺失'}</em></div><div class="a"><span class="k">培训日期</span><b class="pj">${trainHtml(b)}</b></div><div class="a"><span class="k">金额</span><b>${money(b.amount)}</b><em>${b.category} · ${money(b.price)} × ${b.qty}${b.unit}${b.other>0?' + 其他 '+money(b.other):''}</em></div></div>
+   ${D?dedBox:(risk?`<div class="rv-rk">${risk}</div>`:'<div class="rv-clean" style="margin:0 0 12px">✓ 该账单未发现风险</div>')}
+   <div class="rv-hl"><div class="a"><span class="k">讲师 / 助教</span><b class="pj">${b.name} <span class="tag ${b.role==='讲师'?'blue':'purple'}">${b.role}</span></b><em>${b.phone||'手机号缺失'}</em></div><div class="a"><span class="k">培训日期</span><b class="pj">${trainHtml(b)}</b></div><div class="a"><span class="k">${D?'原订单金额':'金额'}</span><b>${money(b.amount)}</b><em>${b.category} · ${money(b.price)} × ${b.qty}${b.unit}${b.other>0?' + 其他 '+money(b.other):''}</em></div></div>
    <div class="rv-fd">
     ${a.type==='紧急'?`<div class="rv-kv full urgk"><dt>紧急结算原因</dt><dd>${a.reason||'—'}</dd></div>`:''}
     ${kv('项目名称',b.project)}${kv('合同号',b.pact)}${b.other>0?kv('其他费用',money(b.other)+'　<span class="muted">'+(b.otherNote||'<span class="rv-d w">未说明</span>')+'</span>'):''}
@@ -2578,7 +2769,7 @@ function rvBillBody(a,b,src){
     ${b.remark?kv('备注',b.remark):''}
     <div class="rv-kv full hist"><dt>${b.role}历史单价</dt><dd>${histHtml}</dd></div>
    </div>
-   <details class="rv-dt" open><summary>附件（${files.length}）</summary>${files.length?files.map((f,i)=>`<div class="rv-f"><span>${f.name}</span><span class="muted">${fmtSize(f.size)}</span><button class="link" onclick="previewBillFile('${b.id}',${i})">预览</button><button class="link" onclick="openBillFile('${b.id}',${i})">下载</button></div>`).join(''):'<div class="muted">无附件</div>'}</details>
+   <details class="rv-dt" open><summary>${D?'原订单附件':'附件'}（${files.length}）</summary>${files.length?files.map((f,i)=>`<div class="rv-f"><span>${f.name}</span><span class="muted">${fmtSize(f.size)}</span><button class="link" onclick="previewBillFile('${b.id}',${i})">预览</button><button class="link" onclick="openBillFile('${b.id}',${i})">下载</button></div>`).join(''):'<div class="muted">无附件</div>'}</details>
    ${cf.length?`<details class="rv-dt" open><summary>合同附件（仅财务可见）</summary>${cf.map(r=>`<div class="rv-f"><span><span class="tag blue">${r.type}</span> ${r.no}</span></div>`+r.files.map(f=>`<div class="rv-f" style="padding-left:14px"><span>${f.name}</span><span class="muted">${fmtSize(f.size)}</span><button class="link" onclick="rvPreview('${f.name}')">预览</button><button class="link" onclick="rvDownload('${f.name}')">下载</button></div>`).join('')).join('')}</details>`:''}`;
 }
 /* ---------- 审核提示（固定的描述性文字，告诉审核人重点看什么；不判断是否命中，不拦截） ---------- */
@@ -2591,6 +2782,11 @@ const RV_GUIDE={
   ['其他费用','确认说明清楚、金额合理、与培训方式相符，必要时补凭证。'],
   ['紧急结算','确认原因真实充分；通过后账单可立即提现。'],
   ['重新提交','对照上次驳回原因，留意金额、单价是否变动。']],
+ ded:[['扣款依据','核对扣款原因与附件是否充分，金额是否与原因一致。'],
+  ['订单状态','订单须为账期中或可提现；提现中、已提现的订单不可扣款（发起时已校验）。'],
+  ['累计扣款','累计扣款（含审批中）不得超过订单原金额，可全额扣除，也可多次扣减。'],
+  ['影响范围','通过后立即从讲师账户扣减，并释放对应付款合同额度；销售合同可执行金额、课酬成本占比不调整。'],
+  ['讲师侧','发起时订单已冻结，讲师端提示暂不可提现；通过或驳回后自动解除，不单独通知讲师。']],
  finance:[['付款合同','核对额度是否充足、乙方与讲师是否一致。'],
   ['拆单','留意拆成多笔小额以规避付款合同（5000 元免签）。'],
   ['收款资料','核对手机号、实名、收款账户齐全；同一账户不应多人共用。'],
@@ -2601,7 +2797,8 @@ const RV_GUIDE={
   ['付款影响','留意可提现日期；紧急结算通过后立即可提现，跨月注意到账时间。'],
   ['税务提示','同一讲师当月多次领取劳务费，留意个税累计。']]
 };
-function rvGuideHtml(){
+function rvGuideHtml(a){
+  if(isDed(a)){const R=state.rv;return `<details class="rv-gd" ${R.gShut?'':'open'} ontoggle="state.rv.gShut=!this.open"><summary>审核提示（扣款）</summary><ol>${RV_GUIDE.ded.map(x=>`<li><b>${x[0]}</b>：${x[1]}</li>`).join('')}</ol></details>`}
   const R=state.rv,both=state.role!=='lead'&&state.role!=='finance';
   const sec=(k,t)=>(both?`<div class="gt">${t}</div>`:'')+'<ol>'+RV_GUIDE[k].map(x=>`<li><b>${x[0]}</b>：${x[1]}</li>`).join('')+'</ol>';
   const body=state.role==='lead'?sec('lead','项目主管'):state.role==='finance'?sec('finance','财务'):sec('lead','项目主管审核提示')+sec('finance','财务审核提示');
@@ -2612,10 +2809,10 @@ function rvDrawerHtml(a,anim){
   const b=rvBill(a);
   if(!b)return '';
   const list=rvList(),i=list.findIndex(x=>x.id===a.id),can=rvCan(a),hi=rvRisks(a).filter(r=>r.lv==='h');
-  return `<div class="rv-mask" onclick="if(event.target===this)rvCloseDrawer()"><aside class="rv-dr ${anim?'anim':''}${asMin()?' asmin':''}"><div class="rv-drh"><div><b>${b.project}</b></div><div class="nv"><button class="btn sm" ${i>0?'':'disabled'} onclick="rvDStep(-1)" title="上一张结算单（←）">‹</button><span>${i>=0?(i+1)+' / '+list.length:'—'}</span><button class="btn sm" ${i>=0&&i<list.length-1?'':'disabled'} onclick="rvDStep(1)" title="下一张结算单（→）">›</button><button class="btn sm" onclick="rvCloseDrawer()" title="关闭（Esc）">×</button></div></div>
+  return `<div class="rv-mask" onclick="if(event.target===this)rvCloseDrawer()"><aside class="rv-dr ${anim?'anim':''}${asMin()?' asmin':''}"><div class="rv-drh"><div style="display:flex;align-items:center;gap:8px"><b>${b.project}</b>${tag('审批处理','blue')}</div><div class="nv"><button class="btn sm" ${i>0?'':'disabled'} onclick="rvDStep(-1)" title="上一张结算单（←）">‹</button><span>${i>=0?(i+1)+' / '+list.length:'—'}</span><button class="btn sm" ${i>=0&&i<list.length-1?'':'disabled'} onclick="rvDStep(1)" title="下一张结算单（→）">›</button><button class="btn sm" onclick="rvCloseDrawer()" title="关闭（Esc）">×</button></div></div>
   ${rvSummary(a,b)}
   <div class="rv-dbd"><div class="rv-drb">
-   ${rvGuideHtml()}
+   ${rvGuideHtml(a)}
    ${rvBillBody(a,b)}
   </div>${rvAside(a,true)}</div>
   <div class="rv-drf c"><div class="grow">${can.ok?(hi.length?'<span style="color:var(--red);font-weight:600">本结算单存在高风险提示，请人工判断</span>':''):`<span class="muted">${can.why}</span>${can.partner?` <button class="link" onclick="rvPartner('${a.id}')">演示：模拟 ${can.partner} 通过</button>`:''}`}</div>
@@ -2631,11 +2828,15 @@ function rvDrawer(appId,billId){const R=state.rv,first=!R.drawer;R.drawerApp=app
 function rvCloseDrawer(){state.rv.drawer='';state.rv.drawerApp='';rvPaintDrawer()}
 function rvDStep(d){const R=state.rv,l=rvList(),i=l.findIndex(x=>x.id===R.drawerApp),n=l[i+d];if(n){R.drawerApp=n.id;R.drawer=rvBill(n).id;rvPaintDrawer()}}
 function rvSkip(){const R=state.rv,l=rvList(),i=l.findIndex(x=>x.id===R.drawerApp);if(i<0||i>=l.length-1){toast('已无下一条数据','当前已是列表中的最后一条','error');return}rvDStep(1)}
+const dedFileOf=(id,i)=>{const a=rvApp(id);return a&&(a.files||[])[i]};
+function dedPv(id,i){pvFileObj(dedFileOf(id,i))}
+function dedDl(id,i){dlFileObj(dedFileOf(id,i))}
+function dedFilesModal(id){const a=rvApp(id);if(!a)return;modal('扣款附件 · '+id+'（'+(a.files||[]).length+' 个）','<div class="table-wrap"><table><thead><tr><th>文件名</th><th>大小</th><th>操作</th></tr></thead><tbody>'+(a.files||[]).map((f,i)=>'<tr><td>'+f.name+'</td><td>'+fmtSize(f.size)+'</td><td><button class="link" onclick="dedPv(\''+id+'\','+i+')">预览</button> <button class="link" onclick="dedDl(\''+id+'\','+i+')">下载</button></td></tr>').join('')+'</tbody></table></div>','知道了',closeModal)}
 function rvPreview(n){pvFileObj({name:n,size:0})}
 function rvDownload(n){dlFileObj({name:n})}
 /* ---------- 审批动作 ---------- */
 const rvSnap=a=>({id:a.id,s:JSON.parse(JSON.stringify({status:a.status,node:a.node,fin:a.fin,log:a.log,rejectNode:a.rejectNode,rejectReason:a.rejectReason,arrive:a.arrive})),b:appBills(a).map(x=>[x.id,x.status])});
-function rvRestore(sn,back){const a=rvApp(sn.id);Object.assign(a,JSON.parse(JSON.stringify(sn.s)));sn.b.forEach(([bid,st])=>{const b=state.bills.find(x=>x.id===bid);if(b)b.status=st})}
+function rvRestore(sn,back){const a=rvApp(sn.id);Object.assign(a,JSON.parse(JSON.stringify(sn.s)));if(isDed(a)&&a.status!=='已通过')dedAcct(a,-1);sn.b.forEach(([bid,st])=>{const b=state.bills.find(x=>x.id===bid);if(b)b.status=st})}
 function rvUndo(sns,reopen){sns.forEach(rvRestore);const R=state.rv;R.checked=new Set();if(reopen){R.drawerApp=reopen;R.drawer=rvBill(rvApp(reopen)).id}render();toast('已撤销','已恢复到处理前的状态')}
 function rvToast(h,m,undo){
   const el=document.createElement('div');el.className='toast';el.innerHTML='<span class="toast-icon">✓</span><div><b>'+h+'</b><p>'+m+'</p></div>'+(undo?'<button class="btn sm" style="margin-left:10px;align-self:center">撤销</button>':'');
@@ -2647,6 +2848,10 @@ function rvApply(a,op){
   else{a.fin[m.who]='done';a.log.push({k:'pass',who:m.who,role:m.label,at:RV_NOW,text:op});rvFinish(a)}
 }
 function rvFinish(a){
+  if(isDed(a)){
+    if(FIN_PPL.some(p=>a.fin[p]==='done')){a.status='已通过';dedAcct(a,1);a.log.push({k:'sys',who:'系统',role:'合同系统',at:RV_NOW,text:'审批通过：已从讲师账户扣减 '+money(a.deductAmt)+'，订单冻结解除，付款合同额度已释放，已同步师资结算系统'})}
+    return;
+  }
   if(FIN_PPL.every(p=>a.fin[p]==='done')){
     a.status='已通过';appBills(a).forEach(b=>b.status=a.type==='紧急'?'可提现':'账期中');
     a.log.push({k:'sys',who:'系统',role:'合同系统',at:RV_NOW,text:a.type==='紧急'?'审批全部通过：账单直接进入可提现，已同步师资结算系统':'审批全部通过：账单进入账期中，到期转可提现，已同步师资结算系统'});
@@ -2667,7 +2872,7 @@ function rvPass(id){
 function rvDoPass(a,op){
   const list=rvList(),sn=rvSnap(a),m=rvMe(),fd=state.rv.drawer&&state.rv.drawerApp===a.id;
   rvApply(a,op);
-  rvToast(a.status==='已通过'?'已通过 · 审批完成':'已通过',rvLbl(a)+(m.node===1&&a.status!=='已通过'?'　等待另一位财务审批':'　已进入下一环节'),()=>rvUndo([sn],fd?a.id:''));
+  rvToast(a.status==='已通过'?'已通过 · 审批完成':'已通过',rvLbl(a)+(isDed(a)?'　已从讲师账户扣减 '+money(a.deductAmt):(m.node===1&&a.status!=='已通过'?'　等待另一位财务审批':'　已进入下一环节')),()=>rvUndo([sn],fd?a.id:''));
   rvAfter(list,a,fd);
 }
 function rvPartner(id){
@@ -2677,10 +2882,10 @@ function rvPartner(id){
 const rvPhHtml=t=>(RV_PHRASE[t]||[]).map(x=>`<span class="chip" onclick="document.getElementById('rvRj').value='${x}'">${x}</span>`).join('');
 /* 驳回（单张 / 批量共用）：只退回所选的结算单，重新提交后从驳回节点继续 */
 function rvRejectModal(apps,done){
-  const R=state.rv,node=rvMe().node?'财务':'项目主管',many=apps.length>1;
-  modal(many?'批量驳回 '+apps.length+' 张结算单':'驳回 '+rvLbl(apps[0]),`<div class="infobox">${many?'所选结算单将<b>统一使用下面的驳回类型和原因</b>，各自单独退回项目经理，互不影响。':'仅退回这一张，退回项目经理 '+apps[0].owner+'，同批其他结算单不受影响。'}修改并重新提交后，将<b>从“${node}”节点继续审批</b>，前序已通过的节点不重复审批。</div>${many?`<div class="rv-bl" style="margin-bottom:12px">${apps.slice(0,8).map(x=>`<div>${rvLbl(x)}　${appProject(x)}　${money(rvAmt(x))}</div>`).join('')}${apps.length>8?`<div class="muted">… 另有 ${apps.length-8} 张</div>`:''}</div>`:''}<div class="field"><label><em>*</em> 驳回类型</label><div class="rv-types">${RV_TYPES.map(t=>`<span class="chip ${R.rejType===t?'on':''}" onclick="state.rv.rejType='${t}';document.querySelectorAll('.rv-types .chip').forEach(e=>e.classList.toggle('on',e.textContent==='${t}'));document.getElementById('rvPh').innerHTML=rvPhHtml('${t}')">${t}</span>`).join('')}</div></div><div class="field"><label><em>*</em> 驳回原因（项目经理可见）</label><textarea id="rvRj" placeholder="写清楚需要修改什么，至少 5 个字"></textarea><div id="rvPh" class="rv-ph">${rvPhHtml(R.rejType)}</div></div>`,many?'确认批量驳回':'确认驳回',()=>{
+  const R=state.rv,node=rvMe().node?'财务':'项目主管',many=apps.length>1,allDed=apps.every(isDed);
+  modal(many?'批量驳回 '+apps.length+' 张结算单':'驳回 '+rvLbl(apps[0]),`<div class="infobox">${many?'所选结算单将<b>统一使用下面的驳回类型和原因</b>，各自单独退回项目经理，互不影响。':'仅退回这一张，退回项目经理 '+apps[0].owner+'，同批其他结算单不受影响。'}${allDed?'驳回后<b>本扣款申请结束，订单冻结自动解除</b>，讲师端恢复可提现；项目经理如仍需扣款，须重新发起申请。':'修改并重新提交后，将<b>从“'+node+'”节点继续审批</b>，前序已通过的节点不重复审批。'}</div>${many?`<div class="rv-bl" style="margin-bottom:12px">${apps.slice(0,8).map(x=>`<div>${rvLbl(x)}　${appProject(x)}　${money(rvAmt(x))}</div>`).join('')}${apps.length>8?`<div class="muted">… 另有 ${apps.length-8} 张</div>`:''}</div>`:''}<div class="field"><label><em>*</em> 驳回类型</label><div class="rv-types">${RV_TYPES.map(t=>`<span class="chip ${R.rejType===t?'on':''}" onclick="state.rv.rejType='${t}';document.querySelectorAll('.rv-types .chip').forEach(e=>e.classList.toggle('on',e.textContent==='${t}'));document.getElementById('rvPh').innerHTML=rvPhHtml('${t}')">${t}</span>`).join('')}</div></div><div class="field"><label><em>*</em> 驳回原因（项目经理可见）</label><textarea id="rvRj" placeholder="写清楚需要修改什么，至少 5 个字"></textarea><div id="rvPh" class="rv-ph">${rvPhHtml(R.rejType)}</div></div>`,many?'确认批量驳回':'确认驳回',()=>{
     const r=document.getElementById('rvRj').value.trim();if(r.length<5){toast('请填写驳回原因','至少 5 个字，方便项目经理修改','error');return}
-    const m=rvMe();apps.forEach(a=>{a.status='已驳回';a.rejectNode=m.node;a.rejectReason=R.rejType+'；'+r;appBills(a).forEach(b=>b.status='驳回待修改');a.log.push({k:'reject',who:m.who,role:m.label,at:RV_NOW,text:r,rtype:R.rejType})});
+    const m=rvMe();apps.forEach(a=>{a.status='已驳回';a.rejectNode=m.node;a.rejectReason=R.rejType+'；'+r;if(!isDed(a))appBills(a).forEach(b=>b.status='驳回待修改');a.log.push({k:'reject',who:m.who,role:m.label,at:RV_NOW,text:r,rtype:R.rejType})});
     closeModal();done();
   },'danger');
 }
@@ -2694,7 +2899,7 @@ function rvPicked(){return rvList().filter(x=>state.rv.checked.has(x.id)&&rvCan(
 function rvBatchPass(){
   const els=rvPicked(),m=rvMe();if(!els.length)return;
   const hiL=els.filter(x=>rvCnt(x).h);
-  modal('批量同意 '+els.length+' 张结算单',`<div class="infobox">合计 ${money(els.reduce((s,x)=>s+rvAmt(x),0))}，其中紧急单 ${els.filter(x=>x.type==='紧急').length} 张。${hiL.length?'<br><b style="color:var(--red)">其中 '+hiL.length+' 张含高风险提示（'+hiL.slice(0,3).map(x=>rvLbl(x)).join('、')+(hiL.length>3?' 等':'')+'），仅作提醒，是否通过由你判断。</b>':''}${m.node===1?'<br>财务节点需两位审批人均通过，你通过后仍需另一位审批。':''}</div><div class="rv-bl">${els.slice(0,10).map(x=>`<div>${rvLbl(x)}${x.type==='紧急'?' [紧急]':''}　${appProject(x)}　${money(rvAmt(x))}</div>`).join('')}${els.length>10?`<div class="muted">… 另有 ${els.length-10} 张</div>`:''}</div><div class="field" style="margin-top:12px"><label>审批意见（可选）</label><textarea id="rvBo" style="width:100%;min-height:56px;border:1px solid #d7ddea;border-radius:8px;padding:8px 10px">同意</textarea></div>`,'确认同意',()=>{
+  modal('批量同意 '+els.length+' 张结算单',`<div class="infobox">增款合计 ${money(els.filter(x=>!isDed(x)).reduce((s,x)=>s+rvAmt(x),0))}，其中紧急单 ${els.filter(x=>x.type==='紧急').length} 张；扣款单 ${els.filter(isDed).length} 张，合计 −${money(els.filter(isDed).reduce((s,x)=>s+rvAmt(x),0))}。${hiL.length?'<br><b style="color:var(--red)">其中 '+hiL.length+' 张含高风险提示（'+hiL.slice(0,3).map(x=>rvLbl(x)).join('、')+(hiL.length>3?' 等':'')+'），仅作提醒，是否通过由你判断。</b>':''}${m.node===1&&els.some(x=>!isDed(x))?'<br>增款结算单的财务节点需两位审批人均通过，你通过后仍需另一位审批。':''}${els.some(isDed)?'<br>扣款单只需一位财务通过，通过即从讲师账户扣减。':''}</div><div class="rv-bl">${els.slice(0,10).map(x=>`<div>${rvLbl(x)}${isDed(x)?' [扣款]':''}${x.type==='紧急'?' [紧急]':''}　${appProject(x)}　${money(rvAmt(x))}</div>`).join('')}${els.length>10?`<div class="muted">… 另有 ${els.length-10} 张</div>`:''}</div><div class="field" style="margin-top:12px"><label>审批意见（可选）</label><textarea id="rvBo" style="width:100%;min-height:56px;border:1px solid #d7ddea;border-radius:8px;padding:8px 10px">同意</textarea></div>`,'确认同意',()=>{
     const op=document.getElementById('rvBo').value.trim()||'同意',sns=els.map(rvSnap);els.forEach(x=>rvApply(x,op));closeModal();state.rv.checked=new Set();
     rvToast('已批量同意','共 '+els.length+' 张结算单',()=>rvUndo(sns));render();
   },'green');
@@ -2735,12 +2940,27 @@ function render(){
   }
   {const sy=window.scrollY;document.getElementById('app').innerHTML=html;window.scrollTo(0,window.__keepScroll?sy:0);window.__keepScroll=false}
   {const f=document.getElementById('cartFab');if(f)f.remove()}
-  if(p!=='/bills')state.bd.bill='';
+  if(p!=='/bills'&&p!=='/bills/detail')state.bd.bill='';
   renderAdoc();
 }
 window.addEventListener('hashchange',render);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.cf.focus&&!document.getElementById('modalRoot').innerHTML){state.cf.focus=false;render()}});
-rvSeed();
+/* 扣款单演示数据（必须在 rvSeed 之后：rvSplit 会重建结算单列表） */
+function dedSeed(){
+  const mkd=(id,ref,amt,status,reason,created,files,extra)=>{
+    const a=Object.assign({id,dir:'扣款',ref,deductAmt:amt,from:'课酬账单页发起',version:1,type:'常规',status,node:1,owner:'纪超',created,arrive:created,reason,files:files||[],rejectReason:'',history:[],fin:{'胡世超':'wait','周敏':'wait'},log:[{k:'submit',who:'纪超',role:'项目经理',at:created,text:'发起扣款申请：扣款 '+money(amt)+'；原因：'+reason}]},extra||{});
+    state.applications.unshift(a);return a;
+  };
+  mkd('KK202611-0003','KB202609-0171',3000,'审批中','课程由 3 天缩减为 2 天，多付 1 天课酬',
+    '2026-11-03 14:30',[F('课程缩减确认邮件.pdf',286000,'2026-11-03 14:28')]);
+  const ok=mkd('KK202611-0002','KB202609-0172',1200,'已通过','重复结算：同一课时已在其他账单中结算',
+    '2026-11-02 11:20',[F('重复结算核对表.xlsx',64000,'2026-11-02 11:18')],{fin:{'胡世超':'done','周敏':'wait'},acctApplied:true});
+  ok.log.push({k:'pass',who:'胡世超',role:'财务',at:'2026-11-02 15:10',text:'同意'},{k:'sys',who:'系统',role:'合同系统',at:'2026-11-02 15:10',text:'审批通过：已从讲师账户扣减 '+money(1200)+'，订单冻结解除，付款合同额度已释放，已同步师资结算系统'});
+  const rj=mkd('KK202611-0001','KB202610-0190',800,'已驳回','客户反馈培训时长不足，需扣减部分课酬',
+    '2026-11-01 16:05',[],{rejectNode:1,rejectReason:'材料缺失；缺少客户确认的扣款依据，请补充后重新发起'});
+  rj.log.push({k:'reject',who:'周敏',role:'财务',at:'2026-11-01 17:40',text:'缺少客户确认的扣款依据，请补充后重新发起',rtype:'材料缺失'});
+}
+rvSeed();dedSeed();
 if(!location.hash) location.hash=landing(); else render();
 </script>
 <script src="./返回目录.js" data-style="top:23px;left:50%;transform:translateX(-50%)"></script>
