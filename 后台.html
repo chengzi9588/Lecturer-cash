@@ -1477,7 +1477,7 @@ function accounts(kind){
   const isT=kind==='teacher', word=isT?'讲师':'助教';
   const rows=state.accounts.filter(a=>a.roles.includes(word));
   return '<div class="filters"><label class="fl"><span>姓名</span><input class="input" placeholder="请输入"></label><label class="fl"><span>手机号</span><input class="input" placeholder="请输入"></label><label class="fl"><span>微信绑定</span><select class="select"><option>全部绑定状态</option><option>已绑定</option><option>未绑定</option></select></label><span class="filter-actions"><button class="fbtn query">查询</button><button class="fbtn reset">重置</button><button class="fbtn export" onclick="exportAccounts(\''+kind+'\')">导出</button></span></div>'+title(word+'账户','',(canOp()?'<button class="btn primary" onclick="go(\'/accounts/new?from='+kind+'\')">添加'+word+'</button>':''))+
-  '<section class="card"><div class="table-wrap"><table><thead><tr><th>'+word+'姓名</th><th>手机号</th><th>角色</th><th>合作主体</th><th>账期（天）</th><th>微信绑定</th><th>收款账户</th><th>可提现</th><th>提现中</th><th>操作</th></tr></thead><tbody>'+slicePg('acc_'+kind,rows).map(a=>'<tr><td><b>'+a.name+'</b>'+(a.sysName&&a.sysName!==a.name?'<div class="muted" style="font-size:12px">系统名称：'+a.sysName+'</div>':'')+'</td><td>'+(a.phone||'—')+'</td><td>'+a.roles+'</td><td>'+(a.orgId?tag('机构','blue')+' '+orgName(a.orgId):(a.entity||(a.roles==='讲师'?'个人':'—')))+'</td><td>'+(a.orgId?'<span class="muted">随机构账户</span>':termText(a))+'</td><td>'+(a.orgId?'<span class="muted">由机构账户登录</span>':tag(a.wechat,a.wechat==='已绑定'?'green':'orange'))+'</td><td>'+(a.orgId?'<span class="muted">归属机构</span>':tag(a.bank,a.bank==='已完善'?'green':''))+'</td><td class="num">'+(a.orgId?'—':money(a.available-frozenOf(a.personId))+frozenNote(frozenOf(a.personId)))+'</td><td class="num">'+(a.orgId?'—':money(a.frozen))+'</td><td><button class="link" onclick="go(\'/accounts/detail?id='+a.id+'&from='+kind+'\')">查看详情</button></td></tr>').join('')+'</tbody></table></div>'+pager('acc_'+kind,rows.length)+'</section>';
+  '<section class="card"><div class="table-wrap"><table><thead><tr><th>'+word+'姓名</th><th>手机号</th><th>角色</th><th>合作主体</th><th>账期（天）</th><th>微信绑定</th><th>收款账户</th><th>可提现</th><th>提现中</th><th>操作</th></tr></thead><tbody>'+slicePg('acc_'+kind,rows).map(a=>'<tr><td><b>'+a.name+'</b>'+(a.sysName&&a.sysName!==a.name?'<div class="muted" style="font-size:12px">系统名称：'+a.sysName+'</div>':'')+'</td><td>'+(a.phone||'—')+'</td><td>'+a.roles+'</td><td>'+(a.orgId?tag('机构','blue')+' '+orgName(a.orgId):(a.entity||'个人'))+'</td><td>'+(a.orgId?'<span class="muted">随机构账户</span>':termText(a))+'</td><td>'+(a.orgId?'<span class="muted">由机构账户登录</span>':tag(a.wechat,a.wechat==='已绑定'?'green':'orange'))+'</td><td>'+(a.orgId?'<span class="muted">归属机构</span>':tag(a.bank,a.bank==='已完善'?'green':''))+'</td><td class="num">'+(a.orgId?'—':money(a.available-frozenOf(a.personId))+frozenNote(frozenOf(a.personId)))+'</td><td class="num">'+(a.orgId?'—':money(a.frozen))+'</td><td><button class="link" onclick="go(\'/accounts/detail?id='+a.id+'&from='+kind+'\')">查看详情</button></td></tr>').join('')+'</tbody></table></div>'+pager('acc_'+kind,rows.length)+'</section>';
 }
 function orgTeachers(id){return state.accounts.filter(a=>a.orgId===id)}
 function orgList(){
@@ -1487,17 +1487,21 @@ function orgList(){
   '<section class="card"><div class="table-wrap"><table><thead><tr><th>机构名称</th><th>统一社会信用代码</th><th>机构对接人</th><th>对接人手机号</th><th>授课讲师</th><th>账期（天）</th><th>微信绑定</th><th>对公账户</th><th>可提现</th><th>提现中</th><th>操作</th></tr></thead><tbody>'+slicePg('acc_org',rows).map(o=>'<tr><td><b>'+o.orgName+'</b>'+(o.sysName&&o.sysName!==o.orgName?'<div class="muted" style="font-size:12px">系统名称：'+o.sysName+'</div>':'')+'</td><td>'+o.code+'</td><td>'+o.rep+'</td><td>'+o.phone+'</td><td>'+orgTeachers(o.id).length+' 位</td><td>'+termText(o)+'</td><td>'+tag(o.wechat,o.wechat==='已绑定'?'green':'orange')+'</td><td>'+tag(o.bank,o.bank==='已完善'?'green':'')+'</td><td class="num">'+money(o.available-frozenOrg(o))+frozenNote(frozenOrg(o))+'</td><td class="num">'+money(o.frozen)+'</td><td><button class="link" onclick="go(\'/accounts/org/detail?id='+o.id+'\')">查看详情</button></td></tr>').join('')+'</tbody></table></div>'+pager('acc_org',rows.length)+'</section>';
 }
 function exportOrgs(){exportCsv('机构账户',['机构名称','统一社会信用代码','机构对接人','对接人手机号','授课讲师数','账期（天）','微信绑定','对公账户','可提现','提现中'],state.orgs.map(o=>[o.orgName,o.code,o.rep,o.phone,orgTeachers(o.id).length,o.termDays||termDefault(o),o.wechat,o.bank,o.available,o.frozen]))}
+function formNotes(list){
+  return '<div class="muted" style="margin:14px 4px 0;line-height:1.9;font-size:13px"><div style="font-weight:600;margin-bottom:2px">填写说明</div><ol style="margin:0;padding-left:20px">'+list.map(x=>'<li>'+x+'</li>').join('')+'</ol></div>';
+}
 function orgNew(){
   const st=state.orgNew,f=(label,body,req)=>'<div class="field"><label>'+label+(req?' <em>*</em>':'')+'</label>'+body+'</div>',inp=(k,ph,ml)=>'<input class="input" '+(ml?'maxlength="'+ml+'" ':'')+'value="'+st[k]+'" placeholder="'+ph+'" oninput="state.orgNew.'+k+'=this.value">';
   return title('添加机构账户','','<button class="btn" onclick="go(\'/accounts/org\')">返回列表</button><button class="btn primary" onclick="createOrg()">创建机构账户</button>')+
-  '<section class="card"><div class="card-head"><h3>机构信息</h3><span class="muted">机构提供资料后由运营在后台录入；一个机构只生成一个小程序账号，对公收款账户由机构对接人首次登录后自行填写</span></div><div class="card-body"><div class="form-3">'+
-  f('从讲师系统抓取','<select class="select" onchange="fetchOrg(this.value)"><option value="">不抓取，手工录入</option>'+OPS_ORGS.map(n=>'<option '+(st.sysName===n?'selected':'')+'>'+n+'</option>').join('')+'</select><div class="muted" style="margin-top:6px;font-size:12px">抓取的名称仅作参考，不会直接对外使用</div>')+
+  '<section class="card"><div class="card-head"><h3>机构信息</h3></div><div class="card-body"><div class="form-3">'+
+  f('从讲师系统抓取','<select class="select" onchange="fetchOrg(this.value)"><option value="">不抓取，手工录入</option>'+OPS_ORGS.map(n=>'<option '+(st.sysName===n?'selected':'')+'>'+n+'</option>').join('')+'</select>')+
   f('机构全称（营业执照名称）','<input class="input" value="'+st.name+'" placeholder="须与营业执照名称一致" oninput="state.orgNew.name=this.value;orgNameHint()"><div id="orgNameHint" style="margin-top:6px;font-size:12px;line-height:1.6">'+orgNameHintHtml()+'</div>',1)+f('统一社会信用代码',inp('code','请输入18位统一社会信用代码',18),1)+f('机构对接人姓名',inp('rep','机构指定的小程序登录人'),1)+f('机构对接人手机号',inp('phone','请输入11位手机号',11),1)+
-  '</div><div class="muted" style="margin-top:14px;line-height:1.9">账户规则：课酬统一归属本机构账户；机构对接人登录小程序后查看机构下全部授课讲师的课酬明细并发起提现；提现方式仅支持<b>开发票</b>（机构自行上传发票，可多张，合计等于提现金额），收款仅支持对公账户，不代扣个税。</div></div></section>';
+  '</div></div></section>'+
+  formNotes(['机构提供资料后由运营在后台录入；一个机构只生成一个小程序账号，对公收款账户由机构对接人首次登录后自行填写。','「从讲师系统抓取」的名称仅作参考，不会直接对外使用，机构全称须按营业执照名称填写。','课酬统一归属本机构账户；机构对接人登录小程序后查看机构下全部授课讲师的课酬明细并发起提现。','提现方式仅支持<b>开发票</b>（机构自行上传发票，可多张，合计等于提现金额），收款仅支持对公账户，不代扣个税。']);
 }
 function orgNameHintHtml(){
   const st=state.orgNew,sysBad=st.sysName?nameIssue(st.sysName,'org'):'',iss=st.name?nameIssue(st.name,'org'):'';
-  return (st.sysName?(sysBad?'<div style="color:#d4380d">讲师系统名称「'+st.sysName+'」不规范，不会对机构展示，请按营业执照填写机构全称</div>':'<div class="muted">讲师系统名称：'+st.sysName+'（规范，已带入，可修改）</div>'):'')+(iss?'<div style="color:#d4380d">机构全称不规范：'+iss+'</div>':'');
+  return (st.sysName&&sysBad?'<div style="color:#d4380d">讲师系统名称「'+st.sysName+'」不规范，不会对机构展示，请按营业执照填写机构全称</div>':'')+(iss?'<div style="color:#d4380d">机构全称不规范：'+iss+'</div>':'');
 }
 function orgNameHint(){const e=document.getElementById('orgNameHint');if(e)e.innerHTML=orgNameHintHtml()}
 function fetchOrg(v){const st=state.orgNew;st.sysName=v;if(v)st.name=nameIssue(v,'org')?'':v;render()}
@@ -1587,23 +1591,24 @@ function accountNew(){
     f('性别','<select class="select" '+dis+' onchange="state.accNew.gender=this.value"><option '+(st.gender==='男'?'selected':'')+'>男</option><option '+(st.gender==='女'?'selected':'')+'>女</option></select>')+
     f('身份证号','<input class="input" '+dis+' maxlength="18" value="'+st.idNo+'" placeholder="'+ph+'" oninput="state.accNew.idNo=this.value">')+
     f('手机号','<input class="input" '+dis+' maxlength="11" value="'+st.phone+'" placeholder="'+(st.entity==='机构'?'机构讲师不登录小程序，可不填':ph)+'" oninput="state.accNew.phone=this.value">',st.entity==='机构'?0:1)+
-    f('讲师类型','<select class="select" '+dis+' onchange="state.accNew.type=this.value"><option '+(st.type==='个人讲师'?'selected':'')+'>个人讲师</option><option '+(st.type==='机构讲师'?'selected':'')+'>机构讲师</option></select>')+
     f('讲师价格（元/天）','<input class="input" type="number" '+dis+' value="'+st.price+'" placeholder="'+ph+'" oninput="state.accNew.price=this.value">')+
     f('合作主体','<select class="select" '+dis+' onchange="state.accNew.entity=this.value;state.accNew.orgId=\'\';render()"><option '+(st.entity==='个人'?'selected':'')+'>个人</option><option '+(st.entity==='机构'?'selected':'')+'>机构</option></select>')+
-    (st.entity==='机构'?f('所属机构','<select class="select" '+dis+' onchange="state.accNew.orgId=this.value;render()"><option value="">请选择机构账户</option>'+state.orgs.map(o=>'<option value="'+o.id+'" '+(st.orgId===o.id?'selected':'')+'>'+o.orgName+'</option>').join('')+'</select><div class="muted" style="margin-top:6px;font-size:12px">'+(st.orgId?'该讲师不单独生成小程序账号，课酬归属 <b>'+orgName(st.orgId)+'</b>，由机构对接人登录并提现':'找不到机构？<a class="link" href="#/accounts/org/new">去创建机构账户</a>')+'</div>',1):'');
+    (st.entity==='机构'?f('所属机构','<select class="select" '+dis+' onchange="state.accNew.orgId=this.value;render()"><option value="">请选择机构账户</option>'+state.orgs.map(o=>'<option value="'+o.id+'" '+(st.orgId===o.id?'selected':'')+'>'+o.orgName+'</option>').join('')+'</select>'+(st.orgId?'':'<div class="muted" style="margin-top:6px;font-size:12px">找不到机构？<a class="link" href="#/accounts/org/new">去创建机构账户</a></div>'),1):'');
   }else{
     body=f('助教姓名（须与身份证一致）','<input class="input" id="astName" value="'+st.name+'" placeholder="请输入姓名" oninput="state.accNew.name=this.value">',1)+
     f('性别','<select class="select" id="astGender" onchange="state.accNew.gender=this.value"><option '+(st.gender==='男'?'selected':'')+'>男</option><option '+(st.gender==='女'?'selected':'')+'>女</option></select>')+
     f('身份证号','<input class="input" id="astId" maxlength="18" value="'+st.idNo+'" placeholder="请输入18位身份证号" oninput="state.accNew.idNo=this.value">')+
-    f('手机号','<input class="input" id="astPhone" maxlength="11" value="'+st.phone+'" placeholder="请输入11位手机号" oninput="state.accNew.phone=this.value">',1);
+    f('手机号','<input class="input" id="astPhone" maxlength="11" value="'+st.phone+'" placeholder="'+(st.entity==='机构'?'机构助教不登录小程序，可不填':'请输入11位手机号')+'" oninput="state.accNew.phone=this.value">',st.entity==='机构'?0:1)+
+    f('合作主体','<select class="select" onchange="state.accNew.entity=this.value;state.accNew.orgId=\'\';render()"><option '+(st.entity==='个人'?'selected':'')+'>个人</option><option '+(st.entity==='机构'?'selected':'')+'>机构</option></select>')+
+    (st.entity==='机构'?f('所属机构','<select class="select" onchange="state.accNew.orgId=this.value;render()"><option value="">请选择机构账户</option>'+state.orgs.map(o=>'<option value="'+o.id+'" '+(st.orgId===o.id?'selected':'')+'>'+o.orgName+'</option>').join('')+'</select>'+(st.orgId?'':'<div class="muted" style="margin-top:6px;font-size:12px">找不到机构？<a class="link" href="#/accounts/org/new">去创建机构账户</a></div>'),1):'');
   }
   return title('添加'+word,'','<button class="btn" onclick="go(\'/accounts/'+kind+'\')">返回列表</button><button class="btn primary" onclick="createAccount()">创建账户</button>')+
-  '<section class="card"><div class="card-head"><h3>'+word+'信息</h3><span class="muted">'+(kind==='teacher'?'讲师姓名只能从讲师运营系统选择，选中后其他信息自动带出，可按需修改':'助教需手动录入')+'</span></div><div class="card-body"><div class="form-3">'+body+'</div></div></section>';
+  '<section class="card"><div class="card-head"><h3>'+word+'信息</h3></div><div class="card-body"><div class="form-3">'+body+'</div></div></section>'+formNotes(kind==='teacher'?['讲师姓名只能从讲师运营系统选择，选中后其他信息自动带出，可按需修改。','选择讲师后，须按证件填写“结算姓名”：小程序、付款、发票、导出均使用结算姓名。','合作主体选“机构”时，该讲师不单独生成小程序账号，课酬归属所选机构，由机构对接人登录并提现；手机号可不填。']:['助教需手动录入，姓名须与身份证一致。','手机号用于登录小程序和接收邀请，与账户一对一。','合作主体选“机构”时，该助教不单独生成小程序账号，课酬归属所选机构，由机构对接人登录并提现；手机号可不填。']);
 }
 function settleHintHtml(){
-  const st=state.accNew,x=OPS_POOL.find(o=>o.personId===st.sel);if(!x)return '<span class="muted">选择讲师后，须按证件填写“结算姓名”：小程序、付款、发票、导出均使用结算姓名</span>';
+  const st=state.accNew,x=OPS_POOL.find(o=>o.personId===st.sel);if(!x)return '';
   const sysBad=nameIssue(x.name,'person'),iss=nameIssue(st.settle,'person');
-  return (sysBad?'<div style="color:#d4380d">讲师系统名称「'+x.name+'」不规范（'+sysBad+'），不会对讲师和机构展示，请核对后填写结算姓名</div>':'<div class="muted">讲师系统名称：'+x.name+'（规范，已带入，可修改）</div>')+(st.settle&&iss?'<div style="color:#d4380d">结算姓名不规范：'+iss+'</div>':'');
+  return (sysBad?'<div style="color:#d4380d">讲师系统名称「'+x.name+'」不规范（'+sysBad+'），不会对讲师和机构展示，请核对后填写结算姓名</div>':'')+(st.settle&&iss?'<div style="color:#d4380d">结算姓名不规范：'+iss+'</div>':'');
 }
 function settleHint(){const e=document.getElementById('settleHint');if(e)e.innerHTML=settleHintHtml()}
 function selectOps(id){state.accNew.sel=id;const x=OPS_POOL.find(o=>o.personId===id);state.accNew.name=x.name;state.accNew.settle=nameIssue(x.name,'person')?'':x.name;const isOrg=x.type==='机构讲师',org=isOrg?state.orgs.find(o=>x.company.split(' / ')[0]===o.orgName):null;
@@ -1622,20 +1627,48 @@ function createAccount(){
     if(idn&&!/^\d{17}[\dXx]$/.test(idn)){toast('身份证号格式不正确','请填写18位身份证号','error');return}
     if(!isOrg&&state.accounts.some(a=>a.phone===maskPhone(ph))){toast('无法创建','该手机号已被其他账户占用','error');return}
     const nIss=nameIssue(st.settle,'person');if(nIss){toast('结算姓名不规范',nIss==='请填写'?'请填写与证件一致的结算姓名':nIss,'error');return}
-    acc={id:isOrg?'JS-'+x.personId:id,personId:x.personId,name:st.settle.trim(),sysName:x.name,phone:maskPhone(ph),roles:'讲师',gender:st.gender,idNo:idn,type:st.type,price:st.price?st.price+' 元/天':'',entity:st.entity||'个人'};
+    acc={id:isOrg?'JS-'+x.personId:id,personId:x.personId,name:st.settle.trim(),sysName:x.name,phone:maskPhone(ph),roles:'讲师',gender:st.gender,idNo:idn,type:isOrg?'机构讲师':'个人讲师',price:st.price?st.price+' 元/天':'',entity:st.entity||'个人'};
     if(isOrg)acc.orgId=st.orgId;
   }else{
     const name=st.name.trim(),ph=st.phone.trim(),idn=st.idNo.trim();
     if(!name){toast('请填写助教姓名','姓名为必填项','error');return}
     const aIss=nameIssue(name,'person');if(aIss){toast('助教姓名不规范',aIss,'error');return}
-    if(!/^1\d{10}$/.test(ph)){toast('手机号格式不正确','请填写完整的11位手机号','error');return}
+    const isOrg=st.entity==='机构';
+    if(isOrg&&!st.orgId){toast('请选择所属机构','合作主体为机构时必须归属到已创建的机构账户；若尚未创建请先创建机构账户','error');return}
+    if(!isOrg&&!/^1\d{10}$/.test(ph)){toast('手机号格式不正确','请填写完整的11位手机号','error');return}
+    if(isOrg&&ph&&!/^1\d{10}$/.test(ph)){toast('手机号格式不正确','请填写完整的11位手机号，或留空','error');return}
     if(idn&&!/^\d{17}[\dXx]$/.test(idn)){toast('身份证号格式不正确','请填写18位身份证号','error');return}
-    if(state.accounts.some(a=>a.phone===maskPhone(ph))){toast('无法创建','该手机号已被其他账户占用','error');return}
-    acc={id,personId:'ZJ'+(20000+state.accounts.length),name,phone:maskPhone(ph),roles:'助教',gender:st.gender,idNo:idn};
+    if(!isOrg&&state.accounts.some(a=>a.phone===maskPhone(ph))){toast('无法创建','该手机号已被其他账户占用','error');return}
+    const pid='ZJ'+(20000+state.accounts.length);
+    acc={id:isOrg?'JS-'+pid:id,personId:pid,name,phone:ph?maskPhone(ph):'',roles:'助教',gender:st.gender,idNo:idn,entity:st.entity||'个人'};
+    if(isOrg)acc.orgId=st.orgId;
   }
   state.accounts.push(Object.assign({wechat:'未绑定',bank:'未填写',available:0,pending:0,frozen:0,paid:0,project:'—',invite:'尚未发送'},acc.orgId?{wechat:'—',bank:'—'}:{},acc));
   Object.assign(st,{kind:'',sel:null,name:'',settle:'',gender:'男',idNo:'',phone:'',type:'个人讲师',price:'',entity:'个人',orgId:''});
-  if(acc.orgId)toast('讲师已创建','课酬将归属 '+orgName(acc.orgId)+'，不单独生成小程序账号');else toast('账户已创建',acc.name+' 的账户已创建，首次有课酬入账时将发送小程序登录邀请');go('/accounts/detail?id='+acc.id+'&from='+kind);
+  if(acc.orgId)toast(acc.roles+'已创建','课酬将归属 '+orgName(acc.orgId)+'，不单独生成小程序账号');else toast('账户已创建',acc.name+' 的账户已创建，首次有课酬入账时将发送小程序登录邀请');go('/accounts/detail?id='+acc.id+'&from='+kind);
+}
+function entityEditItem(a,oi){
+  const ed=state.entEdit&&state.entEdit.id===a.id?state.entEdit:null,cur=a.orgId?'机构':(a.entity||'个人');
+  if(!ed){
+    const txt=a.orgId?tag('机构','blue')+' '+orgName(a.orgId):tag(cur,'blue');
+    return oi('合作主体',txt+(canOp()?' <button class="link" onclick="entEditStart(\''+a.id+'\')">修改</button>':''));
+  }
+  const sel='<select class="select" style="width:120px" onchange="state.entEdit.entity=this.value;state.entEdit.orgId=\'\';render()"><option '+(ed.entity==='个人'?'selected':'')+'>个人</option><option '+(ed.entity==='机构'?'selected':'')+'>机构</option></select>';
+  const org=ed.entity==='机构'?' <select class="select" style="width:200px" onchange="state.entEdit.orgId=this.value"><option value="">请选择机构账户</option>'+state.orgs.map(o=>'<option value="'+o.id+'" '+(ed.orgId===o.id?'selected':'')+'>'+o.orgName+'</option>').join('')+'</select>':'';
+  return oi('合作主体',sel+org+' <button class="btn sm primary" onclick="entEditSave()">保存</button> <button class="btn sm" onclick="state.entEdit=null;render()">取消</button><div class="muted" style="margin-top:6px;font-size:12px">'+(ed.entity==='机构'?'改为机构后不单独生成小程序账号，课酬归属所选机构，由机构对接人登录并提现':'改为个人后需本人手机号登录小程序并自行绑定微信、完善收款账户')+'</div>');
+}
+function entEditStart(id){const a=state.accounts.find(x=>x.id===id);state.entEdit={id,entity:a.orgId?'机构':(a.entity||'个人'),orgId:a.orgId||''};render()}
+function entEditSave(){
+  const ed=state.entEdit,a=ed&&state.accounts.find(x=>x.id===ed.id);if(!a)return;
+  const was=a.orgId?'机构':(a.entity||'个人');
+  if(ed.entity===was&&(ed.entity==='个人'||ed.orgId===a.orgId)){state.entEdit=null;render();return}
+  if(ed.entity==='机构'&&!ed.orgId){toast('请选择所属机构','合作主体为机构时必须归属到已创建的机构账户','error');return}
+  if(was==='个人'&&((a.available||0)+(a.pending||0)+(a.frozen||0)>0||frozenOf(a.personId)>0)){toast('无法变更合作主体','该账户仍有未结清的课酬或提现中金额，请处理完毕后再变更','error');return}
+  if(ed.entity==='个人'&&!a.phone){toast('无法改为个人','个人合作需本人手机号登录小程序，请先补充手机号','error');return}
+  if(ed.entity==='机构'){a.entity='机构';a.orgId=ed.orgId;a.wechat='—';a.bank='—'}
+  else{a.entity='个人';delete a.orgId;a.wechat='未绑定';a.bank='未填写'}
+  state.entEdit=null;
+  toast('合作主体已更新',a.name+' 的合作主体已变更为'+(a.orgId?'机构：'+orgName(a.orgId):'个人'));render();
 }
 function accountDetail(){
   const a=state.accounts.find(x=>x.id===qs().get('id'))||state.accounts[0];
@@ -1646,7 +1679,8 @@ function accountDetail(){
     const orgCur=og.id?(og.termDays||termDefault(og)):'—';
     const sumBy=fn=>myBills.filter(fn).reduce((s,b)=>s+netAmt(b),0);
     const bWait=sumBy(b=>b.status==='待提交'||b.status==='审批中'),bTerm=sumBy(b=>b.status==='账期中'),bAvail=sumBy(b=>b.status==='可提现'),bDone=sumBy(b=>b.status==='提现中'||b.status==='已提现'),bTotal=myBills.reduce((s,b)=>s+netAmt(b),0);
-    return title('讲师详情',a.name,'<button class="btn" onclick="go(\'/accounts/teacher\')">返回列表</button>')+
+    const isTO=a.roles==='讲师',wordO=a.roles;
+    return title(wordO+'详情',a.name,'<button class="btn" onclick="go(\'/accounts/'+(isTO?'teacher':'assistant')+'\')">返回列表</button>')+
       accHeroHtml(a.name.slice(0,1),a.name,a.sysName,tag(a.roles,'blue')+tag('合作主体：机构','blue')+tag('所属机构：'+(og.orgName||'—'),'')+tag('不单独生成小程序账号',''),'<button class="btn primary" onclick="go(\'/accounts/org/detail?id='+og.id+'\')">查看所属机构账户</button>')+
       '<div class="acc-kpis">'+
         '<div class="acc-kpi total"><div class="k"><span>名下授课课酬累计</span></div><div class="v">'+money(bTotal)+'</div><div class="s">共 '+myBills.length+' 笔账单 · 资金归属所属机构</div></div>'+
@@ -1655,8 +1689,8 @@ function accountDetail(){
         '<div class="acc-kpi"><div class="k"><span>可提现 / 提现中（机构）</span>'+tag('由机构提现','blue')+'</div><div class="v">'+money(bAvail+bDone)+'</div><div class="s">由机构对接人统一开票提现</div></div>'+
       '</div>'+
       '<section class="card"><div class="card-head"><h3>基本信息</h3><span class="muted">课酬账单保留实际授课人姓名，用于对账与历史追溯</span></div><div class="info-grid clean">'+
-        oi('结算姓名',a.name)+oi('讲师 ID',a.personId)+oi('性别',a.gender)+oi('身份证号',a.idNo?a.idNo.slice(0,6)+'********'+a.idNo.slice(-4):'—')+
-        oi('讲师类型',a.type)+oi('讲师价格',a.price)+oi('手机号',a.phone)+oi('所属机构',og.id?'<button class="link" onclick="go(\'/accounts/org/detail?id='+og.id+'\')">'+og.orgName+'</button>':'—')+
+        oi('结算姓名',a.name)+oi(wordO+' ID',a.personId)+oi('性别',a.gender)+oi('身份证号',a.idNo?a.idNo.slice(0,6)+'********'+a.idNo.slice(-4):'—')+
+        (isTO?oi('讲师类型',a.type)+oi('讲师价格',a.price):'')+oi('手机号',a.phone)+(isTO?'':entityEditItem(a,oi))+oi('所属机构',og.id?'<button class="link" onclick="go(\'/accounts/org/detail?id='+og.id+'\')">'+og.orgName+'</button>':'—')+
       '</div></section>'+
       '<section class="card"><div class="acc-term"><div class="acc-term-l"><div class="acc-term-top"><h3>账期与结算归属</h3>'+tag('随所属机构','blue')+'<span>当前生效账期：<b>'+orgCur+' 天</b> · 归属机构：<button class="link" onclick="go(\'/accounts/org/detail?id='+og.id+'\')">'+(og.orgName||'—')+'</button></span></div><div class="muted">该讲师不单独设小程序登录入口与余额池；课酬统一计入所属机构账户，由机构对接人 <b>'+(og.rep||'—')+'</b>（'+(og.phone||'—')+'）开具发票后提现。</div></div><div class="acc-term-r"><span class="muted">账期请在所属机构账户维护</span></div></div></section>'+
       accBillsCard('最近课酬入账','实际授课人名下关联的课酬账单（资金归属 '+((og&&og.orgName)||'所属机构')+'）',myBills);
@@ -1673,7 +1707,7 @@ function accountDetail(){
     accKpisHtml(a)+
     '<section class="card"><div class="card-head"><h3>基本信息</h3><span class="muted">'+(isT?'个人合作：本人手机号登录小程序，可选云账户 / 开发票 / 劳务费代扣；手机号在讲师运营系统维护，变更后解绑旧微信、余额不变':'助教手机号由讲师运营在本系统维护，变更后解绑旧微信，余额与历史流水不变')+'</span></div><div class="info-grid clean">'+
       oi('结算姓名',a.name)+oi(isT?'讲师 ID':'助教 ID',a.personId)+oi('性别',o.gender)+oi('身份证号',o.idNo?o.idNo.slice(0,6)+'********'+o.idNo.slice(-4):'—')+
-      (isT?oi('讲师类型',o.type)+oi('讲师价格',o.price)+oi('合作主体','个人（授课人即收款人）')+oi('结算账户 ID',a.id):'')+
+      (isT?oi('讲师类型',o.type)+oi('讲师价格',o.price)+oi('合作主体','个人（授课人即收款人）')+oi('结算账户 ID',a.id):entityEditItem(a,oi))+
       oi('当前手机号',a.phone)+oi('微信状态',tag(a.wechat,a.wechat==='已绑定'?'green':'orange'))+oi('收款账户',tag(a.bank,a.bank==='已完善'?'green':'orange'))+oi('最近邀请','<span id="inviteTime">'+a.invite+'</span>')+
     '</div></section>'+
     accTermHtml(a,false)+
@@ -2215,9 +2249,9 @@ accountNew:{t:'添加讲师 / 助教账户',d:'运营在后台创建师资账户
  s:[['讲师',[
   ['讲师（从讲师系统选择）','选定后带出结算姓名、性别、身份证号、手机号等，选择前其余字段不可编辑'],
   ['结算姓名','须与身份证一致，用于付款'],
-  ['讲师类型 / 讲师价格（元/天）','个人讲师等类型与参考单价'],
-  ['合作主体 / 所属机构','个人或机构；选机构时账户归属机构，不单独生成小程序账号']]],
- ['助教',[['助教姓名 / 性别 / 身份证号 / 手机号','姓名须与身份证一致；手机号用于登录与邀请']]],
+  ['讲师价格（元/天）','参考单价'],
+  ['合作主体 / 所属机构','个人或机构（讲师类型随合作主体自动确定：个人→个人讲师，机构→机构讲师）；选机构时账户归属机构，不单独生成小程序账号']]],
+ ['助教',[['助教姓名 / 性别 / 身份证号 / 手机号','姓名须与身份证一致；手机号用于登录与邀请，合作主体为机构时可不填'],['合作主体 / 所属机构','个人或机构；选机构时账户归属机构，不单独生成小程序账号']]],
  ['按钮',[['创建账户','校验通过后创建，并发送邀请']]]]},
 orgList:{t:'机构账户',d:'机构合作主体的结算账户。一个机构只对应一个小程序账号，旗下授课讲师不单独生成账号。机构仅可开发票，不代扣个税。',
  roles:{lead:'无权访问',pm:'查看、导出、添加机构账户',operator:'无权访问',finance:'查看、导出，维护账期',admin:'全部'},

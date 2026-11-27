@@ -22,7 +22,7 @@ h1{font-size:38px;letter-spacing:-1px;margin:17px 0 12px}
 .body{flex:1;min-width:0}.body h2{font-size:18px;margin:0 0 6px}.body h2 em{font-style:normal;font-size:11px;font-weight:600;color:var(--c,var(--blue));background:var(--bgc,#eaf0ff);padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:2px}
 .body p{margin:0;font-size:13px;line-height:1.7;color:var(--sub)}
 .go{flex:none;font-size:12px;font-weight:700;color:var(--c,var(--blue));white-space:nowrap}
-.s1{--c:#315cec;--bgc:#eaf0ff}.s2{--c:#0f8fb0;--bgc:#e4f6fb}.s3{--c:#7b4fd6;--bgc:#f0eaff}.s4{--c:#dc861d;--bgc:#fff2e0}.s5{--c:#159a70;--bgc:#e8f8f2}
+.s1{--c:#315cec;--bgc:#eaf0ff}.s2{--c:#0f8fb0;--bgc:#e4f6fb}.s3{--c:#7b4fd6;--bgc:#f0eaff}.s4{--c:#dc861d;--bgc:#fff2e0}.s5{--c:#159a70;--bgc:#e8f8f2}.s6{--c:#d4380d;--bgc:#fff1ee}
 @media(max-width:760px){h1{font-size:30px}.wrap{padding-top:34px}.step a{flex-wrap:wrap;gap:12px}.ico{display:none}.go{width:100%;padding-left:52px}.steps:before{left:35px}}
 </style>
 </head>
@@ -32,7 +32,7 @@ h1{font-size:38px;letter-spacing:-1px;margin:17px 0 12px}
   <h1>讲师 / 助教师资结算系统</h1>
   <p class="lead">覆盖排期联动、课酬账单、课酬审核、讲师 / 助教 / 机构账户、自助提现、月度与紧急付款及付款确认。页面内置示例数据，可切换角色并完整演示关键流程。</p>
 
-  <div class="hint">推荐查看顺序 <small>按业务流转：流程图 → 项目排期 → 执行单 → 后台 → 小程序</small></div>
+  <div class="hint">推荐查看顺序 <small>按业务流转：流程图 → 项目排期 → 执行单 → 后台 → 小程序 → 风控规则</small></div>
 
   <ol class="steps">
     <li class="step s1">
@@ -73,6 +73,14 @@ h1{font-size:38px;letter-spacing:-1px;margin:17px 0 12px}
         <span class="ico"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2M9 6h6"/></svg></span>
         <div class="body"><h2>讲师 / 助教小程序<em>小程序.html</em></h2><p>邀请登录、结算中心、订单明细（含扣款行与扣款冻结提示）、勾选订单整笔提现（提现密码）、AI 客服、收款账户、提现记录及手机号重新绑定；支持机构账户视角。</p></div>
         <span class="go">进入小程序 →</span>
+      </a>
+    </li>
+    <li class="step s6">
+      <a href="./风控规则.html">
+        <span class="no">6</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <div class="body"><h2>风控规则说明<em>风控规则.html</em></h2><p>按高 / 中 / 低风险分级梳理全链路风控规则，区分判断型（拦截）与提示型（仅提醒），并标记待业务确认事项；支持按等级、类型筛选与搜索。</p></div>
+        <span class="go">查看 →</span>
       </a>
     </li>
   </ol>
