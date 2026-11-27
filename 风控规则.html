@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>风控规则说明 · 师资结算系统 V3.0</title>
+<style>
+:root{--blue:#315cec;--ink:#162033;--sub:#69758c;--line:#e4e9f2;--bg:#f3f6fb;--red:#d4380d;--red-bg:#fff1ee;--orange:#d97706;--orange-bg:#fff4e0;--green:#159a70;--green-bg:#e8f8f2;--purple:#7b4fd6;--purple-bg:#f0eaff}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:14px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:radial-gradient(900px 460px at -5% -10%,#dce7ff,transparent 60%),radial-gradient(800px 420px at 105% 0,#def5eb,transparent 58%),var(--bg)}
+.wrap{max-width:1180px;margin:auto;padding:56px 24px 72px}
+.badge{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid #cfdaff;border-radius:20px;background:#eef2ff;color:var(--blue);font-size:11px;font-weight:700}
+.badge:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--blue)}
+h1{font-size:34px;letter-spacing:-1px;margin:16px 0 10px}
+.lead{max-width:860px;color:var(--sub);font-size:14px;line-height:1.85;margin:0 0 24px}
+.card{background:rgba(255,255,255,.96);border:1px solid #fff;border-radius:16px;box-shadow:0 12px 36px rgba(25,41,78,.07);padding:20px 24px;margin-bottom:18px}
+.card h2{margin:0 0 12px;font-size:16px}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.legend>div{border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--sub);line-height:1.75}
+.legend b{display:block;color:var(--ink);font-size:14px;margin-bottom:2px}
+.stats{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px}
+.stat{flex:1;min-width:130px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.stat .n{font-size:26px;font-weight:800;line-height:1.2}.stat .t{font-size:12px;color:var(--sub)}
+.stat.h .n{color:var(--red)}.stat.m .n{color:var(--orange)}.stat.l .n{color:var(--green)}.stat.p .n{color:var(--purple)}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{height:30px;padding:0 14px;border:1px solid #d7ddea;border-radius:15px;background:#fff;color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.bar .sep{width:1px;height:20px;background:var(--line)}
+.bar input{flex:1;min-width:200px;max-width:320px;height:32px;border:1px solid #d7ddea;border-radius:16px;padding:0 14px;font:inherit;font-size:13px;outline:none;background:#fff}
+.bar input:focus{border-color:var(--blue)}
+.lv{margin-bottom:18px;overflow:hidden;padding:0}
+.lv-h{display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--line)}
+.lv-h h2{margin:0}.lv-h .d{color:var(--sub);font-size:12.5px;flex:1}.lv-h .c{font-size:12px;color:var(--sub)}
+.lv.h .lv-h{background:var(--red-bg)}.lv.m .lv-h{background:var(--orange-bg)}.lv.l .lv-h{background:var(--green-bg)}
+.pill{display:inline-block;padding:1px 9px;border-radius:10px;font-size:12px;font-weight:700;line-height:20px;white-space:nowrap}
+.pill.h{background:var(--red);color:#fff}.pill.m{background:var(--orange);color:#fff}.pill.l{background:var(--green);color:#fff}
+.tg{display:inline-block;padding:0 8px;border-radius:4px;font-size:12px;line-height:20px;white-space:nowrap}
+.tg.j{background:#e8eefc;color:#2347c9;border:1px solid #c6d4fb}
+.tg.t{background:#fff4e0;color:#b35f00;border:1px solid #f6d49b}
+.tg.p{background:var(--purple-bg);color:var(--purple);border:1px solid #d9c9fa;font-weight:600}
+.tg.ob{background:#e8f8f2;color:#0f7a58;border:1px solid #b5e5d2}
+.tg.of{background:#fff7d6;color:#8a5a00;border:1px solid #f0d98a}
+.tg.oc{background:#fdebf5;color:#a02275;border:1px solid #f1bfdc}
+.tg.op{background:#f1f3f7;color:#69758c;border:1px solid #d9deea}
+.tabs{display:flex;gap:8px;margin:0 0 18px}
+.tab{height:38px;padding:0 20px;border:1px solid #d7ddea;border-radius:19px;background:#fff;font:inherit;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer}
+.tab:hover{border-color:var(--blue);color:var(--blue)}
+.tab.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.tab small{font-weight:400;opacity:.85;margin-left:4px}
+.lv.t .lv-h{background:#eaf0ff}
+.tg.dn{background:#e8f8f2;color:#0f7a58;border:1px solid #b5e5d2}
+.tg.s{background:#e3f6f4;color:#0b7f78;border:1px solid #a9e2dd;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);font-size:13px}
+th{background:#fafbfd;color:#4b5568;font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td.id{font-weight:700;color:var(--sub);white-space:nowrap}
+td.nm{font-weight:600;min-width:150px}
+td.ds{min-width:300px;color:#3b4660}
+td.wh{min-width:150px;color:#3b4660}
+td.ac{min-width:150px}
+.pend{margin-top:6px;padding:6px 10px;border-radius:8px;background:var(--purple-bg);color:#5a35b0;font-size:12.5px;line-height:1.7}
+.mx{width:100%;border-collapse:collapse}
+.mx th,.mx td{text-align:center;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px}
+.mx th:first-child,.mx td:first-child{text-align:left}
+.mx td b{font-size:16px}
+.empty{padding:28px;text-align:center;color:var(--sub)}
+ol.pl{margin:0;padding-left:22px;line-height:2}
+ol.pl li b{color:var(--ink)}
+.foot{color:var(--sub);font-size:12.5px;line-height:1.9}
+@media(max-width:760px){h1{font-size:28px}.wrap{padding-top:40px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <span class="badge">交互原型 V3.0</span>
+  <h1>风控规则说明</h1>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div id="bizView">
+  <section class="card">
+    <h2>分级与类型口径</h2>
+    <div class="legend">
+      <div><b><span class="pill h">高</span> 高风险</b>直接涉及资金安全、重复或超额付款、收款主体、身份真实性。优先用拦截规则在源头控制。</div>
+      <div><b><span class="pill m">中</span> 中风险</b>可能是异常，需要结合业务由人核实；或属于流程合规性要求。</div>
+      <div><b><span class="pill l">低</span> 低风险</b>数据质量、格式校验、告知类文案。</div>
+      <div><b><span class="tg j">拦截</span></b>系统自动校验，不满足即拦截（不能提交 / 不能发起 / 不能创建 / 不能提现），并提示原因。</div>
+      <div><b><span class="tg t">提醒</span></b>只提醒、不拦截：黄色 / 红色风险提示、固定审核提示、二次确认，由项目经理、审批人或财务核实后决定是否放行。其中“固定审核提示”无命中条件，每次都展示，是后续可系统化的重点。</div>
+      <div><b><span class="tg ob">业务</span> 业务判断</b>由项目经理、项目主管、讲师运营判断或负责，如培训是否真实发生、单价与天数是否合理、档案是否准确。</div>
+      <div><b><span class="tg of">财务</span> 财务判断</b>由财务、月度账单经办人判断或负责，如付款合同与额度、发票与税务、收款资料与付款安全、提现窗口与付款确认。</div>
+      <div><b><span class="tg oc">共同</span> 业务 + 财务共同</b>需业务与财务共同判断或拍板（如单价、执行金额、扣款、个人代收是否禁止）。</div>
+    </div>
+    <div class="muted" style="margin-top:12px;font-size:12.5px;color:var(--sub)">说明：「拦截 / 提醒」描述的是命中后的<b>处置方式</b>；「业务 / 财务 / 共同」是<b>判断方（责任方）</b>，即由谁核实、由谁拍板规则口径与阈值，边界项待业务与财务确认。权限、加密、验证码、提现密码等纯技术手段不在此列，见「技术类风控」。</div>
+  </section>
+
+
+  <div class="bar">
+    <div class="chips" id="fLv"></div><span class="sep"></span>
+    <div class="chips" id="fTp"></div><span class="sep"></span>
+    <div class="chips" id="fOw"></div><span class="sep"></span>
+    <div class="chips" id="fPd"></div>
+    <input id="q" placeholder="搜索规则、触发节点…" oninput="R.q=this.value;draw()">
+  </div>
+
+  <div id="list"></div>
+  </div>
+
+  <div id="techView" style="display:none">
+    <section class="card">
+      <h2>技术类风控说明</h2>
+      <div class="muted" style="font-size:13px;line-height:1.85;color:var(--sub)">技术类风控是靠<b>技术手段与页面交互设计</b>实现的安全控制，与业务规则（金额、合同、审批等）相互独立，由产品与技术共同保证，不需要业务或财务做业务判断。按“身份与登录认证、提现安全、验证码、实名与账户核验、页面交互设计、数据与系统安全”六类梳理；状态含义：<span class="tg dn">已设计</span>纳入本方案设计；<span class="tg op">本期不含</span>方案明确不在本期范围。部分控制项下方的“待确认”为具体参数（时长、次数、处理方式）尚待确认。</div>
+    </section>
+    <div class="bar">
+      <div class="chips" id="tCat"></div><span class="sep"></span>
+      <div class="chips" id="tSt"></div>
+      <input id="tq" placeholder="搜索控制项、技术手段…" oninput="T.q=this.value;drawTech()">
+    </div>
+    <div id="techList"></div>
+  </div>
+
+  <section class="card">
+    <h2>待业务确认事项</h2>
+    <ol class="pl" id="pending"></ol>
+  </section>
+
+</main>
+
+<script>
+/* lv: h/m/l；tp: j 拦截 / t 提醒；pend: 待业务确认说明（有值即标记） */
+const RULES=[
+/* ============ 高风险 · 拦截 ============ */
+{id:'H01',own:'biz',lv:'h',tp:'j',nm:'同一师资同一时段重复',ds:'以「师资 + 日期 + 上午 / 下午」为准，跨项目同样；全天占上下午两个时段。从源头杜绝重复报销。',wh:'保存执行单（仅提醒）；发起结算申请 / 付款申请（强拦截）',ac:'拦截，并列出冲突日期与执行单'},
+{id:'H02',own:'fin',lv:'h',tp:'j',nm:'付款合同额度超限',ds:'付款合同号抓取或选择即占用额度，同一合同号关联的账单合计不得超过付款总额。扣款通过后释放额度。',wh:'提交执行单、发起申请；审批抽屉同步标红「高风险」',ac:'拦截，并列出已关联的账单与缺口'},
+{id:'H04',own:'fin',lv:'h',tp:'j',nm:'须选付款合同号但未取得',ds:'单次付款金额 > 5000 且属企培讲师成本时必须有付款合同号；≤ 5000 免签；助教 / 兼职非必填；出题费不按类别豁免。系统按销售合同自动抓取，抓不到不允许提交。',wh:'提交执行单、发起申请',ac:'拦截，标记「缺付款合同号」'},
+{id:'H05',own:'biz',lv:'h',tp:'j',nm:'身份与手机号唯一性',ds:'人员 ID 为主键；一人 ID 对应一个手机号、一个手机号对应一个人员 ID；授权手机号须与登记手机号一致；不允许自行注册；一个人只能是讲师或助教其中一种角色。',wh:'提交执行单、发起申请、创建 / 修改账户、小程序登录',ac:'拦截，标记「档案未建 / 手机号待补充 / 冲突」'},
+{id:'H06',own:'biz',lv:'h',tp:'j',nm:'机构师资所属机构账户未创建',ds:'合作主体为机构的讲师 / 助教，其所属机构账户必须已创建（授课人不校验手机号）。补救：讲师运营补建机构账户并录入对接人，补建后自动解除拦截。',wh:'创建账户、提交执行单、发起申请',ac:'拦截，标记「机构账户未创建」'},
+{id:'H08',own:'both',lv:'h',tp:'j',nm:'扣款约束',ds:'仅账期中 / 可提现账单可扣款；累计扣款（含审批中）不得超过账单原金额；必填金额与原因；发起即冻结整笔订单，讲师端不可勾选并提示“扣款申请审批中，暂不可提现”。提现中 / 已提现不可扣款。',wh:'发起扣款、讲师提现',ac:'拦截；财务一位审批，通过即扣减并释放额度'},
+{id:'H10',own:'fin',lv:'h',tp:'j',nm:'开发票提现：发票金额必须等于提现金额',ds:'须上传电子发票，支持多张，发票金额合计须等于提现金额，不一致不可提交；可预览、删除后重传。',wh:'小程序提现第 1 步',ac:'拦截，提示差额'},
+{id:'H11',own:'fin',lv:'h',tp:'j',nm:'收款主体限制',ds:'机构仅支持开发票、仅支持对公账户，对公不可用支付宝；机构不代扣个税；提现单保存收款信息快照，后续改账户不影响已提交提现单。',wh:'收款账户维护、提现方式选择',ac:'限制可选项 / 拦截'},
+/* ============ 高风险 · 提醒 ============ */
+{id:'H12',own:'both',lv:'h',tp:'t',nm:'个人代收（授课人 ≠ 收款人）',ds:'存在税务 / 审计风险。付款页以红色「代收」标签提示，经办人付款前核对收款主体。',wh:'月度付款、付款确认',ac:'标红提示，不拦截',pend:'是否禁止代收待业务拍板（议题 C17）；财务倾向不允许'},
+{id:'H14',own:'fin',lv:'h',tp:'t',nm:'拆成多笔小额规避付款合同',ds:'财务审核提示「拆单」：留意拆成多笔小额以规避付款合同（5000 元免签）。',wh:'课酬审核（财务）',ac:'审核提示；固定审核提示（无命中条件），可系统化',pend:'是否升级为系统自动判断（如同师资同项目短期多笔小额），待业务确认'},
+{id:'H17',own:'both',lv:'h',tp:'t',nm:'含高风险提示的结算单批量同意',ds:'批量同意弹窗中展示“其中 N 张含高风险提示，仅作提醒，是否通过由你判断”；审批抽屉红字提示“本结算单存在高风险提示，请人工判断”。',wh:'课酬审核（批量同意 / 单张同意）',ac:'二次提醒，不拦截'},
+/* ---- 方案已有、本次补入 ---- */
+
+{id:'H23',own:'both',lv:'h',tp:'j',nm:'收款户名与结算姓名不一致自动判定为“代收”',ds:'把现在靠标签展示的“代收”明确成判断规则：个人收款户名 ≠ 结算姓名，或对公户名 ≠ 机构全称，系统自动识别为代收并标红。',wh:'提现提交、提现单、付款单',ac:'自动识别并标红；是否拦截见 H12',pend:'与 H12（是否禁止代收，议题 C17）联动，拦截或仅标红待业务拍板'},
+{id:'H25',own:'fin',lv:'h',tp:'j',nm:'发票防重复与抬头税号核对',ds:'开发票提现除校验“发票合计金额 = 提现金额”外：同一发票号码不可用于多张提现单；发票购买方名称、税号须与公司开票信息一致。',wh:'小程序提现（开发票）',ac:'拦截',pend:'电子发票自动采集不在本期，需讲师手录发票号码 / 抬头，是否做待业务、财务确认'},
+{id:'H27',own:'fin',lv:'h',tp:'t',nm:'付款合同乙方与讲师不一致',ds:'财务审核提示已有“乙方与讲师是否一致”，付款合同乙方 ≠ 结算姓名 / 机构全称时在审批抽屉标红，条件成熟后升级为拦截。',wh:'课酬审核（财务）',ac:'标红提示，后续可拦截',pend:'需合同系统提供付款合同乙方字段，是否纳入待确认'},
+{id:'H28',own:'fin',lv:'h',tp:'j',nm:'机构对公户名与对接人变更管控',ds:'机构对公账户户名须等于机构全称；机构对接人手机号或对公账户变更后，须财务核验并留痕，变更后首次提现同样适用技术类风控中的“添加 / 修改账户等待期”（T08）。',wh:'机构账户、小程序收款账户',ac:'拦截 / 财务核验',pend:'是否需要财务核验节点待业务、财务确认'},
+
+/* ============ 中风险 · 拦截 ============ */
+{id:'M01',own:'biz',lv:'m',tp:'j',nm:'项目未完成讲师评价',ds:'项目经理发起结算申请 / 付款申请前须完成讲师评价；页面红色小字提示，弹窗提供“去评价”入口。',wh:'发起结算申请 / 付款申请',ac:'拦截'},
+{id:'M02',own:'biz',lv:'m',tp:'j',nm:'最后执行日期晚于今天',ds:'可以保存执行单，但最后执行日期到期前不能发起结算申请 / 付款申请。',wh:'发起结算申请 / 付款申请',ac:'拦截，提示到期日'},
+{id:'M07',own:'fin',lv:'m',tp:'j',nm:'提现窗口限制',ds:'普通余额只能在每月 1~10 号（财务可配）提现；到期不等于随时可提；紧急（随时可提现）订单不受窗口限制。',wh:'小程序提现',ac:'窗口外拦截'},
+/* ============ 中风险 · 提醒 ============ */
+{id:'M10',own:'both',lv:'m',tp:'t',nm:'课酬单价偏高',ds:'单价高于该讲师 / 助教同费用类别的历史最高单价；审批时展示历史单价（同类别历史最高 + 合作次数，可展开每次明细）。',wh:'提交执行单、发起申请、账单、审批抽屉',ac:'黄色风险提醒，不拦截',pend:'历史最高的对比口径待确认'},
+{id:'M11',own:'biz',lv:'m',tp:'t',nm:'服务日期过长',ds:'服务日期跨度（首日至末日）或执行时段超过 31 天。',wh:'同 M10',ac:'黄色风险提醒，不拦截',pend:'31 天阈值为预设，待确认'},
+{id:'M12',own:'biz',lv:'m',tp:'t',nm:'执行天数与服务天数不一致',ds:'执行天数 ≠ 实际培训日期天数，或按天计费的数量 ≠ 服务天数。',wh:'同 M10',ac:'黄色风险提醒，不拦截'},
+{id:'M13',own:'both',lv:'m',tp:'t',nm:'课酬合计超过执行金额',ds:'本执行单课酬合计 > 执行金额，由审批人判断。',wh:'同 M10',ac:'黄色风险提醒，不拦截'},
+{id:'M14',own:'biz',lv:'m',tp:'t',nm:'账单未关联执行单',ds:'含“未关联执行单”账单提交时需二次确认；手工创建账单可先不关联，但最终必须关联。审批抽屉以提示级展示，并在排序上靠前。',wh:'发起结算申请、审批抽屉',ac:'二次确认 + 提示'},
+{id:'M15',own:'both',lv:'m',tp:'t',nm:'结算单曾被驳回',ds:'提示“本单曾被驳回 N 次，请确认上次问题已解决”；审批记录展示“本次提交修改了 N 处”，可展开前后对比。',wh:'课酬审核',ac:'提示'},
+{id:'M17',own:'biz',lv:'m',tp:'t',nm:'紧急结算',ds:'本期不设金额上限、频次限制或固定触发条件；审核提示“确认原因真实充分，通过后账单可立即提现；跨月注意到账时间”。',wh:'课酬审核',ac:'审核提示；固定审核提示（无命中条件），可系统化',pend:'紧急通道的金额与频次限制是否设置，待业务确认'},
+{id:'M19',own:'fin',lv:'m',tp:'t',nm:'合同状态与成本占比',ds:'财务审核提示：合同是否结项或终止、客户回款情况、课酬成本占比；核对附件齐全、已盖章。',wh:'课酬审核（财务）',ac:'审核提示；固定审核提示（无命中条件），可系统化'},
+{id:'M20',own:'fin',lv:'m',tp:'t',nm:'大额 / 高单价 / 含其他费用须有证明材料',ds:'财务审核提示“附件凭证”：金额大、单价高、含其他费用的，确认有证明材料。',wh:'课酬审核（财务）',ac:'审核提示；固定审核提示（无命中条件），可系统化'},
+
+/* ---- 方案已有、本次补入 ---- */
+{id:'M25',own:'fin',lv:'m',tp:'t',nm:'月底未确认提醒',ds:'月底前 N 天（财务可配）起，若仍有未确认的提现单，付款确认页顶部提醒经办人；超过月底红色告警。',wh:'付款确认',ac:'顶部提醒 / 红色告警'},
+{id:'M26',own:'biz',lv:'m',tp:'j',nm:'手工创建账单管控',ds:'无执行单场景（咨询、大赛、预付）手工创建：必须下拉选择合同，必填最终客户名称与课程名称；可先不关联执行单但最终必须关联；预付账单后续按合同定时匹配执行单，无匹配保持“待关联”并提醒，多个匹配转项目经理手工选择。',wh:'手工创建账单、发起结算申请',ac:'必填拦截 + 持续提醒'},
+
+/* ============ 低风险 · 拦截 ============ */
+{id:'L01',own:'biz',lv:'l',tp:'j',nm:'姓名 / 机构名规范',ds:'讲师、助教须为 2~8 个汉字，不含“/”、括号、英文、数字及“真名”“不对外”等字样；机构须以“公司 / 中心 / 事务所 / 学校 / 协会”等结尾，简称、个人姓名不可。',wh:'创建 / 编辑账户',ac:'拦截；从讲师系统带出的不规范名称留空并标红'},
+{id:'L02',own:'biz',lv:'l',tp:'j',nm:'机构全称、信用代码不可重复',ds:'机构全称与统一社会信用代码在系统内唯一；机构对接人手机号不可被其他账户占用。',wh:'创建机构账户',ac:'拦截'},
+{id:'L06',own:'biz',lv:'l',tp:'j',nm:'合作主体变更保护',ds:'个人改为机构时，账户仍有未结清课酬或提现中金额不可变更；机构改为个人须已有手机号。',wh:'账户详情 · 修改合作主体',ac:'拦截'},
+/* ============ 低风险 · 提醒 ============ */
+{id:'L07',own:'biz',lv:'l',tp:'t',nm:'名称不规范标红',ds:'讲师系统名称不规范时标红“名称不规范”，不会对讲师、机构展示，请核对后填写结算姓名 / 机构全称。',wh:'创建账户',ac:'红色提示'},
+];
+const PENDING=[
+ ['个人代收是否禁止','授课人 ≠ 收款人存在税务 / 审计风险，财务倾向不允许，最终由业务拍板；当前以“代收”标签标红提示（H12，议题 C17）。'],
+ ['拆单是否升级为系统自动识别','“拆成多笔小额规避付款合同”（H14）目前只有财务审核提示文字（无命中条件），是否升级为系统自动识别并提醒 / 拦截、判断规则如何定，待业务、财务确认。'],
+ ['风险提醒阈值与口径','单价对比的历史最高口径、服务日期 31 天阈值（M10、M11）；是否增设“需说明”强提醒档（命中后必须填写说明才可提交）。'],
+ ['紧急结算金额与频次限制','本期不设金额上限与频次限制（M17），是否设置待业务确认。'],
+ ['“单次 ≤5000”的口径（议题 4）','账单级还是结算申请合计级，直接决定“拆成多笔小额规避付款合同”（H14）能否做成系统自动校验。'],
+ ['付款合同自动抓取与额度释放（议题 11）','多个付款合同都符合时的优先级、是否需项目经理确认；驳回或删除账单后，已占用的额度是否释放（影响 H02）。'],
+ ['审批通过时已晚于账期到期日（议题 6）','建议直接计入可提现（窗口规则不变），待产品、财务确认。'],
+ ['银行卡实名 / 三要素校验与发票验真','本期不含（T13、T14）：系统只校验收款信息完整性，不校验银行卡实名与有效性，也不做电子发票自动采集与验真（规划 P5 能力升级）。'],
+ ['技术类风控参数','会话超时时长、密码错误锁定次数与时长、首次提现与新增 / 修改账户等待期的时长及处理方式（拦截或二次验证）、验证码有效期与频控、接口限流策略（T03、T04、T06~T08、T11、T12、T24），待业务、财务、技术确认。']
+];
+const R={lv:'all',tp:'all',own:'all',pd:'all',q:''};
+const LV={h:['高风险','直接涉及资金安全、重复或超额付款、收款主体、身份真实性'],m:['中风险','可能是异常需人工核实，或属于流程合规要求'],l:['低风险','数据质量、格式校验、告知类文案']};
+const OWN={biz:['业务','ob'],fin:['财务','of'],both:['业务 + 财务','oc'],plat:['平台','op']};
+function chips(id,key,items){
+  document.getElementById(id).innerHTML=items.map(([v,t])=>`<button class="chip ${R[key]===v?'on':''}" onclick="R.${key}='${v}';draw()">${t}</button>`).join('');
+}
+function match(x){
+  if(R.lv!=='all'&&x.lv!==R.lv)return false;
+  if(R.tp!=='all'&&x.tp!==R.tp)return false;
+  if(R.own!=='all'&&x.own!==R.own)return false;
+  if(R.pd==='pend'&&!x.pend)return false;
+  const q=R.q.trim();
+  return !q||(x.id+x.nm+x.ds+x.wh+x.ac+(x.pend||'')).includes(q);
+}
+function draw(){
+  chips('fLv','lv',[['all','全部等级'],['h','高风险'],['m','中风险'],['l','低风险']]);
+  chips('fTp','tp',[['all','全部处置方式'],['j','拦截'],['t','提醒']]);
+  chips('fOw','own',[['all','全部判断方'],['biz','业务'],['fin','财务'],['both','业务+财务']]);
+  chips('fPd','pd',[['all','全部状态'],['pend','仅看待业务确认']]);
+  const rows=RULES.filter(match);
+  const out=['h','m','l'].map(lv=>{
+    const rs=rows.filter(x=>x.lv===lv);
+    if(!rs.length)return '';
+    const jn=rs.filter(x=>x.tp==='j').length;
+    return `<section class="card lv ${lv}"><div class="lv-h"><span class="pill ${lv}">${LV[lv][0]}</span><span class="d">${LV[lv][1]}</span><span class="c">共 ${rs.length} 条 · 拦截 ${jn} · 提醒 ${rs.length-jn}</span></div>
+    <table><thead><tr><th>编号</th><th>规则</th><th>处置 / 判断方</th><th>规则说明</th><th>触发节点</th><th>处理方式</th></tr></thead><tbody>`+
+    rs.map(x=>`<tr><td class="id">${x.id}</td><td class="nm">${x.nm}</td><td><span class="tg ${x.tp}">${x.tp==='j'?'拦截':'提醒'}</span><div style="margin-top:4px"><span class="tg ${OWN[x.own][1]}">${OWN[x.own][0]}</span></div></td><td class="ds">${x.ds}${x.pend?`<div class="pend"><span class="tg p">待业务确认</span> ${x.pend}</div>`:''}</td><td class="wh">${x.wh}</td><td class="ac">${x.ac}</td></tr>`).join('')+
+    `</tbody></table></section>`;
+  }).join('');
+  document.getElementById('list').innerHTML=out||'<section class="card"><div class="empty">没有符合条件的规则</div></section>';
+}
+
+const TECH_CATS=[['A','身份与登录认证','确认“是本人、是授权人”，防止冒用与非授权登录'],['B','提现安全','提现这一资金出口的多重防护'],['C','验证码','敏感操作的手机验证码二次校验'],['D','实名与账户核验','收款账户、发票的真实性核验'],['E','页面交互设计','通过页面设计减少误操作、泄露与越权'],['F','数据与系统安全','数据保护、权限、留痕与接口防护']];
+/* st: done 已设计 / out 本期不含 */
+const TECH=[
+{id:'T01',c:'A',st:'done',nm:'微信手机号授权登录与开通制',how:'小程序通过微信手机号授权登录，授权手机号须与讲师运营系统 / 机构账户当前登记手机号一致，通过后才绑定微信与结算用户 ID；不允许自行注册，由后台开通并发送邀请。',risk:'冒用他人身份登录、非授权人员获取账户',when:'小程序首次登录、邀请登录'},
+{id:'T02',c:'A',st:'done',nm:'手机号变更后旧号失效、微信自动解绑',how:'手机号变更后旧号立即失效、原微信绑定自动解除；新号需重新授权登录并绑定原结算用户 ID；余额与历史流水不变；已发起的结算单、提现单保留变更前的手机号快照。',risk:'旧手机号 / 旧微信继续操作账户',when:'讲师运营修改手机号'},
+{id:'T03',c:'A',st:'done',nm:'异常登录监测与通知',how:'检测异地登录、多设备登录、短时间内重新绑定微信等异常，向账户登记手机号发送提醒，必要时要求重新验证。',risk:'账号被盗用后悄悄提现',when:'小程序登录、绑定微信',pend:'是否纳入、判定规则与通知方式待业务、技术确认'},
+{id:'T04',c:'A',st:'done',nm:'会话超时与重新认证',how:'小程序长时间无操作自动退出；进入收款账户、提现等敏感页面时可要求重新验证。',risk:'手机丢失或被他人借用时直接操作',when:'小程序全程',pend:'超时时长待确认'},
+{id:'T05',c:'B',st:'done',nm:'提现密码',how:'6 位数字；首次提现前必须设置（输入两次）；修改需验证原密码，或通过短信验证码重置；提示“请勿使用简单连续数字”；与微信登录无关；提交前必须校验，提交后不可撤销。',risk:'手机被他人使用或微信被盗时直接提现',when:'提现第 3 步、设置 / 修改 / 重置密码'},
+{id:'T06',c:'B',st:'done',nm:'提现密码错误锁定',how:'连续输错 N 次后锁定一段时间，或须通过短信验证码重置后才能继续。',risk:'暴力破解提现密码',when:'提现第 3 步',pend:'错误次数、锁定时长待确认'},
+{id:'T07',c:'B',st:'done',nm:'首次提现强化',how:'账户首次提现，或首次使用新收款账户提现时，增加短信验证码二次验证，并在付款单上标记“首次提现”，提醒经办人付款前重点核对。',risk:'冒名开户、虚假账户一次性套取资金',when:'提现提交、月度付款单',pend:'是否增加限额或人工核验、标记规则待业务、财务确认'},
+{id:'T08',c:'B',st:'done',nm:'添加 / 修改账户等待期',how:'修改收款账户、手机号或重新绑定微信后，N 小时内首次提现需短信二次验证（或暂不可提现）；付款单对“近期变更”的收款人加标记。',risk:'账号被盗后改卡并立即提现',when:'小程序提现、付款单',pend:'等待期时长、拦截还是二次验证，待业务、财务确认'},
+{id:'T09',c:'B',st:'done',nm:'提现幂等与订单冻结原子性',how:'同一请求重复提交只生成一张提现单；订单冻结与提现密码校验具备幂等与原子性；提交后所选订单立即冻结为“提现中”，不能重复勾选；提交前再次校验订单是否被扣款冻结。',risk:'重复点击、网络重试、并发造成重复提现',when:'小程序提现提交'},
+{id:'T10',c:'C',st:'done',nm:'查看完整收款信息需短信验证码',how:'收款户名、账号默认脱敏；点击“查看完整信息”或编辑账户时，须获取并输入手机验证码，通过后才展示完整户名与账号；离开页面自动恢复脱敏。',risk:'他人借用手机时窥探完整收款信息',when:'小程序收款账户管理'},
+{id:'T11',c:'C',st:'done',nm:'修改 / 新增收款账户需短信验证码',how:'新增或修改收款账户时，须输入登记手机号收到的验证码；机构对公账户变更同样适用。',risk:'账号被盗后改卡',when:'小程序收款账户新增 / 编辑',pend:'目前方案规定修改收款账户无需审批，是否增加验证码待确认'},
+{id:'T12',c:'C',st:'done',nm:'验证码有效期与发送频控',how:'验证码有效期（如 5 分钟）、同一手机号每分钟 / 每日发送次数上限、校验错误次数上限。',risk:'短信轰炸、验证码被暴力破解',when:'所有使用验证码的场景',pend:'有效期、频次上限待确认'},
+{id:'T13',c:'D',st:'out',nm:'银行卡三要素 / 实名校验',how:'对接实名校验服务，校验“户名 + 身份证号 + 银行卡号（可加手机号）”是否一致，防止填错卡、冒用他人银行卡。当前只校验收款信息完整性，不校验实名与有效性。',risk:'收款卡号 / 户名错误导致付款失败，或冒用他人银行卡',when:'新增 / 修改收款账户',pend:'本期不含（规划 P5 能力升级），上线时机待确认'},
+{id:'T14',c:'D',st:'out',nm:'电子发票自动采集与验真',how:'对接税务平台自动采集并验真电子发票，校验发票号码、金额、抬头、税号与是否重复报销。当前只校验发票金额合计等于提现金额，由经办人人工核票。',risk:'假发票、重复使用发票、抬头税号错误',when:'开发票提现、月度付款单收票核票',pend:'本期不含（规划 P5 能力升级）'},
+{id:'T15',c:'E',st:'done',nm:'敏感信息默认脱敏',how:'小程序收款户名、账号默认脱敏（如 齐*、6222 **** 6321、qi***@example.com）；确认提现、提现记录等页面一律脱敏且不提供查看入口；后台列表脱敏。',risk:'屏幕被窥探、截图泄露',when:'小程序全部展示页、后台账户列表'},
+{id:'T16',c:'E',st:'done',nm:'提现三步确认',how:'①提现信息（金额按所选订单自动合计，不可改，不支持部分金额）→ ②确认（收款账户、金额、预计到账时间）→ ③输入提现密码；提交成功页明确结果。',risk:'误操作、金额被篡改、选错收款账户',when:'小程序提现'},
+{id:'T17',c:'E',st:'done',nm:'关键操作二次确认弹窗',how:'暂不付款（提示不可撤销、款项退回余额、讲师下月重提）；批量 / 整单确认付款成功（不可撤销）；含“未关联执行单”账单提交；批量同意（展示合计、紧急单、扣款单与含高风险提示数量）；放弃本次申请。',risk:'不可逆操作被误点',when:'后台付款确认、课酬审核、发起结算申请'},
+{id:'T18',c:'E',st:'done',nm:'按钮置灰与原因提示',how:'不满足条件时按钮置灰并提示原因（如非项目经理本人不能发起、扣款冻结订单不可勾选）；待申请账单显示“需处理 N 项”且不可勾选；弹窗实时逐人列出不满足项；已发起账单只读。',risk:'越权操作、带病提交、不清楚被拦原因',when:'后台各业务页、小程序订单勾选'},
+{id:'T19',c:'E',st:'done',nm:'可撤销窗口与必填原因',how:'批量同意后 6 秒内可撤销；驳回必须选择类型并填写原因；扣款必须填写金额与原因；紧急结算必须填写紧急原因。',risk:'误点审批、无依据的驳回 / 扣款 / 紧急',when:'课酬审核、发起扣款、发起紧急结算'},
+{id:'T20',c:'F',st:'done',nm:'银行账号加密存储与明文查看权限',how:'银行账号加密存储、列表脱敏；明文查看需单独权限并留痕；月度付款单导出含身份证号、手机号的仅限云账户 / 劳务费类。',risk:'数据库或导出文件泄露收款与身份信息',when:'数据存储、后台查看与导出'},
+{id:'T21',c:'F',st:'done',nm:'角色权限与数据范围',how:'六类后台角色按最小权限授权；项目经理只能看到自己名下账单，项目主管只看本部门，财务、经办人全量只读（经办人在付款相关页面可操作），超级管理员在课酬审核页只读；讲师 / 助教 / 机构对接人只用小程序。',risk:'越权查看与操作',when:'后台全部页面、小程序'},
+{id:'T22',c:'F',st:'done',nm:'敏感操作留痕',how:'开通、录入、审批同步、提现、导出、确认、暂不付款等敏感操作全部记录日志，可追溯操作人、时间与对象。',risk:'事后无法追溯责任',when:'全系统'},
+{id:'T23',c:'F',st:'done',nm:'单据数据快照',how:'提现单保存手机号与收款账户快照；结算单保留提交时的手机号与账单快照；驳回后重提保留版本与修改记录；账户资料后续修改不影响已提交单据。',risk:'事后改资料导致对账不一致、责任不清',when:'提现提交、结算单提交'},
+{id:'T24',c:'F',st:'done',nm:'接口限流与防刷',how:'对登录、验证码、提现提交、查看收款信息等接口设置频率限制，异常请求拦截并告警。',risk:'接口被脚本批量调用、撞库、刷短信',when:'小程序与后台接口',pend:'限流策略待技术确认'}
+];
+const T={cat:'all',st:'all',q:''};
+const TST={done:['已设计','dn'],out:['本期不含','op']};
+function drawTech(){
+  chips2('tCat',T,'cat',[['all','全部分类']].concat(TECH_CATS.map(c=>[c[0],c[1]])),'drawTech');
+  chips2('tSt',T,'st',[['all','全部状态'],['done','已设计'],['out','本期不含']],'drawTech');
+  const q=T.q.trim(),rows=TECH.filter(x=>(T.cat==='all'||x.c===T.cat)&&(T.st==='all'||x.st===T.st)&&(!q||(x.id+x.nm+x.how+x.risk+x.when+(x.pend||'')).includes(q)));
+  const out=TECH_CATS.map(([k,t,d])=>{
+    const rs=rows.filter(x=>x.c===k);if(!rs.length)return '';
+    return `<section class="card lv t"><div class="lv-h"><h2>${t}</h2><span class="d">${d}</span><span class="c">共 ${rs.length} 项</span></div><table><thead><tr><th>编号</th><th>控制项</th><th>技术手段 / 交互设计</th><th>防范风险</th><th>触发场景</th><th>状态</th></tr></thead><tbody>`+
+    rs.map(x=>`<tr><td class="id">${x.id}</td><td class="nm">${x.nm}</td><td class="ds">${x.how}${x.pend?`<div class="pend"><span class="tg p">待确认</span> ${x.pend}</div>`:''}</td><td class="wh">${x.risk}</td><td class="wh">${x.when}</td><td><span class="tg ${TST[x.st][1]}">${TST[x.st][0]}</span></td></tr>`).join('')+`</tbody></table></section>`;
+  }).join('');
+  document.getElementById('techList').innerHTML=out||'<section class="card"><div class="empty">没有符合条件的控制项</div></section>';
+}
+function chips2(id,obj,key,items,fn){
+  document.getElementById(id).innerHTML=items.map(([v,t])=>`<button class="chip ${obj[key]===v?'on':''}" onclick="${obj===T?'T':'R'}.${key}='${v}';${fn}()">${t}</button>`).join('');
+}
+const V={view:'biz'};
+function tabs(){
+  document.getElementById('tabs').innerHTML=`<button class="tab ${V.view==='biz'?'on':''}" onclick="V.view='biz';showView()">业务风控规则<small>${RULES.length} 条</small></button><button class="tab ${V.view==='tech'?'on':''}" onclick="V.view='tech';showView()">技术类风控<small>${TECH.length} 项</small></button>`;
+}
+function showView(){
+  document.getElementById('bizView').style.display=V.view==='biz'?'':'none';
+  document.getElementById('techView').style.display=V.view==='tech'?'':'none';
+  tabs();(V.view==='biz'?draw:drawTech)();
+}
+document.getElementById('pending').innerHTML=PENDING.map(([t,d])=>`<li><b>${t}</b>：${d}</li>`).join('');
+showView();
+</script>
+<script src="./返回目录.js" data-style="top:20px;right:24px"></script>
+</body>
+</html>
